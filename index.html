@@ -10,51 +10,93 @@
 body{overflow:hidden;background:black;color:white;}
 
 .logo{
-position:absolute;top:25px;left:50%;
+position:absolute;
+top:25px;
+left:50%;
 transform:translateX(-50%);
-font-size:60px;letter-spacing:20px;font-weight:bold;
-white-space:nowrap;z-index:10;
+font-size:65px;
+letter-spacing:20px;
+font-weight:bold;
+white-space:nowrap;
+z-index:10;
 }
 
 .yellow{color:#ffd700;}
 .red{color:#ff1a1a;}
 
+/* زرار الاسم */
 #userArea{
-position:absolute;top:30px;right:40px;
-background:#ffd700;color:black;
-padding:10px 20px;border-radius:20px;
-font-weight:bold;cursor:pointer;z-index:10;
+position:absolute;
+top:20px;
+right:25px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:15px;
+font-weight:bold;
+font-size:13px;
+cursor:pointer;
+z-index:10;
+box-shadow:0 0 10px rgba(255,215,0,0.5);
 }
 
+/* زرار الرجوع */
 .backBtn{
-position:absolute;top:30px;left:40px;
-background:#ffd700;color:black;
-padding:8px 15px;border-radius:15px;
-font-weight:bold;cursor:pointer;display:none;z-index:10;
+position:absolute;
+top:20px;
+left:25px;
+background:#ffd700;
+color:black;
+padding:5px 12px;
+border-radius:12px;
+font-weight:bold;
+font-size:12px;
+cursor:pointer;
+display:none;
+z-index:10;
+box-shadow:0 0 10px rgba(255,215,0,0.5);
 }
 
 .menu{
-position:absolute;top:50%;left:50%;
+position:absolute;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-display:flex;flex-direction:column;
-gap:40px;align-items:center;z-index:10;
+display:flex;
+flex-direction:column;
+gap:40px;
+align-items:center;
+z-index:10;
 }
 
 .item{
-font-size:22px;letter-spacing:3px;
-cursor:pointer;transition:0.3s;
+font-size:22px;
+letter-spacing:3px;
+cursor:pointer;
+transition:0.3s;
 }
 
-.item:hover{transform:scale(1.2);color:#ffd700;}
+.item:hover{
+transform:scale(1.2);
+color:#ffd700;
+}
 
 .sectionTitle{
-position:absolute;top:50%;left:50%;
+position:absolute;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-font-size:40px;display:none;z-index:10;
+font-size:40px;
+display:none;
+z-index:10;
 letter-spacing:5px;
 }
 
-canvas{position:fixed;top:0;left:0;}
+canvas{
+position:fixed;
+top:0;
+left:0;
+}
 </style>
 </head>
 
@@ -106,7 +148,7 @@ onAuthStateChanged(auth,async(user)=>{
 if(user){
 const snap=await getDoc(doc(db,"users",user.uid));
 const data=snap.data();
-userArea.innerHTML=data.name+"<br><span style='font-size:12px'>Logout</span>";
+userArea.innerHTML=data.name+"<br><span style='font-size:10px'>Logout</span>";
 userArea.onclick=()=>signOut(auth).then(()=>location.reload());
 }else{
 userArea.innerHTML="LOGIN";
@@ -139,7 +181,7 @@ return{
 x:-50,
 y:Math.random()*canvas.height,
 radius:40,
-alpha:0.6,
+alpha:0.5,
 speed:2
 };
 }
@@ -156,7 +198,8 @@ ctx.fill();
 }
 
 function drawSmoke(){
-if(smokeActive && Math.random()<0.5){
+
+if(smokeActive && Math.random()<0.4){
 smokes.push(createSmoke());
 }
 
@@ -186,7 +229,7 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* Sections */
+/* الأقسام */
 
 const menu=document.getElementById("menu");
 const backBtn=document.getElementById("backBtn");
@@ -197,8 +240,7 @@ menu.style.display="none";
 backBtn.style.display="block";
 sectionTitle.style.display="block";
 sectionTitle.innerText=name;
-
-smokeActive=true; // يفضل شغال طول ما انت جوه القسم
+smokeActive=true;
 }
 
 backBtn.onclick=function(){
