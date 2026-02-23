@@ -29,16 +29,20 @@ z-index:10;
 position:absolute;
 top:22px;
 right:30px;
-width:32px;
-height:32px;
+width:30px;
+height:30px;
 border-radius:50%;
 cursor:pointer;
 z-index:10;
 border:2px solid #ffd700;
-display:none;
+transition:0.3s;
 }
 
-/* زرار الرجوع > */
+#profilePic:hover{
+transform:scale(1.15);
+}
+
+/* زرار الرجوع */
 .backBtn{
 position:absolute;
 top:25px;
@@ -109,6 +113,7 @@ left:0;
 <span class="yellow">𝔗</span>
 </div>
 
+<!-- صورة ثابتة دايمًا -->
 <img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
 
 <div class="backBtn" id="backBtn">></div>
@@ -141,14 +146,24 @@ const auth = getAuth(app);
 
 const profilePic=document.getElementById("profilePic");
 
+let currentUser=null;
+
 onAuthStateChanged(auth,(user)=>{
-if(user){
-profilePic.style.display="block";
-profilePic.onclick=()=>signOut(auth).then(()=>location.reload());
-}else{
-profilePic.style.display="none";
-}
+currentUser=user;
 });
+
+profilePic.onclick=function(){
+
+if(currentUser){
+signOut(auth).then(()=>{
+alert("Logged out ✅");
+location.reload();
+});
+}else{
+window.location.href="auth.html";
+}
+
+};
 
 /* Canvas */
 
