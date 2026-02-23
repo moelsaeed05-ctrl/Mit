@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey:"",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+appId:""
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
+
+/* حماية الصفحة */
+
+onAuthStateChanged(auth,(user)=>{
+if(!user){
+location.href="login.html";
+}
+});
+
+/* إضافة منتج */
+
+window.addProduct = async function(){
+
+let file = imageFile.files[0];
+
+if(!file){
+alert("اختر صورة");
+return;
+}
+
+let storageRef = ref(storage,"products/"+Date.now());
+
+await uploadBytes(storageRef,file);
+
+let imageURL = await getDownloadURL(storageRef);
+
+await addDoc(collection(db,"products"),{
+name:name.value,
+price:price.value,
+image:imageURL
+});
+
+alert("تم إضافة المنتج ✅");
+
+loadProducts();
+}
+
+/* حذف المنتج */
+
+window.deleteProduct = async function(id){
+
+await deleteDoc(doc(db,"products",id));
+
+loadProducts();
+}
+
+/* تحميل المنتجات */
+
+async function loadProducts(){
+
+let container = document.getElementById("productsContainer");
+container.innerHTML="";
+
+let data = await getDocs(collection(db,"products"));
+
+data.forEach(docSnap=>{
+
+let p = docSnap.data();
+
+container.innerHTML += `
+<div style="background:#111;padding:15px;margin:10px;border-radius:15px">
+<img src="${p.image}" width="120"><br>
+${p.name}<br>
+${p.price}<br>
+
+<button onclick="deleteProduct('${docSnap.id}')">
+Delete
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+window.logout = function(){
+signOut(auth);
+location.href="login.html";
+}
+
+window.onload = loadProducts;
+
+</script>
+
+</head>
+
+<body style="background:black;color:white;padding:40px">
+
+<h1>ADMIN PANEL</h1>
+
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<input id="name" placeholder="Product Name"><br><br>
+<input id="price" placeholder="Price"><br><br>
+<input type="file" id="imageFile"><br><br>
+
+<button onclick="addProduct()">Add Product</button>
+
+<h2>Products</h2>
+
+<div id="productsContainer"></div>
+
+</body>
+</html>
