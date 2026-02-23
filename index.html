@@ -1,4 +1,3 @@
-elking:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +10,7 @@ elking:
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial;
 }
 
 body{
@@ -20,7 +19,6 @@ body{
     color:white;
 }
 
-/* ===== Logo ===== */
 .logo{
     position:absolute;
     top:25px;
@@ -33,17 +31,9 @@ body{
     white-space:nowrap;
 }
 
-.yellow{
-    color:#ffd700;
-    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00,0 0 40px #ffae00;
-}
+.yellow{color:#ffd700;}
+.red{color:#ff1a1a;}
 
-.red{
-    color:#ff1a1a;
-    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
-}
-
-/* ===== User Area ===== */
 #userArea{
     position:absolute;
     top:30px;
@@ -55,10 +45,17 @@ body{
     font-weight:bold;
     cursor:pointer;
     z-index:10;
-    text-align:center;
 }
 
-/* ===== Menu ===== */
+.backBtn{
+    position:absolute;
+    top:30px;
+    left:40px;
+    cursor:pointer;
+    display:none;
+    z-index:10;
+}
+
 .menu{
     position:absolute;
     top:50%;
@@ -75,14 +72,11 @@ body{
     cursor:pointer;
     font-size:22px;
     letter-spacing:3px;
-    padding:10px 25px;
-    border-radius:15px;
     transition:0.3s;
 }
 
 .item:hover{
     transform:scale(1.2);
-    text-shadow:0 0 10px #aaa,0 0 30px #777;
 }
 
 canvas{
@@ -98,25 +92,27 @@ canvas{
 <canvas id="space"></canvas>
 
 <div class="logo">
-    <span class="yellow">𝔐</span>
-    <span class="red">𝔦</span>
-    <span class="yellow">𝔗</span>
+<span class="yellow">𝔐</span>
+<span class="red">𝔦</span>
+<span class="yellow">𝔗</span>
 </div>
 
 <div id="userArea">LOGIN</div>
+<div class="backBtn" id="backBtn">BACK</div>
 
-<div class="menu">
-    <div class="item" onclick="openSection()">HOODIES</div>
-    <div class="item">PANTS</div>
-    <div class="item">ACCESSORIES</div>
+<div class="menu" id="menu">
+<div class="item" onclick="openSection()">HOODIES</div>
+<div class="item">PANTS</div>
+<div class="item">ACCESSORIES</div>
 </div>
 
 <script type="module">
 
-/* ================= Firebase ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } 
+import { getAuth, onAuthStateChanged, signOut }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
@@ -129,136 +125,117 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 const userArea = document.getElementById("userArea");
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async(user)=>{
     if(user){
-        userArea.innerHTML = `
-            ${user.email}<br>
-            <span style="font-size:12px;">Logout</span>
-        `;
-        userArea.onclick = () => {
-            signOut(auth).then(()=> location.reload());
-        };
-    } else {
-        userArea.innerHTML = "LOGIN";
-        userArea.onclick = () => {
-            window.location.href = "auth.html";
-        };
+        const snap = await getDoc(doc(db,"users",user.uid));
+        const data = snap.data();
+
+        userArea.innerHTML = data.name + "<br><span style='font-size:12px'>Logout</span>";
+        userArea.onclick = ()=> signOut(auth).then(()=>location.reload());
+    }else{
+        userArea.innerHTML="LOGIN";
+        userArea.onclick=()=>window.location.href="auth.html";
     }
 });
 
-/* ================= Canvas ================= */
-const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d");
+/* ===== Canvas ===== */
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-let mode = "stars";
-
-/* ===== Stars ===== */
-let stars = [];
-for (let i = 0; i < 250; i++) {
-    stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5,
-        speed: Math.random() * 0.4 + 0.1
-    });
+let stars=[];
+for(let i=0;i<200;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*1.5,
+speed:Math.random()*0.5
+});
 }
 
-/* ===== Smoke ===== */
-let smokes = [];
-let smokeActive = false;
+let smokes=[];
+let smokeActive=false;
 
-function createSmoke() {
-    return {
-        x: -60,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 60 + 40,
-        alpha: 0.6,
-        growth: Math.random()*0.5 + 0.3,
-        speedX: Math.random()*2 + 1.5
-    };
-}
-
-function drawSmoke() {
-
-    if (smokeActive && Math.random() < 0.5) {
-        smokes.push(createSmoke());
-    }
-
-    smokes.forEach((s, index) => {
-
-        s.x += s.speedX;
-        s.radius += s.growth;
-
-        if(!smokeActive){
-            s.
-
-alpha -= 0.01; // يختفي خلال 3 ثواني تقريبًا
-        }
-
-        let gradient = ctx.createRadialGradient(
-            s.x, s.y, 0,
-            s.x, s.y, s.radius
-        );
-
-        gradient.addColorStop(0, `rgba(200,200,200,${s.alpha})`);
-        gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (s.alpha <= 0) {
-            smokes.splice(index, 1);
-        }
-    });
-}
-
-window.openSection = function(){
-    mode = "smoke";
-    smokeActive = true;
-
-    setTimeout(()=>{
-        smokeActive = false;
-    },8000);
+function createSmoke(){
+return{
+x:-50,
+y:Math.random()*canvas.height,
+radius:40,
+alpha:0.6,
+speed:2
 };
+}
+
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+ctx.fill();
+});
+}
+
+function drawSmoke(){
+if(smokeActive && Math.random()<0.4){
+smokes.push(createSmoke());
+}
+
+smokes.forEach((s,i)=>{
+s.x+=s.speed;
+s.radius+=0.5;
+
+if(!smokeActive){
+s.alpha-=0.01;
+}
+
+let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.radius);
+g.addColorStop(0,`rgba(200,200,200,${s.alpha})`);
+g.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=g;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);
+ctx.fill();
+
+if(s.alpha<=0)smokes.splice(i,1);
+});
+}
 
 function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    if(mode === "stars"){
-        stars.forEach(s => {
-            s.x -= s.speed;
-            if (s.x < 0) s.x = canvas.width;
-
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-            ctx.fill();
-        });
-    }
-
-    if(mode === "smoke"){
-        drawSmoke();
-    }
-
-    requestAnimationFrame(animate);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+drawStars();
+drawSmoke();
+requestAnimationFrame(animate);
 }
-
 animate();
 
-window.addEventListener("resize",()=>{
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-});
+/* ===== Section Logic ===== */
+const menu=document.getElementById("menu");
+const backBtn=document.getElementById("backBtn");
+
+window.openSection=function(){
+menu.style.display="none";
+backBtn.style.display="block";
+smokeActive=true;
+
+setTimeout(()=>{
+smokeActive=false;
+},8000);
+}
+
+backBtn.onclick=function(){
+menu.style.display="flex";
+backBtn.style.display="none";
+smokeActive=false;
+smokes=[];
+}
 
 </script>
-
 </body>
 </html>
