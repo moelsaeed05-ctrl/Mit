@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>MIT Register</title>
+<title>MIT AUTH</title>
 
 <style>
 body{
@@ -23,7 +23,10 @@ width:350px;
 display:flex;
 flex-direction:column;
 gap:15px;
+transition:0.3s;
 }
+
+h2{text-align:center;}
 
 input{
 padding:10px;
@@ -39,50 +42,111 @@ background:#ffd700;
 font-weight:bold;
 cursor:pointer;
 }
+
+.switch{
+text-align:center;
+font-size:14px;
+cursor:pointer;
+color:#ffd700;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container" id="formBox">
-<h2>Create Account</h2>
+
+<h2 id="formTitle">Create Account</h2>
 
 <input type="text" id="name" placeholder="Full Name">
 <input type="text" id="phone" placeholder="Phone Number">
+
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
+
 <input type="password" id="confirm" placeholder="Confirm Password">
 
-<button onclick="register()">Register</button>
+<button onclick="submitForm()">Register</button>
+
+<div class="switch" onclick="toggleMode()">
+Already have account? Login
+</div>
+
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword }
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, setDoc, doc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-  authDomain: "mit-store-bd580.firebaseapp.com",
-  projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebasestorage.app",
-  messagingSenderId: "382577223227",
-  appId: "1:382577223227:web:a04cab6663731c1106de1e"
+apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain: "mit-store-bd580.firebaseapp.com",
+projectId: "mit-store-bd580",
+storageBucket: "mit-store-bd580.firebasestorage.app",
+messagingSenderId: "382577223227",
+appId: "1:382577223227:web:a04cab6663731c1106de1e"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-window.register = async function(){
+let isLogin = false;
 
-const name = document.getElementById("name").value;
-const phone = document.getElementById("phone").value;
+window.toggleMode = function(){
+
+isLogin = !isLogin;
+
+const title = document.getElementById("formTitle");
+const name = document.getElementById("name");
+const phone = document.getElementById("phone");
+const confirm = document.getElementById("confirm");
+const button = document.querySelector("button");
+const switchText = document.querySelector(".switch");
+
+if(isLogin){
+title.innerText="Login";
+name.style.display="none";
+phone.style.display="none";
+confirm.style.display="none";
+button.innerText="Login";
+switchText.innerText="Don't have account? Register";
+}else{
+title.innerText="Create Account";
+name.style.display="block";
+phone.style.display="block";
+confirm.style.display="block";
+button.innerText="Register";
+switchText.innerText="Already have account? Login";
+}
+}
+
+window.submitForm = async function(){
+
 const email = document.getElementById("email").value;
 const password = document.getElementById("password").value;
+
+if(isLogin){
+
+// تسجيل دخول
+try{
+await signInWithEmailAndPassword(auth,email,password);
+
+successMessage("تم تسجيل الدخول بنجاح ✅");
+
+}catch(error){
+alert(error.message);
+}
+
+}else{
+
+// إنشاء حساب
+const name = document.getElementById("name").value;
+const phone = document.getElementById("phone").value;
 const confirm = document.getElementById("confirm").value;
 
 if(password !== confirm){
@@ -100,11 +164,21 @@ phone:phone,
 email:email
 });
 
-/* رسالة التأكيد */
+successMessage("تم تأكيد حسابك ✅");
+
+}catch(error){
+alert(error.message);
+}
+}
+
+}
+
+function successMessage(text){
+
 document.body.innerHTML = `
-<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:black;color:#ffd700;font-size:28px;font-family:Arial;flex-direction:column;">
-✅ تم تأكيد حسابك
-<p style="color:white;font-size:16px;margin-top:10px;">جارٍ تحويلك للصفحة الرئيسية...</p>
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:black;color:#ffd700;font-size:26px;font-family:Arial;flex-direction:column;">
+${text}
+<p style="color:white;font-size:14px;margin-top:10px;">جارٍ تحويلك للصفحة الرئيسية...</p>
 </div>
 `;
 
@@ -112,9 +186,6 @@ setTimeout(()=>{
 window.location.href="index.html";
 },2000);
 
-}catch(error){
-alert(error.message);
-}
 }
 
 </script>
