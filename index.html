@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT</title>
+<title>MIT - Login</title>
 
 <style>
 *{
@@ -19,77 +19,116 @@ body{
     color:white;
 }
 
+/* ================= LOGO ================= */
 .logo{
     position:absolute;
-    top:25px;
+    top:30px;
     left:50%;
     transform:translateX(-50%);
-    font-size:60px;
-    letter-spacing:20px;
+    font-size:clamp(28px,8vw,55px);
+    letter-spacing:clamp(5px,3vw,18px);
     font-weight:bold;
-    z-index:10;
-}
-
-.section-title{
-    position:absolute;
-    top:40px;
-    left:40px;
-    font-size:22px;
-    letter-spacing:3px;
-    color:#ccc;
-    display:none;
-    z-index:10;
+    white-space:nowrap;
 }
 
 .yellow{
     color:#ffd700;
-    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00,0 0 40px #ffae00;
+    text-shadow:0 0 10px #ffd700,0 0 30px #ffae00,0 0 60px #ffae00;
 }
 
 .red{
     color:#ff1a1a;
-    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
+    text-shadow:0 0 10px #ff1a1a,0 0 30px #ff0000,0 0 60px #ff0000;
 }
 
-.menu{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    display:flex;
-    flex-direction:column;
-    gap:50px;
-    align-items:center;
-    z-index:10;
-}
-
-.item{
-    cursor:pointer;
-    font-size:22px;
-    letter-spacing:3px;
-    padding:10px 25px;
-    border-radius:15px;
-    transition:0.3s;
-}
-
-.item:hover{
-    transform:scale(1.2);
-    text-shadow:0 0 10px #aaa,0 0 30px #777;
-}
-
-.back{
-    position:absolute;
-    top:40px;
-    right:40px;
-    cursor:pointer;
-    display:none;
-    z-index:10;
-}
-
+/* ================= BACKGROUND CANVAS ================= */
 canvas{
     position:fixed;
     top:0;
     left:0;
+}
+
+/* ================= LOGIN CARD ================= */
+.login-container{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:90%;
+    max-width:400px;
+    padding:40px;
+    border-radius:20px;
+    backdrop-filter:blur(15px);
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 0 40px rgba(255,255,255,0.1);
+    animation:fadeIn 1.2s ease forwards;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translate(-50%,-45%);}
+    to{opacity:1; transform:translate(-50%,-50%);}
+}
+
+.login-container h2{
+    text-align:center;
+    margin-bottom:30px;
+    letter-spacing:3px;
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group input{
+    width:100%;
+    padding:12px 15px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    font-size:15px;
+    transition:0.3s;
+}
+
+.input-group input:focus{
+    background:rgba(255,255,255,0.2);
+    box-shadow:0 0 15px rgba(255,255,255,0.3);
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    cursor:pointer;
+    background:linear-gradient(45deg,#ffd700,#ffae00);
+    color:black;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px #ffae00;
+}
+
+.extra{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    color:#ccc;
+}
+
+.extra a{
+    color:#ffd700;
+    text-decoration:none;
+}
+
+.extra a:hover{
+    text-decoration:underline;
 }
 </style>
 </head>
@@ -104,36 +143,50 @@ canvas{
     <span class="yellow">𝔗</span>
 </div>
 
-<div class="section-title" id="sectionTitle"></div>
-<div class="back" id="backBtn">BACK</div>
+<div class="login-container">
+    <h2>LOGIN</h2>
 
-<div class="menu" id="menu">
-    <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
-    <div class="item" onclick="openSection('PANTS')">PANTS</div>
-    <div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
+    <div class="input-group">
+        <input type="email" placeholder="Email">
+    </div>
+
+    <div class="input-group">
+        <input type="password" placeholder="Password">
+    </div>
+
+    <button>Sign In</button>
+
+    <div class="extra">
+        Don’t have an account? <a href="#">Register</a>
+    </div>
 </div>
 
 <script>
 const canvas = document.getElementById("space");
 const ctx = canvas.getContext("2d");
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+function resizeCanvas(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-let mode = "stars";
-
-/* ================= النجوم ================= */
+/* ================= PARALLAX STARS ================= */
 let stars = [];
+
 for (let i = 0; i < 250; i++) {
+    let layer = Math.random();
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 1.5,
-        speed: Math.random() * 0.4 + 0.1
+        size: layer * 2,
+        speed: layer * 1.5
     });
 }
 
 function drawStars() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     stars.forEach(s => {
         s.x -= s.speed;
         if (s.x < 0) s.x = canvas.width;
@@ -142,91 +195,9 @@ function drawStars() {
         ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
         ctx.fill();
     });
+    requestAnimationFrame(drawStars);
 }
-
-/* ================= دخان من الشمال ================= */
-let smokes = [];
-
-function createSmokeLeft() {
-    return {
-        x: -60,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 60 + 40,
-        baseAlpha: Math.random() * 0.5 + 0.4,
-        growth: Math.random()*0.6 + 0.3,
-        speedX: Math.random()*2 + 1.5,
-        speedY: (Math.random()-0.5)*1
-    };
-}
-
-function drawSmoke() {
-
-    // ضخ غير منتظم
-    if(Math.random() < 0.7){
-        smokes.push(createSmokeLeft());
-    }
-
-    smokes.forEach((s, index) => {
-
-        s.x += s.speedX;
-        s.y += s.speedY;
-        s.radius += s.growth;
-
-        // كل ما ينتشر يمين يخف
-        let fadeFactor = 1 - (s.x / (canvas.width * 0.75));
-        let currentAlpha = s.baseAlpha * fadeFactor;
-
-        if(currentAlpha < 0) currentAlpha = 0;
-
-        let gradient = ctx.createRadialGradient(
-            s.x, s.y, 0,
-            s.x, s.y, s.radius
-        );
-
-        gradient.addColorStop(0, `rgba(200,200,200,${currentAlpha})`);
-        gradient.addColorStop(0.6, `rgba(150,150,150,${currentAlpha*0.7})`);
-        gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (s.x > canvas.width * 0.75) {
-            smokes.splice(index, 1);
-        }
-    });
-}
-
-/* ================= أنيميشن ================= */
-function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    if(mode==="stars"){
-        drawStars();
-    } else {
-        drawSmoke();
-    }
-
-    requestAnimationFrame(animate);
-}
-animate();
-
-/* ================= التحكم ================= */
-function openSection(name){
-    menu.style.display="none";
-    sectionTitle.style.display="block";
-    backBtn.style.display="block";
-    sectionTitle.innerText=name;
-    mode="smoke";
-}
-
-backBtn.onclick=function(){
-    menu.style.display="flex";
-    sectionTitle.style.display="none";
-    backBtn.style.display="none";
-    mode="stars";
-}
+drawStars();
 </script>
 
 </body>
