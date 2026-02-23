@@ -1,9 +1,10 @@
+elking:
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT - Login</title>
+<title>MIT STORE</title>
 
 <style>
 *{
@@ -19,116 +20,75 @@ body{
     color:white;
 }
 
-/* ================= LOGO ================= */
+/* ===== Logo ===== */
 .logo{
     position:absolute;
-    top:30px;
+    top:25px;
     left:50%;
     transform:translateX(-50%);
-    font-size:clamp(28px,8vw,55px);
-    letter-spacing:clamp(5px,3vw,18px);
+    font-size:60px;
+    letter-spacing:20px;
     font-weight:bold;
+    z-index:10;
     white-space:nowrap;
 }
 
 .yellow{
     color:#ffd700;
-    text-shadow:0 0 10px #ffd700,0 0 30px #ffae00,0 0 60px #ffae00;
+    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00,0 0 40px #ffae00;
 }
 
 .red{
     color:#ff1a1a;
-    text-shadow:0 0 10px #ff1a1a,0 0 30px #ff0000,0 0 60px #ff0000;
+    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
 }
 
-/* ================= BACKGROUND CANVAS ================= */
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
+/* ===== User Area ===== */
+#userArea{
+    position:absolute;
+    top:30px;
+    right:40px;
+    padding:10px 20px;
+    border-radius:20px;
+    background:#ffd700;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    z-index:10;
+    text-align:center;
 }
 
-/* ================= LOGIN CARD ================= */
-.login-container{
+/* ===== Menu ===== */
+.menu{
     position:absolute;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:90%;
-    max-width:400px;
-    padding:40px;
-    border-radius:20px;
-    backdrop-filter:blur(15px);
-    background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.1);
-    box-shadow:0 0 40px rgba(255,255,255,0.1);
-    animation:fadeIn 1.2s ease forwards;
+    display:flex;
+    flex-direction:column;
+    gap:40px;
+    align-items:center;
+    z-index:10;
 }
 
-@keyframes fadeIn{
-    from{opacity:0; transform:translate(-50%,-45%);}
-    to{opacity:1; transform:translate(-50%,-50%);}
-}
-
-.login-container h2{
-    text-align:center;
-    margin-bottom:30px;
-    letter-spacing:3px;
-}
-
-.input-group{
-    margin-bottom:20px;
-}
-
-.input-group input{
-    width:100%;
-    padding:12px 15px;
-    border:none;
-    border-radius:10px;
-    outline:none;
-    background:rgba(255,255,255,0.1);
-    color:white;
-    font-size:15px;
-    transition:0.3s;
-}
-
-.input-group input:focus{
-    background:rgba(255,255,255,0.2);
-    box-shadow:0 0 15px rgba(255,255,255,0.3);
-}
-
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    font-size:16px;
+.item{
     cursor:pointer;
-    background:linear-gradient(45deg,#ffd700,#ffae00);
-    color:black;
-    font-weight:bold;
+    font-size:22px;
+    letter-spacing:3px;
+    padding:10px 25px;
+    border-radius:15px;
     transition:0.3s;
 }
 
-button:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 20px #ffae00;
+.item:hover{
+    transform:scale(1.2);
+    text-shadow:0 0 10px #aaa,0 0 30px #777;
 }
 
-.extra{
-    margin-top:15px;
-    text-align:center;
-    font-size:14px;
-    color:#ccc;
-}
-
-.extra a{
-    color:#ffd700;
-    text-decoration:none;
-}
-
-.extra a:hover{
-    text-decoration:underline;
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
 }
 </style>
 </head>
@@ -143,61 +103,161 @@ button:hover{
     <span class="yellow">𝔗</span>
 </div>
 
-<div class="login-container">
-    <h2>LOGIN</h2>
+<div id="userArea">LOGIN</div>
 
-    <div class="input-group">
-        <input type="email" placeholder="Email">
-    </div>
-
-    <div class="input-group">
-        <input type="password" placeholder="Password">
-    </div>
-
-    <button>Sign In</button>
-
-    <div class="extra">
-        Don’t have an account? <a href="#">Register</a>
-    </div>
+<div class="menu">
+    <div class="item" onclick="openSection()">HOODIES</div>
+    <div class="item">PANTS</div>
+    <div class="item">ACCESSORIES</div>
 </div>
 
-<script>
+<script type="module">
+
+/* ================= Firebase ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+  authDomain: "mit-store-bd580.firebaseapp.com",
+  projectId: "mit-store-bd580",
+  storageBucket: "mit-store-bd580.firebasestorage.app",
+  messagingSenderId: "382577223227",
+  appId: "1:382577223227:web:a04cab6663731c1106de1e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const userArea = document.getElementById("userArea");
+
+onAuthStateChanged(auth, (user) => {
+    if(user){
+        userArea.innerHTML = `
+            ${user.email}<br>
+            <span style="font-size:12px;">Logout</span>
+        `;
+        userArea.onclick = () => {
+            signOut(auth).then(()=> location.reload());
+        };
+    } else {
+        userArea.innerHTML = "LOGIN";
+        userArea.onclick = () => {
+            window.location.href = "auth.html";
+        };
+    }
+});
+
+/* ================= Canvas ================= */
 const canvas = document.getElementById("space");
 const ctx = canvas.getContext("2d");
 
-function resizeCanvas(){
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-/* ================= PARALLAX STARS ================= */
+let mode = "stars";
+
+/* ===== Stars ===== */
 let stars = [];
-
 for (let i = 0; i < 250; i++) {
-    let layer = Math.random();
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: layer * 2,
-        speed: layer * 1.5
+        size: Math.random() * 1.5,
+        speed: Math.random() * 0.4 + 0.1
     });
 }
 
-function drawStars() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    stars.forEach(s => {
-        s.x -= s.speed;
-        if (s.x < 0) s.x = canvas.width;
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fill();
-    });
-    requestAnimationFrame(drawStars);
+/* ===== Smoke ===== */
+let smokes = [];
+let smokeActive = false;
+
+function createSmoke() {
+    return {
+        x: -60,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 60 + 40,
+        alpha: 0.6,
+        growth: Math.random()*0.5 + 0.3,
+        speedX: Math.random()*2 + 1.5
+    };
 }
-drawStars();
+
+function drawSmoke() {
+
+    if (smokeActive && Math.random() < 0.5) {
+        smokes.push(createSmoke());
+    }
+
+    smokes.forEach((s, index) => {
+
+        s.x += s.speedX;
+        s.radius += s.growth;
+
+        if(!smokeActive){
+            s.
+
+alpha -= 0.01; // يختفي خلال 3 ثواني تقريبًا
+        }
+
+        let gradient = ctx.createRadialGradient(
+            s.x, s.y, 0,
+            s.x, s.y, s.radius
+        );
+
+        gradient.addColorStop(0, `rgba(200,200,200,${s.alpha})`);
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (s.alpha <= 0) {
+            smokes.splice(index, 1);
+        }
+    });
+}
+
+window.openSection = function(){
+    mode = "smoke";
+    smokeActive = true;
+
+    setTimeout(()=>{
+        smokeActive = false;
+    },8000);
+};
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    if(mode === "stars"){
+        stars.forEach(s => {
+            s.x -= s.speed;
+            if (s.x < 0) s.x = canvas.width;
+
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    if(mode === "smoke"){
+        drawSmoke();
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+});
+
 </script>
 
 </body>
