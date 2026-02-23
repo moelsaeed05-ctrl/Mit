@@ -2,59 +2,50 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>MIT Login</title>
+<title>MIT Register</title>
+
 <style>
 body{
-    background:black;
-    color:white;
-    font-family:Arial;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+background:black;
+color:white;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
 .container{
-    background:#111;
-    padding:40px;
-    border-radius:20px;
-    width:350px;
-    display:flex;
-    flex-direction:column;
-    gap:15px;
+background:#111;
+padding:40px;
+border-radius:20px;
+width:350px;
+display:flex;
+flex-direction:column;
+gap:15px;
 }
 
 input{
-    padding:10px;
-    border:none;
-    border-radius:10px;
+padding:10px;
+border:none;
+border-radius:10px;
 }
 
 button{
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    background:#ffd700;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-button:hover{
-    opacity:0.8;
-}
-
-.switch{
-    text-align:center;
-    cursor:pointer;
-    color:#aaa;
+padding:10px;
+border:none;
+border-radius:10px;
+background:#ffd700;
+font-weight:bold;
+cursor:pointer;
 }
 </style>
 </head>
+
 <body>
 
-<div class="container">
-
-<h2 id="title">Register</h2>
+<div class="container" id="formBox">
+<h2>Create Account</h2>
 
 <input type="text" id="name" placeholder="Full Name">
 <input type="text" id="phone" placeholder="Phone Number">
@@ -63,18 +54,14 @@ button:hover{
 <input type="password" id="confirm" placeholder="Confirm Password">
 
 <button onclick="register()">Register</button>
-
-<div class="switch" onclick="toggleMode()">Already have account? Login</div>
-
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+import { getAuth, createUserWithEmailAndPassword }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import { getFirestore, setDoc, doc } 
+import { getFirestore, setDoc, doc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -90,70 +77,46 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let isLogin = false;
-
-window.toggleMode = function(){
-    isLogin = !isLogin;
-
-    document.getElementById("title").innerText = 
-        isLogin ? "Login" : "Register";
-
-    document.querySelector("button").innerText = 
-        isLogin ? "Login" : "Register";
-
-    document.getElementById("name").style.display = 
-        isLogin ? "none" : "block";
-
-    document.getElementById("phone").style.display = 
-        isLogin ? "none" : "block";
-
-    document.getElementById("confirm").style.display = 
-        isLogin ? "none" : "block";
-
-    document.querySelector(".switch").innerText = 
-        isLogin ? "Don't have account? Register" : "Already have account? Login";
-}
-
 window.register = async function(){
 
-    const name = document.getElementById("name").value;
-    const phone = document.getElementById("phone").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm").value;
+const name = document.getElementById("name").value;
+const phone = document.getElementById("phone").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const confirm = document.getElementById("confirm").value;
 
-    if(isLogin){
-        try{
-            await signInWithEmailAndPassword(auth, email, password);
-            alert("Login Successful 🔥");
-        }catch(error){
-            alert(error.message);
-        }
-        return;
-    }
+if(password !== confirm){
+alert("Passwords do not match");
+return;
+}
 
-    if(password !== confirm){
-        alert("Passwords do not match");
-        return;
-    }
+try{
+const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+const user = userCredential.user;
 
-    try{
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+await setDoc(doc(db,"users",user.uid),{
+name:name,
+phone:phone,
+email:email
+});
 
-        await setDoc(doc(db, "users", user.uid), {
-            name: name,
-            phone: phone,
-            email: email
-        });
+/* رسالة التأكيد */
+document.body.innerHTML = `
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:black;color:#ffd700;font-size:28px;font-family:Arial;flex-direction:column;">
+✅ تم تأكيد حسابك
+<p style="color:white;font-size:16px;margin-top:10px;">جارٍ تحويلك للصفحة الرئيسية...</p>
+</div>
+`;
 
-        alert("Account Created Successfully 👑");
-    }catch(error){
-        alert(error.message);
-    }
+setTimeout(()=>{
+window.location.href="index.html";
+},2000);
+
+}catch(error){
+alert(error.message);
+}
 }
 
 </script>
-
 </body>
 </html>
