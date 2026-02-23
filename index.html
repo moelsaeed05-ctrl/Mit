@@ -6,84 +6,55 @@
 <title>MIT STORE</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial;
-}
-
-body{
-    overflow:hidden;
-    background:black;
-    color:white;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{overflow:hidden;background:black;color:white;}
 
 .logo{
-    position:absolute;
-    top:25px;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:60px;
-    letter-spacing:20px;
-    font-weight:bold;
-    z-index:10;
-    white-space:nowrap;
+position:absolute;top:25px;left:50%;
+transform:translateX(-50%);
+font-size:60px;letter-spacing:20px;font-weight:bold;
+white-space:nowrap;z-index:10;
 }
 
 .yellow{color:#ffd700;}
 .red{color:#ff1a1a;}
 
 #userArea{
-    position:absolute;
-    top:30px;
-    right:40px;
-    padding:10px 20px;
-    border-radius:20px;
-    background:#ffd700;
-    color:black;
-    font-weight:bold;
-    cursor:pointer;
-    z-index:10;
+position:absolute;top:30px;right:40px;
+background:#ffd700;color:black;
+padding:10px 20px;border-radius:20px;
+font-weight:bold;cursor:pointer;z-index:10;
 }
 
 .backBtn{
-    position:absolute;
-    top:30px;
-    left:40px;
-    cursor:pointer;
-    display:none;
-    z-index:10;
+position:absolute;top:30px;left:40px;
+background:#ffd700;color:black;
+padding:8px 15px;border-radius:15px;
+font-weight:bold;cursor:pointer;display:none;z-index:10;
 }
 
 .menu{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    display:flex;
-    flex-direction:column;
-    gap:40px;
-    align-items:center;
-    z-index:10;
+position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+display:flex;flex-direction:column;
+gap:40px;align-items:center;z-index:10;
 }
 
 .item{
-    cursor:pointer;
-    font-size:22px;
-    letter-spacing:3px;
-    transition:0.3s;
+font-size:22px;letter-spacing:3px;
+cursor:pointer;transition:0.3s;
 }
 
-.item:hover{
-    transform:scale(1.2);
+.item:hover{transform:scale(1.2);color:#ffd700;}
+
+.sectionTitle{
+position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+font-size:40px;display:none;z-index:10;
+letter-spacing:5px;
 }
 
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
-}
+canvas{position:fixed;top:0;left:0;}
 </style>
 </head>
 
@@ -101,10 +72,12 @@ canvas{
 <div class="backBtn" id="backBtn">BACK</div>
 
 <div class="menu" id="menu">
-<div class="item" onclick="openSection()">HOODIES</div>
-<div class="item">PANTS</div>
-<div class="item">ACCESSORIES</div>
+<div class="item" onclick="openSection('HOODIES')">HOODIES</div>
+<div class="item" onclick="openSection('PANTS')">PANTS</div>
+<div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
 </div>
+
+<div class="sectionTitle" id="sectionTitle"></div>
 
 <script type="module">
 
@@ -115,34 +88,34 @@ import { getFirestore, doc, getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-  authDomain: "mit-store-bd580.firebaseapp.com",
-  projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebasestorage.app",
-  messagingSenderId: "382577223227",
-  appId: "1:382577223227:web:a04cab6663731c1106de1e"
+apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain: "mit-store-bd580.firebaseapp.com",
+projectId: "mit-store-bd580",
+storageBucket: "mit-store-bd580.firebasestorage.app",
+messagingSenderId: "382577223227",
+appId: "1:382577223227:web:a04cab6663731c1106de1e"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const userArea = document.getElementById("userArea");
+const userArea=document.getElementById("userArea");
 
-onAuthStateChanged(auth, async(user)=>{
-    if(user){
-        const snap = await getDoc(doc(db,"users",user.uid));
-        const data = snap.data();
-
-        userArea.innerHTML = data.name + "<br><span style='font-size:12px'>Logout</span>";
-        userArea.onclick = ()=> signOut(auth).then(()=>location.reload());
-    }else{
-        userArea.innerHTML="LOGIN";
-        userArea.onclick=()=>window.location.href="auth.html";
-    }
+onAuthStateChanged(auth,async(user)=>{
+if(user){
+const snap=await getDoc(doc(db,"users",user.uid));
+const data=snap.data();
+userArea.innerHTML=data.name+"<br><span style='font-size:12px'>Logout</span>";
+userArea.onclick=()=>signOut(auth).then(()=>location.reload());
+}else{
+userArea.innerHTML="LOGIN";
+userArea.onclick=()=>window.location.href="auth.html";
+}
 });
 
-/* ===== Canvas ===== */
+/* Canvas */
+
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -183,7 +156,7 @@ ctx.fill();
 }
 
 function drawSmoke(){
-if(smokeActive && Math.random()<0.4){
+if(smokeActive && Math.random()<0.5){
 smokes.push(createSmoke());
 }
 
@@ -191,9 +164,7 @@ smokes.forEach((s,i)=>{
 s.x+=s.speed;
 s.radius+=0.5;
 
-if(!smokeActive){
-s.alpha-=0.01;
-}
+if(!smokeActive){s.alpha-=0.01;}
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.radius);
 g.addColorStop(0,`rgba(200,200,200,${s.alpha})`);
@@ -215,23 +186,25 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* ===== Section Logic ===== */
+/* Sections */
+
 const menu=document.getElementById("menu");
 const backBtn=document.getElementById("backBtn");
+const sectionTitle=document.getElementById("sectionTitle");
 
-window.openSection=function(){
+window.openSection=function(name){
 menu.style.display="none";
 backBtn.style.display="block";
-smokeActive=true;
+sectionTitle.style.display="block";
+sectionTitle.innerText=name;
 
-setTimeout(()=>{
-smokeActive=false;
-},8000);
+smokeActive=true; // يفضل شغال طول ما انت جوه القسم
 }
 
 backBtn.onclick=function(){
 menu.style.display="flex";
 backBtn.style.display="none";
+sectionTitle.style.display="none";
 smokeActive=false;
 smokes=[];
 }
