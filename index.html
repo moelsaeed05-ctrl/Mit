@@ -6,8 +6,18 @@
 <title>MIT STORE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{overflow:hidden;background:black;color:white;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+overflow:hidden;
+background:black;
+color:white;
+}
 
 .logo{
 position:absolute;
@@ -17,7 +27,6 @@ transform:translateX(-50%);
 font-size:70px;
 letter-spacing:20px;
 font-weight:bold;
-white-space:nowrap;
 z-index:10;
 }
 
@@ -36,7 +45,10 @@ z-index:10;
 border:2px solid #ffd700;
 transition:0.3s;
 }
-#profilePic:hover{transform:scale(1.15);}
+
+#profilePic:hover{
+transform:scale(1.15);
+}
 
 .backBtn{
 position:absolute;
@@ -54,9 +66,7 @@ font-size:20px;
 font-weight:bold;
 cursor:pointer;
 z-index:10;
-transition:0.3s;
 }
-.backBtn:hover{transform:scale(1.2);}
 
 .menu{
 position:absolute;
@@ -76,7 +86,11 @@ letter-spacing:3px;
 cursor:pointer;
 transition:0.3s;
 }
-.item:hover{transform:scale(1.2);color:#ffd700;}
+
+.item:hover{
+transform:scale(1.2);
+color:#ffd700;
+}
 
 .sectionTitle{
 position:absolute;
@@ -101,37 +115,41 @@ left:0;
 
 <canvas id="space"></canvas>
 
-<div class="logo" id="logo">
+<div class="logo">
 <span class="yellow">𝔐</span>
 <span class="red">𝔦</span>
 <span class="yellow">𝔗</span>
 </div>
 
-<img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+<img id="profilePic"
+src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+
 <div class="backBtn" id="backBtn">←</div>
 
 <div class="menu" id="menu">
-  <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
-  <div class="item" onclick="openSection('PANTS')">PANTS</div>
-  <div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
+<div class="item" onclick="openSection('HOODIES')">HOODIES</div>
+<div class="item" onclick="openSection('PANTS')">PANTS</div>
+<div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
 </div>
 
 <div class="sectionTitle" id="sectionTitle"></div>
 
 <script>
 
-// ===== Canvas =====
+/* ===== Canvas Setup ===== */
+
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
 
-window.onresize=function(){
+function resize(){
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 }
+resize();
+window.onresize=resize;
 
-// ===== Stars =====
+/* ===== Stars ===== */
+
 let stars=[];
 for(let i=0;i<200;i++){
 stars.push({
@@ -146,6 +164,7 @@ function drawStars(){
 stars.forEach(s=>{
 s.x-=s.speed;
 if(s.x<0)s.x=canvas.width;
+
 ctx.fillStyle="white";
 ctx.beginPath();
 ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
@@ -153,57 +172,47 @@ ctx.fill();
 });
 }
 
-// ===== Explosion Smoke =====
-let smokes=[];
-let smokeActive=false;
-let lastPuff=0;
+/* ===== Smoke Cycle ===== */
 
-function createExplosion(){
+let smokeParticles=[];
+let startTime=Date.now();
 
-const logo=document.getElementById("logo");
-const rect=logo.getBoundingClientRect();
-const centerX=rect.left + rect.width/2;
-const startY=rect.bottom;
-
-for(let i=0;i<40;i++){
-
-let angle=Math.random()*Math.PI*2;
-let speed=Math.random()*2+1;
-
-smokes.push({
-x:centerX,
-y:startY,
-vx:Math.cos(angle)*speed,
-vy:Math.sin(angle)*speed + 2, // ينزل لتحت
-size:40+Math.random()*30,
+function createSmoke(){
+return{
+x:-100,
+y:Math.random()*canvas.height*0.7 + canvas.height*0.15,
+vx:1+Math.random()*1.2,
+size:120+Math.random()*80,
 life:1
-});
-
 }
 }
 
-function drawSmoke(){
+function updateSmoke(){
 
-let now=Date.now();
+let elapsed=(Date.now()-startTime)/1000;
+let cycle=elapsed%8;
 
-if(smokeActive && now-lastPuff>2500){
-createExplosion();
-lastPuff=now;
+/* أول 6 ثواني انتشار */
+let active=cycle<6;
+
+if(active && Math.random()<0.25){
+smokeParticles.push(createSmoke());
 }
 
 ctx.globalCompositeOperation="lighter";
-ctx.filter="blur(25px)";
+ctx.filter="blur(40px)";
 
-smokes.forEach((s,i)=>{
+smokeParticles.forEach((s,i)=>{
 
+if(active){
 s.x+=s.vx;
-s.y+=s.vy;
+s.size+=0.6;
+s.life-=0.003;
+}else{
+s.life-=0.02;
+}
 
-s.size+=1.2;
-
-s.life-=0.015;
-
-let alpha=s.life*0.4;
+let alpha=s.life*0.2;
 
 let gradient=ctx.createRadialGradient(
 s.x,s.y,0,
@@ -218,8 +227,8 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
 ctx.fill();
 
-if(s.life<=0){
-smokes.splice(i,1);
+if(s.life<=0 || s.x>canvas.width*0.75){
+smokeParticles.splice(i,1);
 }
 
 });
@@ -228,16 +237,19 @@ ctx.filter="none";
 ctx.globalCompositeOperation="source-over";
 }
 
-// ===== Animation =====
+/* ===== Animation ===== */
+
 function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
-drawSmoke();
+updateSmoke();
 requestAnimationFrame(animate);
 }
+
 animate();
 
-// ===== Sections =====
+/* ===== Sections ===== */
+
 const menu=document.getElementById("menu");
 const backBtn=document.getElementById("backBtn");
 const sectionTitle=document.getElementById("sectionTitle");
@@ -247,15 +259,13 @@ menu.style.display="none";
 backBtn.style.display="flex";
 sectionTitle.style.display="block";
 sectionTitle.innerText=name;
-smokeActive=true;
 }
 
 backBtn.onclick=function(){
 menu.style.display="flex";
 backBtn.style.display="none";
 sectionTitle.style.display="none";
-smokeActive=false;
-smokes=[];
+smokeParticles=[];
 }
 
 </script>
