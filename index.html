@@ -42,19 +42,46 @@ body{
     text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
 }
 
-/* ===== User Area ===== */
+/* ===== User Profile ===== */
 #userArea{
     position:absolute;
     top:30px;
     right:40px;
-    padding:10px 20px;
-    border-radius:20px;
+    width:45px;
+    height:45px;
+    border-radius:50%;
     background:#ffd700;
-    color:black;
-    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     cursor:pointer;
     z-index:10;
-    text-align:center;
+    font-size:22px;
+    color:black;
+}
+
+/* ===== Back Button ===== */
+#backBtn{
+    position:absolute;
+    top:30px;
+    left:30px;
+    font-size:22px;
+    background:#222;
+    padding:8px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    display:none;
+    z-index:20;
+}
+
+/* ===== Section Title ===== */
+#sectionTitle{
+    position:absolute;
+    top:30px;
+    left:80px;
+    font-size:22px;
+    letter-spacing:2px;
+    z-index:15;
 }
 
 /* ===== Menu ===== */
@@ -102,17 +129,19 @@ canvas{
     <span class="yellow">𝔗</span>
 </div>
 
-<div id="userArea">LOGIN</div>
+<div id="sectionTitle"></div>
+
+<div id="backBtn">⬅</div>
+
+<div id="userArea">👤</div>
 
 <div class="menu">
-    <div class="item" onclick="openSection()">HOODIES</div>
+    <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
     <div class="item">PANTS</div>
     <div class="item">ACCESSORIES</div>
 </div>
 
 <script type="module">
-
-/* ================= Firebase ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -121,7 +150,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
   authDomain: "mit-store-bd580.firebaseapp.com",
   projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebasestorage.app",
+  storageBucket: "mit-store-bd580.firebaseapp.com",
   messagingSenderId: "382577223227",
   appId: "1:382577223227:web:a04cab6663731c1106de1e"
 };
@@ -132,23 +161,25 @@ const auth = getAuth(app);
 const userArea = document.getElementById("userArea");
 
 onAuthStateChanged(auth, (user) => {
+
     if(user){
-        userArea.innerHTML = `
-            ${user.email}<br>
-            <span style="font-size:12px;">Logout</span>
-        `;
+        userArea.innerHTML = "👤";
+
         userArea.onclick = () => {
-            signOut(auth).then(()=> location.reload());
+            alert(user.email);
         };
+
     } else {
-        userArea.innerHTML = "LOGIN";
+        userArea.innerHTML = "👤";
+
         userArea.onclick = () => {
             window.location.href = "auth.html";
         };
     }
 });
 
-/* ================= Canvas ================= */
+/* ===== Canvas ===== */
+
 const canvas = document.getElementById("space");
 const ctx = canvas.getContext("2d");
 
@@ -158,6 +189,7 @@ canvas.height = innerHeight;
 let mode = "stars";
 
 /* ===== Stars ===== */
+
 let stars = [];
 for (let i = 0; i < 250; i++) {
     stars.push({
@@ -166,9 +198,10 @@ for (let i = 0; i < 250; i++) {
         size: Math.random() * 1.5,
         speed: Math.random() * 0.4 + 0.1
     });
-}
+});
 
 /* ===== Smoke ===== */
+
 let smokes = [];
 let smokeActive = false;
 
@@ -195,7 +228,7 @@ function drawSmoke() {
         s.radius += s.growth;
 
         if(!smokeActive){
-            s.alpha -= 0.01; // يختفي خلال 3 ثواني تقريبًا
+            s.alpha -= 0.01;
         }
 
         let gradient = ctx.createRadialGradient(
@@ -217,13 +250,26 @@ function drawSmoke() {
     });
 }
 
-window.openSection = function(){
+const backBtn = document.getElementById("backBtn");
+const sectionTitle = document.getElementById("sectionTitle");
+
+window.openSection = function(name){
+
     mode = "smoke";
     smokeActive = true;
+
+    sectionTitle.innerText = name;
+    backBtn.style.display = "block";
 
     setTimeout(()=>{
         smokeActive = false;
     },8000);
+};
+
+backBtn.onclick = () => {
+    mode = "stars";
+    sectionTitle.innerText = "";
+    backBtn.style.display = "none";
 };
 
 function animate(){
@@ -254,7 +300,6 @@ window.addEventListener("resize",()=>{
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 });
-
 </script>
 
 </body>
