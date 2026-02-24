@@ -153,24 +153,32 @@ ctx.fill();
 });
 }
 
-// ===== Expanding Smoke =====
+// ===== Explosion Smoke =====
 let smokes=[];
 let smokeActive=false;
 let lastPuff=0;
 
-function createSmoke(){
+function createExplosion(){
 
 const logo=document.getElementById("logo");
 const rect=logo.getBoundingClientRect();
+const centerX=rect.left + rect.width/2;
+const startY=rect.bottom;
 
-return{
-x:rect.left + rect.width/2,
-y:rect.bottom,
-size:80,
-alpha:0.2,
-spreadX:(Math.random()-0.5)*1.2,
-rise:-0.7 - Math.random()*0.5,
+for(let i=0;i<40;i++){
+
+let angle=Math.random()*Math.PI*2;
+let speed=Math.random()*2+1;
+
+smokes.push({
+x:centerX,
+y:startY,
+vx:Math.cos(angle)*speed,
+vy:Math.sin(angle)*speed + 2, // ينزل لتحت
+size:40+Math.random()*30,
 life:1
+});
+
 }
 }
 
@@ -178,37 +186,31 @@ function drawSmoke(){
 
 let now=Date.now();
 
-if(smokeActive && now-lastPuff>2000){
-for(let i=0;i<3;i++){
-smokes.push(createSmoke());
-}
+if(smokeActive && now-lastPuff>2500){
+createExplosion();
 lastPuff=now;
 }
 
 ctx.globalCompositeOperation="lighter";
-ctx.filter="blur(30px)";
+ctx.filter="blur(25px)";
 
 smokes.forEach((s,i)=>{
 
-// يتحرك لفوق
-s.y+=s.rise;
+s.x+=s.vx;
+s.y+=s.vy;
 
-// ينتشر يمين وشمال تدريجي
-s.x+=s.spreadX;
+s.size+=1.2;
 
-// يكبر مع الوقت
-s.size+=0.8;
+s.life-=0.015;
 
-// يقل شفافية
-s.life-=0.003;
-s.alpha=s.life*0.25;
+let alpha=s.life*0.4;
 
 let gradient=ctx.createRadialGradient(
 s.x,s.y,0,
 s.x,s.y,s.size
 );
 
-gradient.addColorStop(0,`rgba(255,255,255,${s.alpha})`);
+gradient.addColorStop(0,`rgba(255,255,255,${alpha})`);
 gradient.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=gradient;
