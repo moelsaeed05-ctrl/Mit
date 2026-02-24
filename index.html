@@ -153,19 +153,18 @@ ctx.fill();
 });
 }
 
-// ===== Realistic Side Smoke =====
+// ===== Soft Grey Smoke =====
 let smokes=[];
 let smokeActive=false;
 let lastPuff=0;
 
 function createSmoke(){
-
 return{
-x:-150, // من بره الشمال
-y:canvas.height*0.3 + Math.random()*(canvas.height*0.4),
-size:180 + Math.random()*120,
-alpha:0.25 + Math.random()*0.15,
-speed:1.5 + Math.random()*1.2,
+x:-120,
+y:canvas.height*0.45 + Math.random()*(canvas.height*0.1),
+size:100 + Math.random()*40,
+alpha:0.06 + Math.random()*0.04,
+speed:0.7 + Math.random()*0.5,
 life:1
 }
 }
@@ -174,34 +173,31 @@ function drawSmoke(){
 
 let now=Date.now();
 
-// نفخة كل 800ms
-if(smokeActive && now-lastPuff>800){
-for(let i=0;i<3;i++){
+// نفخة هادية كل 2 ثانية
+if(smokeActive && now-lastPuff>2000){
 smokes.push(createSmoke());
-}
 lastPuff=now;
 }
 
-ctx.globalCompositeOperation="lighter";
-ctx.filter="blur(35px)";
+ctx.globalCompositeOperation="source-over";
+ctx.filter="blur(45px)";
 
 smokes.forEach((s,i)=>{
 
 s.x+=s.speed;
 
-// تموج واقعي
-s.y+=Math.sin((Date.now()*0.001)+i)*0.4;
+// حركة خفيفة جدًا
+s.y+=Math.sin(Date.now()*0.0005+i)*0.15;
 
-s.life-=0.002;
-s.alpha=s.life*0.4;
+s.life-=0.004;
+s.alpha=s.life*0.08;
 
 let gradient=ctx.createRadialGradient(
 s.x,s.y,0,
 s.x,s.y,s.size
 );
 
-gradient.addColorStop(0,`rgba(200,200,200,${s.alpha})`);
-gradient.addColorStop(0.6,`rgba(150,150,150,${s.alpha*0.6})`);
+gradient.addColorStop(0,`rgba(110,110,110,${s.alpha})`);
 gradient.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=gradient;
@@ -209,14 +205,13 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
 ctx.fill();
 
-if(s.life<=0 || s.x>canvas.width*0.8){
+if(s.life<=0 || s.x>canvas.width*0.6){
 smokes.splice(i,1);
 }
 
 });
 
 ctx.filter="none";
-ctx.globalCompositeOperation="source-over";
 }
 
 // ===== Animation =====
