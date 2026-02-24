@@ -6,115 +6,93 @@
 <title>MIT STORE</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{overflow:hidden;background:black;color:white;}
 
-body{
-    overflow:hidden;
-    background:black;
-    color:white;
-}
-
-/* ===== Logo ===== */
 .logo{
-    position:absolute;
-    top:25px;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:60px;
-    letter-spacing:20px;
-    font-weight:bold;
-    z-index:10;
-    white-space:nowrap;
+position:absolute;
+top:30px;
+left:50%;
+transform:translateX(-50%);
+font-size:70px;
+letter-spacing:20px;
+font-weight:bold;
+white-space:nowrap;
+z-index:10;
 }
 
-.yellow{
-    color:#ffd700;
-    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00,0 0 40px #ffae00;
-}
+.yellow{color:#ffd700;}
+.red{color:#ff1a1a;}
 
-.red{
-    color:#ff1a1a;
-    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
+#profilePic{
+position:absolute;
+top:25px;
+right:35px;
+width:32px;
+height:32px;
+border-radius:50%;
+cursor:pointer;
+z-index:10;
+border:2px solid #ffd700;
+transition:0.3s;
 }
+#profilePic:hover{transform:scale(1.15);}
 
-/* ===== User Profile ===== */
-#userArea{
-    position:absolute;
-    top:30px;
-    right:40px;
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    background:#ffd700;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    z-index:10;
-    font-size:22px;
-    color:black;
+.backBtn{
+position:absolute;
+top:22px;
+left:35px;
+width:38px;
+height:38px;
+border-radius:50%;
+background:#ffd700;
+color:black;
+display:none;
+align-items:center;
+justify-content:center;
+font-size:20px;
+font-weight:bold;
+cursor:pointer;
+z-index:10;
+transition:0.3s;
 }
+.backBtn:hover{transform:scale(1.2);}
 
-/* ===== Back Button ===== */
-#backBtn{
-    position:absolute;
-    top:30px;
-    left:30px;
-    font-size:22px;
-    background:#222;
-    padding:8px 14px;
-    border-radius:12px;
-    cursor:pointer;
-    display:none;
-    z-index:20;
-}
-
-/* ===== Section Title ===== */
-#sectionTitle{
-    position:absolute;
-    top:30px;
-    left:80px;
-    font-size:22px;
-    letter-spacing:2px;
-    z-index:15;
-}
-
-/* ===== Menu ===== */
 .menu{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    display:flex;
-    flex-direction:column;
-    gap:40px;
-    align-items:center;
-    z-index:10;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:40px;
+align-items:center;
+z-index:10;
 }
 
 .item{
-    cursor:pointer;
-    font-size:22px;
-    letter-spacing:3px;
-    padding:10px 25px;
-    border-radius:15px;
-    transition:0.3s;
+font-size:22px;
+letter-spacing:3px;
+cursor:pointer;
+transition:0.3s;
 }
+.item:hover{transform:scale(1.2);color:#ffd700;}
 
-.item:hover{
-    transform:scale(1.2);
-    text-shadow:0 0 10px #aaa,0 0 30px #777;
+.sectionTitle{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:40px;
+display:none;
+z-index:10;
+letter-spacing:5px;
 }
 
 canvas{
-    position:fixed;
-    top:0;
-    left:0;
+position:fixed;
+top:0;
+left:0;
 }
 </style>
 </head>
@@ -124,182 +102,153 @@ canvas{
 <canvas id="space"></canvas>
 
 <div class="logo">
-    <span class="yellow">𝔐</span>
-    <span class="red">𝔦</span>
-    <span class="yellow">𝔗</span>
+<span class="yellow">𝔐</span>
+<span class="red">𝔦</span>
+<span class="yellow">𝔗</span>
 </div>
 
-<div id="sectionTitle"></div>
+<img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+<div class="backBtn" id="backBtn">←</div>
 
-<div id="backBtn">⬅</div>
-
-<div id="userArea">👤</div>
-
-<div class="menu">
-    <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
-    <div class="item">PANTS</div>
-    <div class="item">ACCESSORIES</div>
+<div class="menu" id="menu">
+  <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
+  <div class="item" onclick="openSection('PANTS')">PANTS</div>
+  <div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<div class="sectionTitle" id="sectionTitle"></div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-  authDomain: "mit-store-bd580.firebaseapp.com",
-  projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebaseapp.com",
-  messagingSenderId: "382577223227",
-  appId: "1:382577223227:web:a04cab6663731c1106de1e"
-};
+<script>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// ===== Canvas =====
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-const userArea = document.getElementById("userArea");
-
-onAuthStateChanged(auth, (user) => {
-
-    if(user){
-        userArea.innerHTML = "👤";
-
-        userArea.onclick = () => {
-            alert(user.email);
-        };
-
-    } else {
-        userArea.innerHTML = "👤";
-
-        userArea.onclick = () => {
-            window.location.href = "auth.html";
-        };
-    }
-});
-
-/* ===== Canvas ===== */
-
-const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d");
-
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-let mode = "stars";
-
-/* ===== Stars ===== */
-
-let stars = [];
-for (let i = 0; i < 250; i++) {
-    stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5,
-        speed: Math.random() * 0.4 + 0.1
-    });
-});
-
-/* ===== Smoke ===== */
-
-let smokes = [];
-let smokeActive = false;
-
-function createSmoke() {
-    return {
-        x: -60,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 60 + 40,
-        alpha: 0.6,
-        growth: Math.random()*0.5 + 0.3,
-        speedX: Math.random()*2 + 1.5
-    };
+window.onresize=function(){
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 }
 
-function drawSmoke() {
-
-    if (smokeActive && Math.random() < 0.5) {
-        smokes.push(createSmoke());
-    }
-
-    smokes.forEach((s, index) => {
-
-        s.x += s.speedX;
-        s.radius += s.growth;
-
-        if(!smokeActive){
-            s.alpha -= 0.01;
-        }
-
-        let gradient = ctx.createRadialGradient(
-            s.x, s.y, 0,
-            s.x, s.y, s.radius
-        );
-
-        gradient.addColorStop(0, `rgba(200,200,200,${s.alpha})`);
-        gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (s.alpha <= 0) {
-            smokes.splice(index, 1);
-        }
-    });
+// ===== Stars =====
+let stars=[];
+for(let i=0;i<200;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*1.5,
+speed:Math.random()*0.6
+});
 }
 
-const backBtn = document.getElementById("backBtn");
-const sectionTitle = document.getElementById("sectionTitle");
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+ctx.fill();
+});
+}
 
-window.openSection = function(name){
+// ===== Realistic Side Smoke =====
+let smokes=[];
+let smokeActive=false;
+let lastPuff=0;
 
-    mode = "smoke";
-    smokeActive = true;
+function createSmoke(){
 
-    sectionTitle.innerText = name;
-    backBtn.style.display = "block";
+return{
+x:-150, // من بره الشمال
+y:canvas.height*0.3 + Math.random()*(canvas.height*0.4),
+size:180 + Math.random()*120,
+alpha:0.25 + Math.random()*0.15,
+speed:1.5 + Math.random()*1.2,
+life:1
+}
+}
 
-    setTimeout(()=>{
-        smokeActive = false;
-    },8000);
-};
+function drawSmoke(){
 
-backBtn.onclick = () => {
-    mode = "stars";
-    sectionTitle.innerText = "";
-    backBtn.style.display = "none";
-};
+let now=Date.now();
 
+// نفخة كل 800ms
+if(smokeActive && now-lastPuff>800){
+for(let i=0;i<3;i++){
+smokes.push(createSmoke());
+}
+lastPuff=now;
+}
+
+ctx.globalCompositeOperation="lighter";
+ctx.filter="blur(35px)";
+
+smokes.forEach((s,i)=>{
+
+s.x+=s.speed;
+
+// تموج واقعي
+s.y+=Math.sin((Date.now()*0.001)+i)*0.4;
+
+s.life-=0.002;
+s.alpha=s.life*0.4;
+
+let gradient=ctx.createRadialGradient(
+s.x,s.y,0,
+s.x,s.y,s.size
+);
+
+gradient.addColorStop(0,`rgba(200,200,200,${s.alpha})`);
+gradient.addColorStop(0.6,`rgba(150,150,150,${s.alpha*0.6})`);
+gradient.addColorStop(1,"rgba(0,0,0,0)");
+
+ctx.fillStyle=gradient;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+ctx.fill();
+
+if(s.life<=0 || s.x>canvas.width*0.8){
+smokes.splice(i,1);
+}
+
+});
+
+ctx.filter="none";
+ctx.globalCompositeOperation="source-over";
+}
+
+// ===== Animation =====
 function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    if(mode === "stars"){
-        stars.forEach(s => {
-            s.x -= s.speed;
-            if (s.x < 0) s.x = canvas.width;
-
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-            ctx.fill();
-        });
-    }
-
-    if(mode === "smoke"){
-        drawSmoke();
-    }
-
-    requestAnimationFrame(animate);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+drawStars();
+drawSmoke();
+requestAnimationFrame(animate);
 }
-
 animate();
 
-window.addEventListener("resize",()=>{
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-});
+// ===== Sections =====
+const menu=document.getElementById("menu");
+const backBtn=document.getElementById("backBtn");
+const sectionTitle=document.getElementById("sectionTitle");
+
+window.openSection=function(name){
+menu.style.display="none";
+backBtn.style.display="flex";
+sectionTitle.style.display="block";
+sectionTitle.innerText=name;
+smokeActive=true;
+}
+
+backBtn.onclick=function(){
+menu.style.display="flex";
+backBtn.style.display="none";
+sectionTitle.style.display="none";
+smokeActive=false;
+smokes=[];
+}
+
 </script>
 
 </body>
