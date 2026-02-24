@@ -153,18 +153,18 @@ ctx.fill();
 });
 }
 
-// ===== Soft Grey Smoke =====
+// ===== White Soft Smoke =====
 let smokes=[];
 let smokeActive=false;
 let lastPuff=0;
 
 function createSmoke(){
 return{
-x:-120,
-y:canvas.height*0.45 + Math.random()*(canvas.height*0.1),
-size:100 + Math.random()*40,
-alpha:0.06 + Math.random()*0.04,
-speed:0.7 + Math.random()*0.5,
+x:-100,
+y:canvas.height*0.45 + Math.random()*(canvas.height*0.15),
+size:140 + Math.random()*60,
+alpha:0.18,
+speed:1 + Math.random()*0.5,
 life:1
 }
 }
@@ -173,31 +173,32 @@ function drawSmoke(){
 
 let now=Date.now();
 
-// نفخة هادية كل 2 ثانية
-if(smokeActive && now-lastPuff>2000){
+// نفخة هادية كل 2.5 ثانية
+if(smokeActive && now-lastPuff>2500){
 smokes.push(createSmoke());
 lastPuff=now;
 }
 
-ctx.globalCompositeOperation="source-over";
-ctx.filter="blur(45px)";
+ctx.globalCompositeOperation="lighter";
+ctx.filter="blur(35px)";
 
 smokes.forEach((s,i)=>{
 
 s.x+=s.speed;
 
-// حركة خفيفة جدًا
-s.y+=Math.sin(Date.now()*0.0005+i)*0.15;
+// تموج خفيف
+s.y+=Math.sin(Date.now()*0.0006+i)*0.3;
 
-s.life-=0.004;
-s.alpha=s.life*0.08;
+s.life-=0.003;
+s.alpha=s.life*0.2;
 
 let gradient=ctx.createRadialGradient(
 s.x,s.y,0,
 s.x,s.y,s.size
 );
 
-gradient.addColorStop(0,`rgba(110,110,110,${s.alpha})`);
+gradient.addColorStop(0,`rgba(255,255,255,${s.alpha})`);
+gradient.addColorStop(0.6,`rgba(200,200,200,${s.alpha*0.6})`);
 gradient.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=gradient;
@@ -205,13 +206,14 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
 ctx.fill();
 
-if(s.life<=0 || s.x>canvas.width*0.6){
+if(s.life<=0 || s.x>canvas.width*0.65){
 smokes.splice(i,1);
 }
 
 });
 
 ctx.filter="none";
+ctx.globalCompositeOperation="source-over";
 }
 
 // ===== Animation =====
