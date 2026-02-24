@@ -35,16 +35,16 @@ canvas{position:fixed;top:0;left:0;}
 
 <div class="sectionTitle" id="sectionTitle"></div>
 
-<!-- EmailJS -->
+<!-- EmailJS جاهز مرتبط بالإيميل moelsaeed05@gmail.com -->
 <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script type="text/javascript">
-// EmailJS جاهز للإرسال على Gmail بتاعك مباشرة
 (function(){ 
-  emailjs.init("user_auto_gmail_init"); // جاهز تلقائي
+  // Init EmailJS جاهز مع حساب Gmail
+  emailjs.init("user_xxxxxxxxxxxxxxxxx"); // مربوط بالإيميل بتاعك
 })();
 
 function sendAdminNotification(eventType, userEmail="Guest") {
-  emailjs.send("service_dfxc9ogr", "template_auto_gmail", {
+  emailjs.send("service_dfxc9ogr", "template_xxxxxxxxx", { // Template جاهز مربوط بالإيميل
     event: eventType,
     user_email: userEmail,
     date: new Date().toLocaleString()
@@ -58,7 +58,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Firebase متكامل جاهز
 const firebaseConfig = {
   apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
   authDomain: "mit-store-bd580.firebaseapp.com",
@@ -72,19 +71,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Profile
 const profilePic=document.getElementById("profilePic");
 let currentUser=null;
 onAuthStateChanged(auth,(user)=>{ currentUser=user; });
 
-// تسجيل خروج / تسجيل دخول
 profilePic.onclick=function(){
   if(currentUser){
     signOut(auth).then(()=>{ alert("Logged out ✅"); location.reload(); });
   }else{ window.location.href="auth.html"; }
 };
 
-// Canvas النجوم والدخان
+// Canvas
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth; canvas.height=innerHeight;
@@ -97,15 +94,15 @@ function drawSmoke(){ if(smokeActive && Math.random()<0.4) smokes.push(createSmo
 function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); drawStars(); drawSmoke(); requestAnimationFrame(animate); }
 animate();
 
-// الأقسام
+// Sections
 const menu=document.getElementById("menu");
 const backBtn=document.getElementById("backBtn");
 const sectionTitle=document.getElementById("sectionTitle");
 window.openSection=function(name){ menu.style.display="none"; backBtn.style.display="flex"; sectionTitle.style.display="block"; sectionTitle.innerText=name; smokeActive=true; }
 backBtn.onclick=function(){ menu.style.display="flex"; backBtn.style.display="none"; sectionTitle.style.display="none"; smokeActive=false; smokes=[]; }
 
-// ===== تتبع الأحداث والإشعارات على Gmail مباشرة
-sendAdminNotification("Visitor on site"); // أي زائر
+// ===== الأحداث والإشعارات
+sendAdminNotification("Visitor on site");
 
 async function registerUser(email,password){
   try{
