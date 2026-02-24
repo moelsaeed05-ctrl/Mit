@@ -6,18 +6,8 @@
 <title>MIT</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
-
-body{
-    overflow:hidden;
-    background:black;
-    color:white;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{overflow:hidden;background:black;color:white}
 
 /* ===== Logo ===== */
 .logo{
@@ -25,29 +15,14 @@ body{
     top:25px;
     left:50%;
     transform:translateX(-50%);
-    font-size:40px;
-    letter-spacing:8px;
+    font-size:38px;
+    letter-spacing:6px;
     font-weight:bold;
-    z-index:10;
     white-space:nowrap;
+    z-index:10;
 }
-
-@media(max-width:480px){
-    .logo{
-        font-size:32px;
-        letter-spacing:5px;
-    }
-}
-
-.yellow{
-    color:#ffd700;
-    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00;
-}
-
-.red{
-    color:#ff1a1a;
-    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000;
-}
+.yellow{color:#ffd700}
+.red{color:#ff1a1a}
 
 /* ===== Profile ===== */
 .profile{
@@ -62,12 +37,7 @@ body{
     cursor:pointer;
     z-index:20;
 }
-
-.profile img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
+.profile img{width:100%;height:100%;object-fit:cover}
 
 /* ===== Menu ===== */
 .menu{
@@ -81,19 +51,7 @@ body{
     align-items:center;
     z-index:10;
 }
-
-.item{
-    cursor:pointer;
-    font-size:22px;
-    letter-spacing:3px;
-    padding:10px 25px;
-    border-radius:15px;
-    transition:0.3s;
-}
-
-.item:hover{
-    transform:scale(1.2);
-}
+.item{cursor:pointer;font-size:22px;letter-spacing:3px}
 
 /* ===== Section Title ===== */
 .section-title{
@@ -101,54 +59,57 @@ body{
     top:90px;
     left:50%;
     transform:translateX(-50%);
-    font-size:20px;
-    letter-spacing:3px;
+    font-size:18px;
     color:#ffd700;
     display:none;
     z-index:10;
 }
 
-/* ===== Auth Box ===== */
-.authBox{
+/* ===== Back Button ===== */
+.back{
     position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
+    top:90px;
+    right:30px;
+    cursor:pointer;
+    display:none;
+    z-index:10;
+}
+
+/* ===== Auth Popup ===== */
+.authPopup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.9);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+}
+.authBox{
+    background:#111;
+    padding:25px;
+    border-radius:15px;
+    width:280px;
     display:flex;
     flex-direction:column;
-    gap:8px;
-    width:260px;
-    z-index:20;
+    gap:10px;
 }
-
-.authBox input{
+.authBox input,.authBox button{
     padding:8px;
     border:none;
     border-radius:8px;
 }
+.authBox button{background:#ffd700;font-weight:bold;cursor:pointer}
 
-.authBox button{
-    padding:8px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#ffd700;
-    font-weight:bold;
-}
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
-}
+canvas{position:fixed;top:0;left:0}
 </style>
 </head>
-
 <body>
 
 <canvas id="space"></canvas>
 
-<div class="profile">
-    <img id="profileImg" src="https://via.placeholder.com/100">
+<div class="profile" onclick="toggleAuth()">
+    <img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
 </div>
 
 <div class="logo">
@@ -158,125 +119,163 @@ canvas{
 </div>
 
 <div class="section-title" id="sectionTitle"></div>
+<div class="back" id="backBtn">BACK</div>
 
-<div class="menu">
+<div class="menu" id="menu">
     <div class="item" data-name="HOODIES">HOODIES</div>
     <div class="item" data-name="PANTS">PANTS</div>
     <div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
 </div>
 
+<div class="authPopup" id="authPopup">
 <div class="authBox">
-    <input id="username" placeholder="Username">
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="signUp()">Sign Up</button>
-    <button onclick="login()">Login</button>
-    <button onclick="googleLogin()">Login with Google</button>
-    <button onclick="logout()">Logout</button>
+<input id="username" placeholder="Username">
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signUp()">Sign Up</button>
+<button onclick="login()">Login</button>
+<button onclick="googleLogin()">Login with Google</button>
+<button onclick="logout()">Logout</button>
+<button onclick="toggleAuth()">Close</button>
+</div>
 </div>
 
 <script type="module">
 
+/* ================= Firebase ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  updateProfile,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword,
+signInWithEmailAndPassword, GoogleAuthProvider,
+signInWithPopup, onAuthStateChanged,
+updateProfile, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import { 
-  getFirestore,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* ===== Firebase Config ===== */
-const firebaseConfig = {
-  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-  authDomain: "mit-store-bd580.firebaseapp.com",
-  projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebasestorage.app",
-  messagingSenderId: "382577223227",
-  appId: "1:382577223227:web:113177bef81c5afb06de1e"
+const firebaseConfig={
+apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+messagingSenderId:"382577223227",
+appId:"1:382577223227:web:113177bef81c5afb06de1e"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
 
-/* ===== Sign Up ===== */
-window.signUp = async function(){
-  const email = email.value;
-  const password = password.value;
-  const username = username.value;
+/* ================= Auth ================= */
+window.toggleAuth=()=>authPopup.style.display=
+authPopup.style.display==="flex"?"none":"flex";
 
-  try{
-    const userCred = await createUserWithEmailAndPassword(auth,email,password);
-    await updateProfile(userCred.user,{displayName:username});
-
-    await setDoc(doc(db,"users",userCred.user.uid),{
-      name: username,
-      email: email,
-      photo: userCred.user.photoURL || ""
-    });
-
-    alert("Account Created 🔥");
-  }catch(error){
-    alert(error.message);
-  }
+window.signUp=async()=>{
+const u=await createUserWithEmailAndPassword(auth,email.value,password.value);
+await updateProfile(u.user,{displayName:username.value});
+alert("Account Created 🔥");
 }
 
-/* ===== Login ===== */
-window.login = async function(){
-  try{
-    await signInWithEmailAndPassword(auth,email.value,password.value);
-    alert("Welcome Back 🔥");
-  }catch(error){
-    alert(error.message);
-  }
+window.login=async()=>{
+await signInWithEmailAndPassword(auth,email.value,password.value);
+alert("Welcome 🔥");
 }
 
-/* ===== Google Login ===== */
-window.googleLogin = async function(){
-  const provider = new GoogleAuthProvider();
-  try{
-    const result = await signInWithPopup(auth,provider);
-
-    await setDoc(doc(db,"users",result.user.uid),{
-      name: result.user.displayName,
-      email: result.user.email,
-      photo: result.user.photoURL
-    });
-
-  }catch(error){
-    alert(error.message);
-  }
+window.googleLogin=async()=>{
+const provider=new GoogleAuthProvider();
+await signInWithPopup(auth,provider);
 }
 
-/* ===== Logout ===== */
-window.logout = function(){
-  signOut(auth);
-}
+window.logout=()=>signOut(auth);
 
-/* ===== Check Login ===== */
 onAuthStateChanged(auth,(user)=>{
-  if(user && user.photoURL){
-    document.getElementById("profileImg").src = user.photoURL;
-  }
+if(user && user.photoURL){profileImg.src=user.photoURL}
+else{profileImg.src="https://cdn-icons-png.flaticon.com/512/149/149071.png"}
 });
 
-/* ===== Section Hover ===== */
-document.querySelectorAll(".item").forEach(item=>{
-    item.addEventListener("touchstart",()=>{
-        sectionTitle.style.display="block";
-        sectionTitle.innerText=item.dataset.name;
-    });
+/* ================= Canvas ================= */
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let mode="stars";
+
+/* ===== Stars ===== */
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*1.5,
+speed:Math.random()*0.4+0.1
 });
+}
+
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+ctx.fill();
+});
+}
+
+/* ===== Smoke ===== */
+let smokes=[];
+function createSmoke(){
+return{
+x:-80,
+y:Math.random()*canvas.height,
+radius:Math.random()*50+30,
+alpha:Math.random()*0.25+0.15,
+growth:Math.random()*0.4+0.2,
+speedX:Math.random()*1.6+0.8
+};
+}
+
+function drawSmoke(){
+if(Math.random()<0.5)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.x+=s.speedX;
+s.radius+=s.growth;
+let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.radius);
+g.addColorStop(0,`rgba(200,200,200,${s.alpha})`);
+g.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=g;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);
+ctx.fill();
+if(s.x>canvas.width*0.75)smokes.splice(i,1);
+});
+}
+
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+mode==="stars"?drawStars():drawSmoke();
+requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= Sections ================= */
+const menu=document.getElementById("menu");
+const sectionTitle=document.getElementById("sectionTitle");
+const backBtn=document.getElementById("backBtn");
+
+document.querySelectorAll(".item").forEach(item=>{
+item.addEventListener("click",()=>{
+menu.style.display="none";
+sectionTitle.style.display="block";
+backBtn.style.display="block";
+sectionTitle.innerText=item.dataset.name;
+mode="smoke";
+});
+});
+
+backBtn.onclick=()=>{
+menu.style.display="flex";
+sectionTitle.style.display="none";
+backBtn.style.display="none";
+mode="stars";
+};
 
 </script>
 
