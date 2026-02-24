@@ -101,7 +101,7 @@ left:0;
 
 <canvas id="space"></canvas>
 
-<div class="logo">
+<div class="logo" id="logo">
 <span class="yellow">𝔐</span>
 <span class="red">𝔦</span>
 <span class="yellow">𝔗</span>
@@ -153,18 +153,23 @@ ctx.fill();
 });
 }
 
-// ===== White Soft Smoke =====
+// ===== Expanding Smoke =====
 let smokes=[];
 let smokeActive=false;
 let lastPuff=0;
 
 function createSmoke(){
+
+const logo=document.getElementById("logo");
+const rect=logo.getBoundingClientRect();
+
 return{
-x:-100,
-y:canvas.height*0.45 + Math.random()*(canvas.height*0.15),
-size:140 + Math.random()*60,
-alpha:0.18,
-speed:1 + Math.random()*0.5,
+x:rect.left + rect.width/2,
+y:rect.bottom,
+size:80,
+alpha:0.2,
+spreadX:(Math.random()-0.5)*1.2,
+rise:-0.7 - Math.random()*0.5,
 life:1
 }
 }
@@ -173,24 +178,30 @@ function drawSmoke(){
 
 let now=Date.now();
 
-// نفخة هادية كل 2.5 ثانية
-if(smokeActive && now-lastPuff>2500){
+if(smokeActive && now-lastPuff>2000){
+for(let i=0;i<3;i++){
 smokes.push(createSmoke());
+}
 lastPuff=now;
 }
 
 ctx.globalCompositeOperation="lighter";
-ctx.filter="blur(35px)";
+ctx.filter="blur(30px)";
 
 smokes.forEach((s,i)=>{
 
-s.x+=s.speed;
+// يتحرك لفوق
+s.y+=s.rise;
 
-// تموج خفيف
-s.y+=Math.sin(Date.now()*0.0006+i)*0.3;
+// ينتشر يمين وشمال تدريجي
+s.x+=s.spreadX;
 
+// يكبر مع الوقت
+s.size+=0.8;
+
+// يقل شفافية
 s.life-=0.003;
-s.alpha=s.life*0.2;
+s.alpha=s.life*0.25;
 
 let gradient=ctx.createRadialGradient(
 s.x,s.y,0,
@@ -198,7 +209,6 @@ s.x,s.y,s.size
 );
 
 gradient.addColorStop(0,`rgba(255,255,255,${s.alpha})`);
-gradient.addColorStop(0.6,`rgba(200,200,200,${s.alpha*0.6})`);
 gradient.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=gradient;
@@ -206,7 +216,7 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
 ctx.fill();
 
-if(s.life<=0 || s.x>canvas.width*0.65){
+if(s.life<=0){
 smokes.splice(i,1);
 }
 
