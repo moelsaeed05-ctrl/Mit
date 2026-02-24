@@ -1,309 +1,327 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MIT STORE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:black;color:white;overflow:hidden}
 
-body{
-background:black;
-color:white;
-overflow:hidden;
-}
+/* ===== Canvas ===== */
+canvas{position:fixed;top:0;left:0}
 
-/* النجوم */
-.stars{
-position:fixed;
-width:100%;
-height:100%;
-background:url('https://i.ibb.co/6J9qK6k/stars.png');
-animation:moveStars 60s linear infinite;
-z-index:0;
-}
-
-@keyframes moveStars{
-from{background-position:0 0;}
-to{background-position:10000px 5000px;}
-}
-
-/* الدخان */
-.smoke{
-position:fixed;
-top:0;
-left:-300px;
-width:300px;
-height:100%;
-background:linear-gradient(to right,rgba(255,255,255,0.4),transparent);
-filter:blur(40px);
-opacity:0;
-z-index:2;
-transition:1s;
-}
-
-.smoke.active{
-left:100%;
-opacity:1;
-transition:10s linear;
-}
-
-/* الهيدر */
-.header{
+/* ===== Logo ===== */
+.logo{
 position:absolute;
-top:20px;
-right:20px;
-z-index:3;
-}
-
-.profile{
-width:45px;
-height:45px;
-border-radius:50%;
-cursor:pointer;
-}
-
-/* قائمة تسجيل */
-.authBox{
-position:absolute;
-top:80px;
-right:20px;
-background:#111;
-padding:20px;
-border-radius:10px;
-display:none;
-flex-direction:column;
-gap:10px;
-z-index:3;
-width:250px;
-}
-
-.authBox input{
-padding:8px;
-background:#222;
-border:none;
-color:white;
-}
-
-.authBox button{
-padding:8px;
-border:none;
-background:#444;
-color:white;
-cursor:pointer;
-}
-
-/* الأيقونات */
-.menu{
-position:absolute;
-top:40%;
-left:50%;
-transform:translate(-50%,-50%);
-display:flex;
-gap:40px;
-z-index:2;
-}
-
-.icon{
-width:120px;
-height:120px;
-background:#111;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-font-size:18px;
-border-radius:15px;
-position:relative;
-overflow:hidden;
-}
-
-.icon::after{
-content:"✦";
-position:absolute;
-top:10px;
-right:15px;
-font-size:20px;
-color:white;
-}
-
-/* المنتجات */
-.products{
-position:absolute;
-top:20%;
+top:25px;
 left:50%;
 transform:translateX(-50%);
-display:none;
-gap:20px;
-flex-wrap:wrap;
-width:80%;
-justify-content:center;
-z-index:2;
+font-size:36px;
+letter-spacing:6px;
+white-space:nowrap;
+z-index:10;
 }
+.yellow{color:#ffd700}
+.red{color:#ff1a1a}
 
-.product{
-width:180px;
-background:#111;
-padding:15px;
-border-radius:10px;
-text-align:center;
-}
-
-.product img{
-width:100%;
-border-radius:10px;
-}
-
-.back{
+/* ===== Profile ===== */
+.profile{
 position:absolute;
 top:20px;
 left:20px;
+width:55px;
+height:55px;
+border-radius:50%;
+overflow:hidden;
+border:2px solid #ffd700;
+cursor:pointer;
+z-index:20;
+}
+.profile img{width:100%;height:100%;object-fit:cover}
+
+/* ===== Menu ===== */
+.menu{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:40px;
+align-items:center;
+z-index:10;
+}
+.item{
+cursor:pointer;
+font-size:22px;
+letter-spacing:3px;
+transition:.3s;
+}
+.item:hover{transform:scale(1.2)}
+
+/* ===== Section ===== */
+.section-title{
+position:absolute;
+top:90px;
+left:50%;
+transform:translateX(-50%);
+color:#ffd700;
+display:none;
+z-index:10;
+}
+.back{
+position:absolute;
+top:90px;
+right:30px;
 cursor:pointer;
 display:none;
-z-index:3;
+z-index:10;
 }
 
+/* ===== Popup ===== */
+.popup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
+}
+.box{
+background:#111;
+padding:25px;
+border-radius:15px;
+width:280px;
+display:flex;
+flex-direction:column;
+gap:10px;
+text-align:center;
+}
+.box input,.box button{
+padding:8px;
+border:none;
+border-radius:8px;
+}
+.box button{background:#ffd700;font-weight:bold;cursor:pointer}
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
-<div class="smoke" id="smoke"></div>
+<canvas id="space"></canvas>
 
-<div class="header">
-<img src="https://i.ibb.co/4pDNDk1/avatar.png" class="profile" onclick="toggleAuth()">
+<div class="profile" onclick="openPopup()">
+<img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
 </div>
 
-<div class="authBox" id="authBox">
-<div id="authContent">
-
-<input id="username" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-
-<button onclick="signUp()">Create Account</button>
-<button onclick="login()">Login</button>
-<button onclick="googleLogin()">Login with Google</button>
-
+<div class="logo">
+<span class="yellow">𝔐</span>
+<span class="red">𝔦</span>
+<span class="yellow">𝔗</span>
 </div>
-<div id="userInfo" style="display:none;">
-<p id="userName"></p>
-<button onclick="logout()">Logout</button>
-</div>
-</div>
+
+<div class="section-title" id="sectionTitle"></div>
+<div class="back" id="backBtn">BACK</div>
 
 <div class="menu" id="menu">
-<div class="icon" onclick="openProducts()">Hoodies</div>
-<div class="icon" onclick="openProducts()">Pants</div>
-<div class="icon" onclick="openProducts()">Accessories</div>
+<div class="item" data-name="HOODIES">🧥 HOODIES</div>
+<div class="item" data-name="PANTS">👖 PANTS</div>
+<div class="item" data-name="ACCESSORIES">⌚ ACCESSORIES</div>
 </div>
 
-<div class="back" id="backBtn" onclick="goBack()">← Back</div>
-
-<div class="products" id="products">
-<div class="product">
-<img src="https://i.ibb.co/ZYW3VTp/hoodie.jpg">
-<p>Black Hoodie</p>
-<p>500 EGP</p>
-</div>
-
-<div class="product">
-<img src="https://i.ibb.co/JyqW3Y7/pants.jpg">
-<p>Street Pants</p>
-<p>450 EGP</p>
-</div>
-
-<div class="product">
-<img src="https://i.ibb.co/0jqHpnp/cap.jpg">
-<p>Black Cap</p>
-<p>200 EGP</p>
-</div>
-
+<div class="popup" id="popup">
+<div class="box" id="popupContent"></div>
 </div>
 
 <script type="module">
 
+/* ================= Firebase ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword,
+signInWithEmailAndPassword, onAuthStateChanged,
+updateProfile, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
-apiKey: "YOUR_API_KEY",
-authDomain: "YOUR_AUTH_DOMAIN",
-projectId: "YOUR_PROJECT_ID",
-storageBucket: "YOUR_BUCKET",
-messagingSenderId: "YOUR_ID",
-appId: "YOUR_APP_ID"
+import { getFirestore, doc, setDoc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+messagingSenderId:"382577223227",
+appId:"1:382577223227:web:113177bef81c5afb06de1e"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-window.signUp = async function(){
-const email = email.value;
-const password = password.value;
-const usernameVal = username.value;
+/* ================= Canvas Animation ================= */
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-const user = await createUserWithEmailAndPassword(auth,email,password);
-await updateProfile(user.user,{displayName:usernameVal});
-alert("Account Created");
+let mode="stars";
+
+/* Stars */
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+speed:Math.random()*0.5+0.1});
 }
 
-window.login = async function(){
-await signInWithEmailAndPassword(auth,email.value,password.value);
-alert("Logged In");
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(s.x,s.y,1,1);
+});
 }
 
-window.googleLogin = async function(){
-const provider = new GoogleAuthProvider();
-await signInWithPopup(auth,provider);
+/* Smoke */
+let smokes=[];
+function createSmoke(){
+return{
+x:-50,
+y:Math.random()*canvas.height,
+r:Math.random()*40+20,
+a:Math.random()*0.3,
+speed:Math.random()*2+1
+};
+}
+function drawSmoke(){
+if(Math.random()<0.4)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.x+=s.speed;
+let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=g;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+if(s.x>canvas.width)smokes.splice(i,1);
+});
 }
 
-window.logout = function(){
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+mode==="stars"?drawStars():drawSmoke();
+requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= Sections ================= */
+const menu=document.getElementById("menu");
+const sectionTitle=document.getElementById("sectionTitle");
+const backBtn=document.getElementById("backBtn");
+
+document.querySelectorAll(".item").forEach(item=>{
+item.onclick=()=>{
+menu.style.display="none";
+sectionTitle.style.display="block";
+backBtn.style.display="block";
+sectionTitle.innerText=item.dataset.name;
+mode="smoke";
+};
+});
+
+backBtn.onclick=()=>{
+menu.style.display="flex";
+sectionTitle.style.display="none";
+backBtn.style.display="none";
+mode="stars";
+};
+
+/* ================= Popup ================= */
+const popup=document.getElementById("popup");
+const popupContent=document.getElementById("popupContent");
+
+window.openPopup=()=>{
+if(auth.currentUser){showProfile();}
+else{showMain();}
+popup.style.display="flex";
+};
+
+function showMain(){
+popupContent.innerHTML=`
+<h3>Account</h3>
+<button onclick="showLogin()">Login</button>
+<button onclick="showRegister()">Create Account</button>
+<button onclick="popup.style.display='none'">Close</button>
+`;
+}
+
+window.showLogin=()=>{
+popupContent.innerHTML=`
+<h3>Login</h3>
+<input id="loginEmail" placeholder="Email">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="showMain()">Back</button>
+`;
+};
+
+window.showRegister=()=>{
+popupContent.innerHTML=`
+<h3>Create Account</h3>
+<input id="regName" placeholder="Full Name">
+<input id="regPhone" placeholder="Phone Number">
+<input id="regEmail" placeholder="Email">
+<input id="regPass" type="password" placeholder="Password">
+<button onclick="register()">Create</button>
+<button onclick="showMain()">Back</button>
+`;
+};
+
+window.register=async()=>{
+const u=await createUserWithEmailAndPassword(auth,regEmail.value,regPass.value);
+await updateProfile(u.user,{displayName:regName.value});
+await setDoc(doc(db,"users",u.user.uid),{
+name:regName.value,
+phone:regPhone.value,
+email:regEmail.value
+});
+alert("Account Created 🔥");
+popup.style.display="none";
+};
+
+window.login=async()=>{
+await signInWithEmailAndPassword(auth,loginEmail.value,loginPass.value);
+popup.style.display="none";
+};
+
+async function showProfile(){
+const user=auth.currentUser;
+const snap=await getDoc(doc(db,"users",user.uid));
+popupContent.innerHTML=`
+<h3>${snap.data().name}</h3>
+<p>${snap.data().email}</p>
+<p>${snap.data().phone}</p>
+<button onclick="logout()">Logout</button>
+<button onclick="popup.style.display='none'">Close</button>
+`;
+}
+
+window.logout=()=>{
 signOut(auth);
-}
+profileImg.src="https://cdn-icons-png.flaticon.com/512/149/149071.png";
+showMain();
+};
 
 onAuthStateChanged(auth,(user)=>{
 if(user){
-document.getElementById("authContent").style.display="none";
-document.getElementById("userInfo").style.display="block";
-document.getElementById("userName").innerText="Welcome "+user.displayName;
-}else{
-document.getElementById("authContent").style.display="block";
-document.getElementById("userInfo").style.display="none";
+profileImg.src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
 }
 });
 
 </script>
-
-<script>
-
-function toggleAuth(){
-const box=document.getElementById("authBox");
-box.style.display=box.style.display=="flex"?"none":"flex";
-box.style.flexDirection="column";
-}
-
-function openProducts(){
-document.getElementById("menu").style.display="none";
-document.getElementById("products").style.display="flex";
-document.getElementById("backBtn").style.display="block";
-
-let smoke=document.getElementById("smoke");
-smoke.classList.add("active");
-
-setTimeout(()=>{
-smoke.classList.remove("active");
-},10000);
-}
-
-function goBack(){
-document.getElementById("menu").style.display="flex";
-document.getElementById("products").style.display="none";
-document.getElementById("backBtn").style.display="none";
-}
-
-</script>
-
 </body>
 </html>
