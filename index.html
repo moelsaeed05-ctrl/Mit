@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIT STORE</title>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{overflow:hidden;background:black;color:white;}
@@ -95,12 +94,15 @@ top:55%;
 left:50%;
 transform:translate(-50%,-50%);
 display:none;
-gap:100px;
+gap:40px;
+flex-wrap:wrap;
+justify-content:center;
 z-index:10;
 }
 
 .hoodie{
-width:380px;
+width:90%;
+max-width:380px;
 filter: drop-shadow(0 0 30px #e8cfa3)
         drop-shadow(0 0 80px rgba(255, 180, 100, 0.9));
 transition:0.4s;
@@ -114,10 +116,16 @@ canvas{
 position:fixed;
 top:0;
 left:0;
+width:100%;
+height:100%;
+}
+
+/* responsive */
+@media(max-width:600px){
+.menu .item{font-size:18px; letter-spacing:2px;}
 }
 </style>
 </head>
-
 <body>
 
 <canvas id="space"></canvas>
@@ -145,14 +153,18 @@ left:0;
 </div>
 
 <script>
-
 /* Canvas Space */
-
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
+window.addEventListener('resize',()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+});
+
+// النجوم
 let stars=[];
 for(let i=0;i<200;i++){
 stars.push({
@@ -174,15 +186,54 @@ ctx.fill();
 });
 }
 
+/* الدخان */
+let smokeParticles = [];
+function createSmoke() {
+  for(let i = 0; i < 50; i++){
+    smokeParticles.push({
+      x: -100 * Math.random(),
+      y: Math.random() * canvas.height,
+      size: 30 + Math.random() * 50,
+      alpha: 0,
+      speed: 0.5 + Math.random() * 0.5
+    });
+  }
+}
+createSmoke();
+
+let smokeVisible = false;
+
+function drawSmoke(){
+  if(!smokeVisible) return;
+  smokeParticles.forEach(p => {
+    ctx.fillStyle = `rgba(200,200,200,${p.alpha})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx.fill();
+    p.x += p.speed;
+
+    if(p.alpha < 0.4 && p.x < canvas.width/2) p.alpha += 0.01;
+    if(p.x > canvas.width) p.alpha -= 0.01;
+    if(p.alpha <= 0) p.x = -100 * Math.random();
+  });
+}
+
+// التحكم في ظهور واختفاء الدخان كل ٨ + ٣ ثواني
+setInterval(() => {
+  smokeVisible = false;
+  setTimeout(() => { smokeVisible = true; }, 3000);
+}, 11000);
+
+/* animate */
 function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
+drawSmoke();
 requestAnimationFrame(animate);
 }
 animate();
 
 /* الأقسام */
-
 const menu=document.getElementById("menu");
 const backBtn=document.getElementById("backBtn");
 const hoodiesContainer=document.getElementById("hoodiesContainer");
@@ -190,6 +241,7 @@ const hoodiesContainer=document.getElementById("hoodiesContainer");
 window.openSection=function(name){
 menu.style.display="none";
 backBtn.style.display="flex";
+smokeVisible = true; // يظهر الدخان لما تدخل القسم
 
 if(name==="HOODIES"){
 hoodiesContainer.style.display="flex";
@@ -200,8 +252,8 @@ backBtn.onclick=function(){
 menu.style.display="flex";
 backBtn.style.display="none";
 hoodiesContainer.style.display="none";
+smokeVisible = false; // يختفي الدخان لما ترجع للقائمة
 }
-
 </script>
 
 </body>
