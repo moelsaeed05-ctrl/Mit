@@ -2,139 +2,261 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MIT STORE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT</title>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import { getFirestore, setDoc, doc }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* Firebase Config */
-
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "mit-store-bd580.firebaseapp.com",
-    projectId: "mit-store-bd580",
-    storageBucket: "mit-store-bd580.firebasestorage.app",
-    messagingSenderId: "382577223227",
-    appId: "1:382577223227:web:113177bef81c5afb06de1e"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* ===== Register ===== */
-
-window.signup = async function(){
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const username = document.getElementById("username").value;
-
-    try{
-
-        const userCredential =
-        await createUserWithEmailAndPassword(auth,email,password);
-
-        await setDoc(doc(db,"users",userCredential.user.uid),{
-            username: username,
-            email: email,
-            createdAt: Date.now()
-        });
-
-        alert("✅ Account Created");
-
-    }
-    catch(err){
-        alert(err.message);
-    }
-}
-
-/* ===== Login ===== */
-
-window.login = async function(){
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try{
-
-        await signInWithEmailAndPassword(auth,email,password);
-        alert("✅ Login Success");
-
-        location.href="index.html";
-
-    }
-    catch(err){
-        alert(err.message);
-    }
-}
-
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
 
 body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    overflow:hidden;
     background:black;
-    font-family:Arial;
     color:white;
 }
 
-.box{
+.logo{
+    position:absolute;
+    top:25px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:60px;
+    letter-spacing:20px;
+    font-weight:bold;
+    z-index:10;
+}
+
+.section-title{
+    position:absolute;
+    top:40px;
+    left:40px;
+    font-size:22px;
+    letter-spacing:3px;
+    color:#ccc;
+    display:none;
+    z-index:10;
+}
+
+.yellow{
+    color:#ffd700;
+    text-shadow:0 0 5px #ffd700,0 0 20px #ffae00,0 0 40px #ffae00;
+}
+
+.red{
+    color:#ff1a1a;
+    text-shadow:0 0 5px #ff1a1a,0 0 20px #ff0000,0 0 40px #ff0000;
+}
+
+.menu{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
     display:flex;
     flex-direction:column;
-    gap:15px;
-    padding:40px;
-    border-radius:20px;
-    backdrop-filter:blur(10px);
-    border:1px solid #333;
+    gap:50px;
+    align-items:center;
+    z-index:10;
 }
 
-input{
-    padding:13px;
-    width:280px;
-    border-radius:10px;
-    border:none;
-    outline:none;
-}
-
-button{
-    padding:13px;
-    border-radius:10px;
-    border:none;
+.item{
     cursor:pointer;
+    font-size:22px;
+    letter-spacing:3px;
+    padding:10px 25px;
+    border-radius:15px;
     transition:0.3s;
 }
 
-button:hover{
-    transform:scale(1.05);
+.item:hover{
+    transform:scale(1.2);
+    text-shadow:0 0 10px #aaa,0 0 30px #777;
 }
 
-</style>
+.back{
+    position:absolute;
+    top:40px;
+    right:40px;
+    cursor:pointer;
+    display:none;
+    z-index:10;
+}
 
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+}
+</style>
 </head>
 
 <body>
 
-<div class="box">
-    <input id="username" placeholder="Username">
+<canvas id="space"></canvas>
 
-    <input id="email" placeholder="Email">
-
-    <input id="password" type="password" placeholder="Password">
-
-    <button onclick="signup()">REGISTER</button>
-    <button onclick="login()">LOGIN</button>
+<div class="logo">
+    <span class="yellow">𝔐</span>
+    <span class="red">𝔦</span>
+    <span class="yellow">𝔗</span>
 </div>
+
+<div class="section-title" id="sectionTitle"></div>
+<div class="back" id="backBtn">BACK</div>
+
+<div class="menu" id="menu">
+    <div class="item" onclick="openSection('HOODIES')">HOODIES</div>
+    <div class="item" onclick="openSection('PANTS')">PANTS</div>
+    <div class="item" onclick="openSection('ACCESSORIES')">ACCESSORIES</div>
+</div>
+
+<script>
+
+/* ===== Firebase ===== */
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_ID",
+    appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ===== Canvas Setup ===== */
+
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let mode = "stars";
+
+/* ================= النجوم ================= */
+
+let stars = [];
+for (let i = 0; i < 250; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5,
+        speed: Math.random() * 0.4 + 0.1
+    });
+}
+
+function drawStars(){
+    stars.forEach(s=>{
+        s.x -= s.speed;
+        if(s.x < 0) s.x = canvas.width;
+
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+        ctx.fill();
+    });
+}
+
+/* ================= دخان نفخ خفيف ================= */
+
+let smokes = [];
+
+function createSmokeLeft(){
+    return {
+        x:-80,
+        y:Math.random()*canvas.height,
+        radius:Math.random()*50 + 30,
+        alpha:Math.random()*0.25 + 0.15,
+        growth:Math.random()*0.4 + 0.2,
+        speedX:Math.random()*1.6 + 0.8,
+        speedY:(Math.random()-0.5)*0.6
+    };
+}
+
+function drawSmoke(){
+
+    if(Math.random() < 0.5){
+        smokes.push(createSmokeLeft());
+    }
+
+    smokes.forEach((s,index)=>{
+
+        s.x += s.speedX;
+        s.y += s.speedY;
+        s.radius += s.growth;
+
+        let fadeZone = canvas.width * 0.7;
+        let fadeFactor = 1 - (s.x / fadeZone);
+        let currentAlpha = Math.max(0, s.alpha * fadeFactor);
+
+        let gradient = ctx.createRadialGradient(
+            s.x,s.y,0,
+            s.x,s.y,s.radius
+        );
+
+        gradient.addColorStop(0, `rgba(220,220,220,${currentAlpha})`);
+        gradient.addColorStop(0.7, `rgba(160,160,160,${currentAlpha*0.6})`);
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);
+        ctx.fill();
+
+        if(s.x > canvas.width*0.75){
+            smokes.splice(index,1);
+        }
+    });
+}
+
+/* ================= أنيميشن ================= */
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    if(mode==="stars"){
+        drawStars();
+    }else{
+        drawSmoke();
+    }
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= التحكم ================= */
+
+const menu = document.getElementById("menu");
+const sectionTitle = document.getElementById("sectionTitle");
+const backBtn = document.getElementById("backBtn");
+
+function openSection(name){
+    menu.style.display="none";
+    sectionTitle.style.display="block";
+    backBtn.style.display="block";
+    sectionTitle.innerText=name;
+    mode="smoke";
+}
+
+backBtn.onclick=function(){
+    menu.style.display="flex";
+    sectionTitle.style.display="none";
+    backBtn.style.display="none";
+    mode="stars";
+}
+
+</script>
 
 </body>
 </html>
