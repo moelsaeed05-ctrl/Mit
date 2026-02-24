@@ -8,7 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:black;color:white;overflow:hidden}
-canvas{position:fixed;top:0;left:0}
+canvas{position:fixed;top:0;left:0;z-index:0}
 
 /* Logo */
 .logo{
@@ -57,7 +57,7 @@ font-size:22px;
 letter-spacing:3px;
 transition:.3s;
 }
-.item:hover{transform:scale(1.2)}
+.item:hover{transform:scale(1.1)}
 
 /* Section */
 .section-title{
@@ -158,7 +158,7 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-/* ================= Canvas Animation ================= */
+/* ================= Canvas Scene ================= */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -166,11 +166,11 @@ canvas.height=innerHeight;
 
 /* Stars */
 let stars=[];
-for(let i=0;i<250;i++){
+for(let i=0;i<200;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-speed:Math.random()*0.6+0.2
+speed:Math.random()*0.3+0.1
 });
 }
 
@@ -179,51 +179,56 @@ stars.forEach(s=>{
 s.x-=s.speed;
 if(s.x<0)s.x=canvas.width;
 ctx.fillStyle="white";
-ctx.fillRect(s.x,s.y,1.2,1.2);
+ctx.fillRect(s.x,s.y,1,1);
 });
 }
 
-/* Local Explosion */
+/* Scene */
+let state="flame";
+let timer=0;
 let smokes=[];
-let explosionActive=false;
-let explosionStart=0;
-let explosionX=0;
-let explosionY=0;
+
+function drawHuman(){
+ctx.fillStyle="rgba(0,0,0,0.9)";
+ctx.fillRect(canvas.width/2-25,canvas.height/2-50,50,120);
+ctx.beginPath();
+ctx.arc(canvas.width/2,canvas.height/2-80,30,0,Math.PI*2);
+ctx.fill();
+ctx.fillRect(canvas.width/2+25,canvas.height/2-30,60,15);
+}
+
+function drawCandle(){
+ctx.fillStyle="#ddd";
+ctx.fillRect(canvas.width/2+85,canvas.height/2-25,10,40);
+}
+
+function drawFlame(){
+ctx.beginPath();
+ctx.arc(canvas.width/2+90,canvas.height/2-35,8+Math.random()*2,0,Math.PI*2);
+ctx.fillStyle="orange";
+ctx.fill();
+}
 
 function createSmoke(){
 return{
-x:explosionX,
-y:explosionY,
-r:Math.random()*60+40,
-a:1,
-angle:Math.random()*Math.PI*2,
-speed:Math.random()*3+2
+x:canvas.width/2+90,
+y:canvas.height/2-35,
+r:20,
+a:0.8,
+vy:Math.random()*1+0.5,
+vx:Math.random()*1-0.5
 };
-}
-
-function startExplosion(x,y){
-explosionX=x;
-explosionY=y;
-explosionActive=true;
-explosionStart=Date.now();
-smokes=[];
-
-/* Shake */
-document.body.style.transition="0.1s";
-document.body.style.transform="translate(5px)";
-setTimeout(()=>{document.body.style.transform="translate(-5px)";},100);
-setTimeout(()=>{document.body.style.transform="translate(0)";},200);
 }
 
 function drawSmoke(){
 smokes.forEach((s,i)=>{
-s.x+=Math.cos(s.angle)*s.speed;
-s.y+=Math.sin(s.angle)*s.speed;
-s.r+=0.8;
-s.a-=0.02;
+s.y-=s.vy;
+s.x+=s.vx;
+s.r+=0.4;
+s.a-=0.003;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(220,220,220,${s.a})`);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
 g.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=g;
@@ -231,29 +236,43 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fill();
 
-if(
-s.a<=0 ||
-s.x<canvas.width*0.2 ||
-s.x>canvas.width*0.8 ||
-s.y<canvas.height*0.2 ||
-s.y>canvas.height*0.8
-){
-smokes.splice(i,1);
-}
+if(s.a<=0) smokes.splice(i,1);
 });
+}
+
+function drawFire(){
+let grad=ctx.createLinearGradient(0,canvas.height,0,canvas.height-250);
+grad.addColorStop(0,"rgba(255,60,0,0.5)");
+grad.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=grad;
+ctx.fillRect(0,canvas.height-250,canvas.width,250);
 }
 
 function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
-drawStars();
 
-if(explosionActive){
-if(Date.now()-explosionStart<2000){
-for(let i=0;i<8;i++){
-smokes.push(createSmoke());
+drawStars();
+drawFire();
+drawHuman();
+drawCandle();
+
+timer++;
+
+if(state==="flame"){
+drawFlame();
+if(timer>300){
+state="smoke";
+timer=0;
 }
+}
+
+if(state==="smoke"){
+if(timer<400){
+if(Math.random()<0.4) smokes.push(createSmoke());
 }else{
-explosionActive=false;
+state="flame";
+timer=0;
+smokes=[];
 }
 }
 
@@ -273,12 +292,6 @@ menu.style.display="none";
 sectionTitle.style.display="block";
 backBtn.style.display="block";
 sectionTitle.innerText=item.dataset.name;
-
-const rect=item.getBoundingClientRect();
-startExplosion(
-rect.left + rect.width/2,
-rect.top + rect.height/2
-);
 };
 });
 
