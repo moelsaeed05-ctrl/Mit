@@ -9,7 +9,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:black;color:white;overflow:hidden}
 
-/* مهم جداً */
+/* Canvas */
 canvas{
 position:fixed;
 top:0;
@@ -31,21 +31,6 @@ z-index:10;
 .yellow{color:#ffd700}
 .red{color:#ff1a1a}
 
-/* Profile */
-.profile{
-position:absolute;
-top:20px;
-left:20px;
-width:55px;
-height:55px;
-border-radius:50%;
-overflow:hidden;
-border:2px solid #ffd700;
-cursor:pointer;
-z-index:20;
-}
-.profile img{width:100%;height:100%;object-fit:cover}
-
 /* Menu */
 .menu{
 position:absolute;
@@ -58,13 +43,20 @@ gap:40px;
 align-items:center;
 z-index:10;
 }
+
 .item{
 cursor:pointer;
 font-size:22px;
 letter-spacing:3px;
 transition:.3s;
+position:relative;
+padding:10px 30px;
+border:1px solid #333;
+border-radius:10px;
+overflow:hidden;
 }
-.item:hover{transform:scale(1.2)}
+
+.item:hover{transform:scale(1.1)}
 
 .section-title{
 position:absolute;
@@ -96,19 +88,26 @@ display:none;
 gap:20px;
 flex-wrap:wrap;
 justify-content:center;
-width:80%;
+width:90%;
 z-index:10;
 }
 
 .product{
 background:#111;
-padding:15px;
+padding:10px;
 border-radius:12px;
-width:120px;
+width:140px;
 text-align:center;
 border:1px solid #222;
 transition:.3s;
 }
+
+.product img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
+}
+
 .product:hover{
 transform:scale(1.05);
 border-color:#ffd700;
@@ -118,10 +117,6 @@ border-color:#ffd700;
 <body>
 
 <canvas id="space"></canvas>
-
-<div class="profile">
-<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-</div>
 
 <div class="logo">
 <span class="yellow">𝔐</span>
@@ -146,19 +141,19 @@ const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
-/* عناصر الصفحة (عرفناهم بدري عشان مفيش Error) */
 const menu=document.getElementById("menu");
+const items=document.querySelectorAll(".item");
 const sectionTitle=document.getElementById("sectionTitle");
 const backBtn=document.getElementById("backBtn");
 const products=document.getElementById("products");
 
 /* ================= Stars ================= */
 let stars=[];
-for(let i=0;i<250;i++){
+for(let i=0;i<200;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-speed:Math.random()*0.6+0.2
+speed:Math.random()*0.5+0.2
 });
 }
 
@@ -173,32 +168,32 @@ ctx.fillRect(s.x,s.y,1.5,1.5);
 
 /* ================= Smoke ================= */
 let smokes=[];
-let explosionActive=false;
-let explosionStart=0;
+let activeItem=null;
 
-function createSmoke(){
-const rect = menu.getBoundingClientRect();
+function createSmoke(rect){
 return{
-x: rect.left - 50,
+x: rect.left - 20,
 y: rect.top + Math.random()*rect.height,
-r: Math.random()*40+25,
+r: Math.random()*25+15,
 a: 0.8,
-speed: Math.random()*2+1
+speed: Math.random()*1.5+0.5
 };
 }
 
 function drawSmoke(){
-const rect = menu.getBoundingClientRect();
-const maxWidth = rect.left + rect.width * 0.75;
+if(!activeItem) return;
+
+const rect=activeItem.getBoundingClientRect();
+const maxX=rect.left+rect.width*0.75;
 
 ctx.save();
 ctx.beginPath();
-ctx.rect(rect.left, rect.top, rect.width, rect.height);
+ctx.rect(rect.left,rect.top,rect.width,rect.height);
 ctx.clip();
 
 smokes.forEach((s,i)=>{
 s.x+=s.speed;
-s.a-=0.005;
+s.a-=0.02;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
 g.addColorStop(0,`rgba(200,200,200,${s.a})`);
@@ -209,7 +204,7 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fill();
 
-if(s.a<=0 || s.x>maxWidth){
+if(s.a<=0||s.x>maxX){
 smokes.splice(i,1);
 }
 });
@@ -217,25 +212,12 @@ smokes.splice(i,1);
 ctx.restore();
 }
 
-function startExplosion(){
-explosionActive=true;
-explosionStart=Date.now();
-smokes=[];
-}
-
-/* ================= Animation ================= */
 function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
 
-if(explosionActive){
-if(Date.now()-explosionStart<6000){
-if(Math.random()<0.5){
-smokes.push(createSmoke());
-}
-}else{
-explosionActive=false;
-}
+if(activeItem && Math.random()<0.4){
+smokes.push(createSmoke(activeItem.getBoundingClientRect()));
 }
 
 drawSmoke();
@@ -243,35 +225,53 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* ================= Products ================= */
+/* ================= Products Data ================= */
 const data={
-HOODIES:["Black Hoodie","Red Hoodie","MIT Hoodie"],
-PANTS:["Black Pants","Grey Pants","Cargo Pants"],
-ACCESSORIES:["Cap","Bag","Chain"]
+HOODIES:[
+{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990"},
+{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf"},
+{name:"MIT Hoodie",img:"https://images.unsplash.com/photo-1578681994506-b8f463449011"}
+],
+PANTS:[
+{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942"},
+{name:"Grey Pants",img:"https://images.unsplash.com/photo-1593030761757-71fae45fa0e7"}
+],
+ACCESSORIES:[
+{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f"},
+{name:"Bag",img:"https://images.unsplash.com/photo-1584917865442-de89df76afd3"}
+]
 };
 
-document.querySelectorAll(".item").forEach(item=>{
+/* ================= Click Events ================= */
+items.forEach(item=>{
 item.onclick=()=>{
+items.forEach(i=>{ if(i!==item) i.style.display="none"; });
+
+sectionTitle.innerText=item.dataset.name;
 sectionTitle.style.display="block";
 backBtn.style.display="block";
 products.style.display="flex";
-
-sectionTitle.innerText=item.dataset.name;
 products.innerHTML="";
 
 data[item.dataset.name].forEach(p=>{
-products.innerHTML+=`<div class="product">${p}</div>`;
+products.innerHTML+=`
+<div class="product">
+<img src="${p.img}?w=300" />
+<div>${p.name}</div>
+</div>`;
 });
 
-startExplosion();
+activeItem=item;
 };
 });
 
 backBtn.onclick=()=>{
+items.forEach(i=>i.style.display="block");
 sectionTitle.style.display="none";
 backBtn.style.display="none";
 products.style.display="none";
 products.innerHTML="";
+activeItem=null;
 };
 </script>
 
