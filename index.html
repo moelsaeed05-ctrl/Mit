@@ -9,15 +9,17 @@
 body{background:black;color:white;overflow-x:hidden}
 canvas{position:fixed;top:0;left:0;z-index:-1}
 
+/* Logo */
 .logo{text-align:center;margin-top:20px;font-size:35px;letter-spacing:6px}
 .yellow{color:#ffd700}
 .red{color:#ff1a1a}
 
+/* Menu */
 .menu{
 display:flex;
 justify-content:center;
 gap:40px;
-margin-top:80px;
+margin-top:60px;
 }
 
 .item{
@@ -30,10 +32,11 @@ transition:.3s;
 
 .item:hover{
 color:#ffd700;
-box-shadow:0 0 10px #ffd700,0 0 25px #ffd700;
+box-shadow:0 0 10px #ffd700,0 0 25px #ffd700,0 0 50px #ffd700;
 transform:scale(1.1);
 }
 
+/* Products */
 #products{
 display:flex;
 flex-wrap:wrap;
@@ -48,6 +51,7 @@ padding:15px;
 width:200px;
 border-radius:15px;
 text-align:center;
+box-shadow:0 0 10px #000;
 }
 
 .card img{
@@ -66,6 +70,7 @@ background:#ffd700;
 margin-top:5px;
 }
 
+/* Panels */
 .adminPanel,.cartPanel{
 position:fixed;
 right:0;
@@ -76,6 +81,7 @@ background:#111;
 padding:20px;
 overflow:auto;
 display:none;
+box-shadow:-5px 0 20px #000;
 }
 
 input,select{
@@ -95,6 +101,11 @@ border:none;
 <span class="yellow">𝔗</span>
 </div>
 
+<div style="text-align:center;margin-top:10px">
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+</div>
+
 <div class="menu">
 <div class="item" onclick="loadProducts('HOODIES')">HOODIES</div>
 <div class="item" onclick="loadProducts('PANTS')">PANTS</div>
@@ -104,7 +115,7 @@ border:none;
 
 <div id="products"></div>
 
-<!-- ADMIN -->
+<!-- ADMIN PANEL -->
 <div class="adminPanel" id="adminPanel">
 <h3>Admin Panel</h3>
 
@@ -126,10 +137,11 @@ border:none;
 <button onclick="adminPanel.style.display='none'">Close</button>
 </div>
 
-<!-- CART -->
+<!-- CART PANEL -->
 <div class="cartPanel" id="cartPanel">
 <h3>Your Cart</h3>
 <div id="cartItems"></div>
+<p id="cartTotal"></p>
 <button onclick="checkout()">Checkout</button>
 <button onclick="cartPanel.style.display='none'">Close</button>
 </div>
@@ -138,7 +150,7 @@ border:none;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword,
-onAuthStateChanged }
+onAuthStateChanged, signOut }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { getFirestore, collection, addDoc,
@@ -162,28 +174,37 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const storage=getStorage(app);
 
-const ADMIN_EMAIL="timofisha@gmail.com";
-const ADMIN_PASS="kingtemo11";
-
 let currentUser=null;
 let cart=[];
 
-/* ===== AUTO ADMIN LOGIN ===== */
-signInWithEmailAndPassword(auth,ADMIN_EMAIL,ADMIN_PASS)
-.catch(()=>{});
+/* LOGIN */
+window.login=()=>{
+const email=prompt("Email:");
+const pass=prompt("Password:");
+signInWithEmailAndPassword(auth,email,pass)
+.then(()=>alert("Logged In 🔥"))
+.catch(()=>alert("Login Error ❌"));
+};
 
+window.logout=()=>{
+signOut(auth);
+alert("Logged Out");
+};
+
+/* AUTH STATE */
 onAuthStateChanged(auth,user=>{
 if(user){
 currentUser=user;
-
-if(user.email===ADMIN_EMAIL){
+if(user.email==="timofisha@gmail.com"){
 adminPanel.style.display="block";
 loadStats();
 }
+}else{
+adminPanel.style.display="none";
 }
 });
 
-/* ===== PRODUCTS ===== */
+/* LOAD PRODUCTS */
 window.loadProducts=async(cat)=>{
 products.innerHTML="";
 const snap=await getDocs(collection(db,"products"));
@@ -203,8 +224,10 @@ products.innerHTML+=`
 });
 };
 
-/* ===== ADD PRODUCT (ADMIN) ===== */
+/* ADD PRODUCT */
 window.addProduct=async()=>{
+if(!pImage.files[0]) return alert("Choose image");
+
 const file=pImage.files[0];
 const storageRef=ref(storage,"products/"+file.name);
 await uploadBytes(storageRef,file);
@@ -221,7 +244,7 @@ alert("Product Added 🔥");
 loadStats();
 };
 
-/* ===== CART ===== */
+/* CART */
 window.addToCart=(product)=>{
 cart.push(product);
 updateCart();
@@ -229,11 +252,14 @@ updateCart();
 
 function updateCart(){
 cartItems.innerHTML="";
-cart.forEach((p,i)=>{
-cartItems.innerHTML+=`
-<p>${p.name} - $${p.price}</p>
-`;
+let total=0;
+
+cart.forEach(p=>{
+cartItems.innerHTML+=`<p>${p.name} - $${p.price}</p>`;
+total+=Number(p.price);
 });
+
+cartTotal.innerHTML="Total: $"+total;
 }
 
 window.toggleCart=()=>{
@@ -241,6 +267,7 @@ cartPanel.style.display="block";
 };
 
 window.checkout=async()=>{
+if(!currentUser) return alert("Login First");
 await setDoc(doc(db,"orders",currentUser.uid),{
 items:cart,
 total:cart.reduce((a,b)=>a+Number(b.price),0)
@@ -250,16 +277,14 @@ cart=[];
 updateCart();
 };
 
-/* ===== STATS ===== */
+/* STATS */
 async function loadStats(){
 const productsSnap=await getDocs(collection(db,"products"));
 const ordersSnap=await getDocs(collection(db,"orders"));
-const usersSnap=await getDocs(collection(db,"users"));
 
 stats.innerHTML=`
 Products: ${productsSnap.size}<br>
-Orders: ${ordersSnap.size}<br>
-Users: ${usersSnap.size}
+Orders: ${ordersSnap.size}
 `;
 }
 
