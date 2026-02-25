@@ -9,7 +9,14 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:black;color:white;overflow:hidden}
 
-canvas{position:fixed;top:0;left:0}
+/* مهم جداً */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+pointer-events:none;
+}
 
 /* Logo */
 .logo{
@@ -19,7 +26,6 @@ left:50%;
 transform:translateX(-50%);
 font-size:36px;
 letter-spacing:6px;
-white-space:nowrap;
 z-index:10;
 }
 .yellow{color:#ffd700}
@@ -60,7 +66,6 @@ transition:.3s;
 }
 .item:hover{transform:scale(1.2)}
 
-/* Section */
 .section-title{
 position:absolute;
 top:90px;
@@ -84,7 +89,7 @@ z-index:10;
 /* Products */
 .products{
 position:absolute;
-top:60%;
+top:65%;
 left:50%;
 transform:translateX(-50%);
 display:none;
@@ -104,39 +109,9 @@ text-align:center;
 border:1px solid #222;
 transition:.3s;
 }
-
 .product:hover{
 transform:scale(1.05);
 border-color:#ffd700;
-}
-
-/* Popup */
-.popup{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.9);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:50;
-}
-.box{
-background:#111;
-padding:25px;
-border-radius:15px;
-width:280px;
-display:flex;
-flex-direction:column;
-gap:10px;
-text-align:center;
-}
-.box button{
-padding:8px;
-border:none;
-border-radius:8px;
-background:#ffd700;
-font-weight:bold;
-cursor:pointer;
 }
 </style>
 </head>
@@ -144,7 +119,7 @@ cursor:pointer;
 
 <canvas id="space"></canvas>
 
-<div class="profile" onclick="openPopup()">
+<div class="profile">
 <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
 </div>
 
@@ -165,20 +140,19 @@ cursor:pointer;
 
 <div class="products" id="products"></div>
 
-<div class="popup" id="popup">
-<div class="box">
-<h3>Account</h3>
-<button onclick="popup.style.display='none'">Close</button>
-</div>
-</div>
-
 <script>
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
-/* Stars */
+/* عناصر الصفحة (عرفناهم بدري عشان مفيش Error) */
+const menu=document.getElementById("menu");
+const sectionTitle=document.getElementById("sectionTitle");
+const backBtn=document.getElementById("backBtn");
+const products=document.getElementById("products");
+
+/* ================= Stars ================= */
 let stars=[];
 for(let i=0;i<250;i++){
 stars.push({
@@ -193,20 +167,20 @@ stars.forEach(s=>{
 s.x-=s.speed;
 if(s.x<0)s.x=canvas.width;
 ctx.fillStyle="white";
-ctx.fillRect(s.x,s.y,1.2,1.2);
+ctx.fillRect(s.x,s.y,1.5,1.5);
 });
 }
 
-/* Smoke inside menu */
+/* ================= Smoke ================= */
 let smokes=[];
 let explosionActive=false;
 let explosionStart=0;
 
 function createSmoke(){
-const menuRect = menu.getBoundingClientRect();
+const rect = menu.getBoundingClientRect();
 return{
-x: menuRect.left - 50,
-y: menuRect.top + Math.random()*menuRect.height,
+x: rect.left - 50,
+y: rect.top + Math.random()*rect.height,
 r: Math.random()*40+25,
 a: 0.8,
 speed: Math.random()*2+1
@@ -214,12 +188,12 @@ speed: Math.random()*2+1
 }
 
 function drawSmoke(){
-const menuRect = menu.getBoundingClientRect();
-const maxWidth = menuRect.left + menuRect.width * 0.75;
+const rect = menu.getBoundingClientRect();
+const maxWidth = rect.left + rect.width * 0.75;
 
 ctx.save();
 ctx.beginPath();
-ctx.rect(menuRect.left, menuRect.top, menuRect.width, menuRect.height);
+ctx.rect(rect.left, rect.top, rect.width, rect.height);
 ctx.clip();
 
 smokes.forEach((s,i)=>{
@@ -249,12 +223,13 @@ explosionStart=Date.now();
 smokes=[];
 }
 
+/* ================= Animation ================= */
 function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
 
 if(explosionActive){
-if(Date.now()-explosionStart<7000){
+if(Date.now()-explosionStart<6000){
 if(Math.random()<0.5){
 smokes.push(createSmoke());
 }
@@ -268,12 +243,7 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* Sections */
-const menu=document.getElementById("menu");
-const sectionTitle=document.getElementById("sectionTitle");
-const backBtn=document.getElementById("backBtn");
-const products=document.getElementById("products");
-
+/* ================= Products ================= */
 const data={
 HOODIES:["Black Hoodie","Red Hoodie","MIT Hoodie"],
 PANTS:["Black Pants","Grey Pants","Cargo Pants"],
@@ -285,11 +255,14 @@ item.onclick=()=>{
 sectionTitle.style.display="block";
 backBtn.style.display="block";
 products.style.display="flex";
+
 sectionTitle.innerText=item.dataset.name;
 products.innerHTML="";
+
 data[item.dataset.name].forEach(p=>{
 products.innerHTML+=`<div class="product">${p}</div>`;
 });
+
 startExplosion();
 };
 });
@@ -300,10 +273,6 @@ backBtn.style.display="none";
 products.style.display="none";
 products.innerHTML="";
 };
-
-/* Popup */
-const popup=document.getElementById("popup");
-window.openPopup=()=>{popup.style.display="flex";}
 </script>
 
 </body>
