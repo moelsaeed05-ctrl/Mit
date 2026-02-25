@@ -1,3 +1,5 @@
+
+أنت قلت:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +29,7 @@ z-index:0;
 pointer-events:none;
 }
 
-/* Logo Neon Red Glow */
+/* Logo */
 .logo{
 position:absolute;
 top:25px;
@@ -36,10 +38,9 @@ transform:translateX(-50%);
 font-size:36px;
 letter-spacing:6px;
 z-index:10;
-text-shadow:0 0 8px red,0 0 16px rgba(255,0,0,.8);
 }
 
-/* Menu Icons بدون حواف */
+/* Menu */
 .menu{
 position:absolute;
 top:45%;
@@ -55,14 +56,13 @@ z-index:10;
 cursor:pointer;
 font-size:22px;
 padding:12px 40px;
-transition:.4s;
-border:none;
+border:1px solid #333;
 border-radius:12px;
+transition:.4s;
 }
 
 .item:hover{
 transform:scale(1.1);
-text-shadow:0 0 6px red;
 }
 
 /* Products Page */
@@ -83,8 +83,6 @@ gap:25px;
 flex-wrap:wrap;
 justify-content:center;
 width:90%;
-position:relative;
-z-index:2;
 }
 
 .product{
@@ -105,19 +103,6 @@ margin-bottom:8px;
 .product:hover{
 transform:scale(1.08);
 border:1px solid #ffd700;
-}
-
-/* Back Button Inside Category */
-.backBtn{
-position:absolute;
-top:25px;
-left:25px;
-padding:10px 18px;
-border-radius:8px;
-border:none;
-background:#ffd700;
-cursor:pointer;
-z-index:5;
 }
 
 /* Detail Popup */
@@ -167,7 +152,6 @@ cursor:pointer;
 </div>
 
 <div class="fullscreen" id="page">
-<button class="backBtn" id="backBtn">Back</button>
 <div class="products" id="products"></div>
 </div>
 
@@ -204,40 +188,44 @@ ctx.fillRect(s.x,s.y,1.5,1.5);
 });
 }
 
-/* Smoke Background Effect */
+/* Smoke */
 let smokes=[];
+let activeRect=null;
 
 function createSmoke(){
+const rect=activeRect.getBoundingClientRect();
+
 return{
-x: Math.random()*200,
-y: Math.random()*canvas.height,
-r: Math.random()*60+40,
+x: rect.left - 60,
+y: rect.top + Math.random()*rect.height,
+r: Math.random()*50+30,
 a:0.9,
-vx:Math.random()*2+0.8,
-vy:(Math.random()-0.5)*0.5
+vx:Math.random()*3+1,
+vy:(Math.random()-0.5)*1
 };
 }
 
 function drawSmoke(){
 
-if(page.style.display!=="flex") return;
+if(!activeRect) return;
 
-const maxX=canvas.width*0.75;
+const rect=activeRect.getBoundingClientRect();
+const maxX=rect.left + rect.width*0.75;
 
-/* Generate smoke */
-if(Math.random()<0.6){
-smokes.push(createSmoke());
-}
+ctx.save();
 
-/* Draw smoke */
+ctx.beginPath();
+ctx.rect(rect.left,rect.top,rect.width,rect.height);
+ctx.clip();
+
 smokes.forEach((s,i)=>{
 
 s.x+=s.vx;
 s.y+=s.vy;
-s.a-=0.006;
+s.a-=0.008;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(220,220,220,${s.a})`);
+g.addColorStop(0,rgba(220,220,220,${s.a}));
 g.addColorStop(1,"transparent");
 
 ctx.fillStyle=g;
@@ -245,13 +233,13 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fill();
 
-/* Remove when fade or reach 3/4 screen */
 if(s.a<=0 || s.x>maxX){
 smokes.splice(i,1);
 }
 
 });
 
+ctx.restore();
 }
 
 /* Animation */
@@ -259,6 +247,11 @@ function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
 drawStars();
+
+if(activeRect && Math.random()<0.5){
+smokes.push(createSmoke());
+}
+
 drawSmoke();
 
 requestAnimationFrame(animate);
@@ -286,7 +279,6 @@ const page=document.getElementById("page");
 const products=document.getElementById("products");
 const detail=document.getElementById("detail");
 const detailBox=document.getElementById("detailBox");
-const backBtn=document.getElementById("backBtn");
 
 document.querySelectorAll(".item").forEach(item=>{
 item.onclick=()=>{
@@ -300,21 +292,26 @@ page.style.display="flex";
 products.innerHTML="";
 
 data[item.dataset.name].forEach(p=>{
-products.innerHTML+=`
+products.innerHTML+=
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
 <img src="${p.img}">
 <div>${p.name}</div>
 <div style="color:#ffd700">${p.price}</div>
-</div>`;
+</div>;
 });
+
+activeRect=item;
 };
 });
 
-/* Back Button */
-backBtn.onclick=()=>{
+/* Back */
+page.onclick=(e)=>{
+if(e.target===page){
 document.querySelectorAll(".item").forEach(i=>i.style.display="block");
 page.style.display="none";
+activeRect=null;
 smokes=[];
+}
 };
 
 /* Detail */
@@ -322,13 +319,13 @@ function showDetail(name,img,price){
 
 detail.style.display="flex";
 
-detailBox.innerHTML=`
+detailBox.innerHTML=
 <h3>${name}</h3>
 <img src="${img}" style="width:100%;border-radius:10px;margin-top:15px">
 <div style="margin-top:10px;color:#ffd700">${price}</div>
 <button onclick="addCart()">Add To Cart</button>
 <button onclick="detail.style.display='none'">Close</button>
-`;
+;
 }
 
 function addCart(){
