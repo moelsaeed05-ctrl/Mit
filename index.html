@@ -1,345 +1,327 @@
-‏<!DOCTYPE html>
-‏<html lang="en">
-‏<head>
-‏<meta charset="UTF-8">
-‏<meta name="viewport" content="width=device-width, initial-scale=1.0">
-‏<title>MIT</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT</title>
 
-‏<style>
-‏*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-‏body{background:black;color:white;overflow:hidden}
-‏canvas{position:fixed;top:0;left:0}
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:black;color:white;overflow:hidden}
 
-‏/* Logo */
-‏.logo{
-‏position:absolute;
-‏top:25px;
-‏left:50%;
-‏transform:translateX(-50%);
-‏font-size:36px;
-‏letter-spacing:6px;
-‏white-space:nowrap;
-‏z-index:10;
-}
-‏.yellow{color:#ffd700}
-‏.red{color:#ff1a1a}
+/* ===== Canvas ===== */
+canvas{position:fixed;top:0;left:0}
 
-‏/* Profile */
-‏.profile{
-‏position:absolute;
-‏top:20px;
-‏left:20px;
-‏width:55px;
-‏height:55px;
-‏border-radius:50%;
-‏overflow:hidden;
-‏border:2px solid #ffd700;
-‏cursor:pointer;
-‏z-index:20;
+/* ===== Logo ===== */
+.logo{
+position:absolute;
+top:25px;
+left:50%;
+transform:translateX(-50%);
+font-size:36px;
+letter-spacing:6px;
+white-space:nowrap;
+z-index:10;
 }
-‏.profile img{width:100%;height:100%;object-fit:cover}
+.yellow{color:#ffd700}
+.red{color:#ff1a1a}
 
-‏/* Menu */
-‏.menu{
-‏position:absolute;
-‏top:50%;
-‏left:50%;
-‏transform:translate(-50%,-50%);
-‏display:flex;
-‏flex-direction:column;
-‏gap:40px;
-‏align-items:center;
-‏z-index:10;
+/* ===== Profile ===== */
+.profile{
+position:absolute;
+top:20px;
+left:20px;
+width:55px;
+height:55px;
+border-radius:50%;
+overflow:hidden;
+border:2px solid #ffd700;
+cursor:pointer;
+z-index:20;
 }
-‏.item{
-‏cursor:pointer;
-‏font-size:22px;
-‏letter-spacing:3px;
-‏transition:.3s;
-‏padding:10px 25px;
-‏border-radius:12px;
-}
-‏.item:hover{
-‏transform:scale(1.15);
-‏color:#ffd700;
-‏box-shadow:
-‏0 0 10px #ffd700,
-‏0 0 20px #ffd700,
-‏0 0 40px #ffd700;
-}
+.profile img{width:100%;height:100%;object-fit:cover}
 
-‏/* Section */
-‏.section-title{
-‏position:absolute;
-‏top:90px;
-‏left:50%;
-‏transform:translateX(-50%);
-‏color:#ffd700;
-‏display:none;
-‏z-index:10;
+/* ===== Menu ===== */
+.menu{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:40px;
+align-items:center;
+z-index:10;
 }
-‏.back{
-‏position:absolute;
-‏top:90px;
-‏right:30px;
-‏cursor:pointer;
-‏display:none;
-‏z-index:10;
+.item{
+cursor:pointer;
+font-size:22px;
+letter-spacing:3px;
+transition:.3s;
+}
+.item:hover{transform:scale(1.2)}
+
+/* ===== Section ===== */
+.section-title{
+position:absolute;
+top:90px;
+left:50%;
+transform:translateX(-50%);
+color:#ffd700;
+display:none;
+z-index:10;
+}
+.back{
+position:absolute;
+top:90px;
+right:30px;
+cursor:pointer;
+display:none;
+z-index:10;
 }
 
-‏/* Popup */
-‏.popup{
-‏position:fixed;
-‏inset:0;
-‏background:rgba(0,0,0,.9);
-‏display:none;
-‏align-items:center;
-‏justify-content:center;
-‏z-index:50;
+/* ===== Popup ===== */
+.popup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
 }
-‏.box{
-‏background:#111;
-‏padding:25px;
-‏border-radius:15px;
-‏width:280px;
-‏display:flex;
-‏flex-direction:column;
-‏gap:10px;
-‏text-align:center;
+.box{
+background:#111;
+padding:25px;
+border-radius:15px;
+width:280px;
+display:flex;
+flex-direction:column;
+gap:10px;
+text-align:center;
 }
-‏.box input,.box button{
-‏padding:8px;
-‏border:none;
-‏border-radius:8px;
+.box input,.box button{
+padding:8px;
+border:none;
+border-radius:8px;
 }
-‏.box button{
-‏background:#ffd700;
-‏font-weight:bold;
-‏cursor:pointer;
-}
-‏</style>
-‏</head>
-‏<body>
+.box button{background:#ffd700;font-weight:bold;cursor:pointer}
+</style>
+</head>
+<body>
 
-‏<canvas id="space"></canvas>
+<canvas id="space"></canvas>
 
-‏<div class="profile" onclick="openPopup()">
-‏<img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-‏</div>
+<div class="profile" onclick="openPopup()">
+<img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+</div>
 
-‏<div class="logo">
-‏<span class="yellow">𝔐</span>
-‏<span class="red">𝔦</span>
-‏<span class="yellow">𝔗</span>
-‏</div>
+<div class="logo">
+<span class="yellow">𝔐</span>
+<span class="red">𝔦</span>
+<span class="yellow">𝔗</span>
+</div>
 
-‏<div class="section-title" id="sectionTitle"></div>
-‏<div class="back" id="backBtn">BACK</div>
+<div class="section-title" id="sectionTitle"></div>
+<div class="back" id="backBtn">BACK</div>
 
-‏<div class="menu" id="menu">
-‏<div class="item" data-name="HOODIES">HOODIES</div>
-‏<div class="item" data-name="PANTS">PANTS</div>
-‏<div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
-‏</div>
+<div class="menu" id="menu">
+<div class="item" data-name="HOODIES">🧥 HOODIES</div>
+<div class="item" data-name="PANTS">👖 PANTS</div>
+<div class="item" data-name="ACCESSORIES">⌚ ACCESSORIES</div>
+</div>
 
-‏<div class="popup" id="popup">
-‏<div class="box" id="popupContent"></div>
-‏</div>
+<div class="popup" id="popup">
+<div class="box" id="popupContent"></div>
+</div>
 
-‏<script type="module">
+<script type="module">
 
-‏/* Firebase */
-‏import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-‏import { getAuth, createUserWithEmailAndPassword,
-‏signInWithEmailAndPassword, onAuthStateChanged,
-‏updateProfile, signOut }
-‏from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+/* ================= Firebase ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword,
+signInWithEmailAndPassword, onAuthStateChanged,
+updateProfile, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-‏import { getFirestore, doc, setDoc, getDoc }
-‏from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-‏const firebaseConfig = {
-‏apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-‏authDomain: "mit-store-bd580.firebaseapp.com",
-‏projectId: "mit-store-bd580",
-‏storageBucket: "mit-store-bd580.firebasestorage.app",
-‏messagingSenderId: "382577223227",
-‏appId: "1:382577223227:web:113177bef81c5afb06de1e"
+const firebaseConfig={
+apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+messagingSenderId:"382577223227",
+appId:"1:382577223227:web:113177bef81c5afb06de1e"
 };
 
-‏const app = initializeApp(firebaseConfig);
-‏const auth = getAuth(app);
-‏const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-‏/* Canvas */
-‏const canvas=document.getElementById("space");
-‏const ctx=canvas.getContext("2d");
-‏canvas.width=innerWidth;
-‏canvas.height=innerHeight;
+/* ================= Canvas Animation ================= */
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-‏let mode="stars";
+let mode="stars";
 
-‏/* Stars */
-‏let stars=[];
-‏for(let i=0;i<250;i++){
-‏stars.push({x:Math.random()*canvas.width,
-‏y:Math.random()*canvas.height,
-‏speed:Math.random()*0.5+0.1});
+/* Stars */
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+speed:Math.random()*0.5+0.1});
 }
 
-‏function drawStars(){
-‏stars.forEach(s=>{
-‏s.x-=s.speed;
-‏if(s.x<0)s.x=canvas.width;
-‏ctx.fillStyle="white";
-‏ctx.fillRect(s.x,s.y,1,1);
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(s.x,s.y,1,1);
 });
 }
 
-‏/* Smoke */
-‏let smokes=[];
-‏function createSmoke(){
-‏return{
-‏x:-50,
-‏y:Math.random()*canvas.height,
-‏r:Math.random()*60+40,
-‏a:Math.random()*0.4+0.2,
-‏speed:Math.random()*3+2
+/* Smoke */
+let smokes=[];
+function createSmoke(){
+return{
+x:-50,
+y:Math.random()*canvas.height,
+r:Math.random()*40+20,
+a:Math.random()*0.3,
+speed:Math.random()*2+1
 };
 }
-
-‏function drawSmoke(){
-‏if(Math.random()<0.7)smokes.push(createSmoke());
-
-‏smokes.forEach((s,i)=>{
-‏s.x+=s.speed;
-‏let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-‏g.addColorStop(0,`rgba(220,220,220,${s.a})`);
-‏g.addColorStop(1,"rgba(0,0,0,0)");
-‏ctx.fillStyle=g;
-‏ctx.beginPath();
-‏ctx.arc(s.x,s.y,s.r*1.2,0,Math.PI*2);
-‏ctx.fill();
-‏if(s.x>canvas.width)smokes.splice(i,1);
+function drawSmoke(){
+if(Math.random()<0.4)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.x+=s.speed;
+let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle=g;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+if(s.x>canvas.width)smokes.splice(i,1);
 });
 }
 
-‏function animate(){
-‏ctx.clearRect(0,0,canvas.width,canvas.height);
-‏mode==="stars"?drawStars():drawSmoke();
-‏requestAnimationFrame(animate);
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+mode==="stars"?drawStars():drawSmoke();
+requestAnimationFrame(animate);
 }
-‏animate();
+animate();
 
-‏/* Sections */
-‏const menu=document.getElementById("menu");
-‏const sectionTitle=document.getElementById("sectionTitle");
-‏const backBtn=document.getElementById("backBtn");
+/* ================= Sections ================= */
+const menu=document.getElementById("menu");
+const sectionTitle=document.getElementById("sectionTitle");
+const backBtn=document.getElementById("backBtn");
 
-‏document.querySelectorAll(".item").forEach(item=>{
-‏item.onclick=()=>{
-‏menu.style.display="none";
-‏sectionTitle.style.display="block";
-‏backBtn.style.display="block";
-‏sectionTitle.innerText=item.dataset.name;
-‏mode="smoke";
+document.querySelectorAll(".item").forEach(item=>{
+item.onclick=()=>{
+menu.style.display="none";
+sectionTitle.style.display="block";
+backBtn.style.display="block";
+sectionTitle.innerText=item.dataset.name;
+mode="smoke";
 };
 });
 
-‏backBtn.onclick=()=>{
-‏menu.style.display="flex";
-‏sectionTitle.style.display="none";
-‏backBtn.style.display="none";
-‏mode="stars";
+backBtn.onclick=()=>{
+menu.style.display="flex";
+sectionTitle.style.display="none";
+backBtn.style.display="none";
+mode="stars";
 };
 
-‏/* Popup */
-‏const popup=document.getElementById("popup");
-‏const popupContent=document.getElementById("popupContent");
+/* ================= Popup ================= */
+const popup=document.getElementById("popup");
+const popupContent=document.getElementById("popupContent");
 
-‏window.openPopup=()=>{
-‏if(auth.currentUser){showProfile();}
-‏else{showMain();}
-‏popup.style.display="flex";
+window.openPopup=()=>{
+if(auth.currentUser){showProfile();}
+else{showMain();}
+popup.style.display="flex";
 };
 
-‏function showMain(){
-‏popupContent.innerHTML=`
-‏<h3>Account</h3>
-‏<button onclick="showLogin()">Login</button>
-‏<button onclick="showRegister()">Create Account</button>
-‏<button onclick="popup.style.display='none'">Close</button>
+function showMain(){
+popupContent.innerHTML=`
+<h3>Account</h3>
+<button onclick="showLogin()">Login</button>
+<button onclick="showRegister()">Create Account</button>
+<button onclick="popup.style.display='none'">Close</button>
 `;
 }
 
-‏window.showLogin=()=>{
-‏popupContent.innerHTML=`
-‏<h3>Login</h3>
-‏<input id="loginEmail" placeholder="Email">
-‏<input id="loginPass" type="password" placeholder="Password">
-‏<button onclick="login()">Login</button>
-‏<button onclick="showMain()">Back</button>
+window.showLogin=()=>{
+popupContent.innerHTML=`
+<h3>Login</h3>
+<input id="loginEmail" placeholder="Email">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="showMain()">Back</button>
 `;
 };
 
-‏window.showRegister=()=>{
-‏popupContent.innerHTML=`
-‏<h3>Create Account</h3>
-‏<input id="regName" placeholder="Full Name">
-‏<input id="regPhone" placeholder="Phone Number">
-‏<input id="regEmail" placeholder="Email">
-‏<input id="regPass" type="password" placeholder="Password">
-‏<button onclick="register()">Create</button>
-‏<button onclick="showMain()">Back</button>
+window.showRegister=()=>{
+popupContent.innerHTML=`
+<h3>Create Account</h3>
+<input id="regName" placeholder="Full Name">
+<input id="regPhone" placeholder="Phone Number">
+<input id="regEmail" placeholder="Email">
+<input id="regPass" type="password" placeholder="Password">
+<button onclick="register()">Create</button>
+<button onclick="showMain()">Back</button>
 `;
 };
 
-‏window.register=async()=>{
-‏try{
-‏const u=await createUserWithEmailAndPassword(auth,regEmail.value,regPass.value);
-‏await updateProfile(u.user,{displayName:regName.value});
-‏await setDoc(doc(db,"users",u.user.uid),{
-‏name:regName.value,
-‏phone:regPhone.value,
-‏email:regEmail.value
+window.register=async()=>{
+const u=await createUserWithEmailAndPassword(auth,regEmail.value,regPass.value);
+await updateProfile(u.user,{displayName:regName.value});
+await setDoc(doc(db,"users",u.user.uid),{
+name:regName.value,
+phone:regPhone.value,
+email:regEmail.value
 });
-‏popupContent.innerHTML=`<h3 style="color:#ffd700">Account Created 🔥</h3>`;
-‏}catch(e){alert(e.message);}
+alert("Account Created 🔥");
+popup.style.display="none";
 };
 
-‏window.login=async()=>{
-‏try{
-‏await signInWithEmailAndPassword(auth,loginEmail.value,loginPass.value);
-‏popupContent.innerHTML=`<h3 style="color:#ffd700">Login Successful 🔥</h3>`;
-‏setTimeout(()=>popup.style.display="none",1500);
-‏}catch(e){alert("Wrong Email or Password ❌");}
+window.login=async()=>{
+await signInWithEmailAndPassword(auth,loginEmail.value,loginPass.value);
+popup.style.display="none";
 };
 
-‏async function showProfile(){
-‏const user=auth.currentUser;
-‏const snap=await getDoc(doc(db,"users",user.uid));
-‏popupContent.innerHTML=`
-‏<h3>${snap.data().name}</h3>
-‏<p>${snap.data().email}</p>
-‏<p>${snap.data().phone}</p>
-‏<button onclick="logout()">Logout</button>
-‏<button onclick="popup.style.display='none'">Close</button>
+async function showProfile(){
+const user=auth.currentUser;
+const snap=await getDoc(doc(db,"users",user.uid));
+popupContent.innerHTML=`
+<h3>${snap.data().name}</h3>
+<p>${snap.data().email}</p>
+<p>${snap.data().phone}</p>
+<button onclick="logout()">Logout</button>
+<button onclick="popup.style.display='none'">Close</button>
 `;
 }
 
-‏window.logout=()=>{
-‏signOut(auth);
-‏popup.style.display="none";
+window.logout=()=>{
+signOut(auth);
+profileImg.src="https://cdn-icons-png.flaticon.com/512/149/149071.png";
+showMain();
 };
 
-‏onAuthStateChanged(auth,(user)=>{
-‏if(user){
-‏profileImg.src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
-‏}else{
-‏profileImg.src="https://cdn-icons-png.flaticon.com/512/149/149071.png";
+onAuthStateChanged(auth,(user)=>{
+if(user){
+profileImg.src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
 }
 });
 
-‏</script>
-‏</body>
-‏</html>
+</script>
+</body>
+</html>
