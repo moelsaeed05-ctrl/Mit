@@ -43,7 +43,7 @@ z-index:20;
 /* Menu */
 .menu{
 position:absolute;
-top:50%;
+top:45%;
 left:50%;
 transform:translate(-50%,-50%);
 display:flex;
@@ -69,7 +69,9 @@ transform:translateX(-50%);
 color:#ffd700;
 display:none;
 z-index:10;
+font-size:24px;
 }
+
 .back{
 position:absolute;
 top:90px;
@@ -77,6 +79,35 @@ right:30px;
 cursor:pointer;
 display:none;
 z-index:10;
+}
+
+/* Products */
+.products{
+position:absolute;
+top:60%;
+left:50%;
+transform:translateX(-50%);
+display:none;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:80%;
+z-index:10;
+}
+
+.product{
+background:#111;
+padding:15px;
+border-radius:12px;
+width:120px;
+text-align:center;
+border:1px solid #222;
+transition:.3s;
+}
+
+.product:hover{
+transform:scale(1.05);
+border-color:#ffd700;
 }
 
 /* Popup */
@@ -99,12 +130,14 @@ flex-direction:column;
 gap:10px;
 text-align:center;
 }
-.box input,.box button{
+.box button{
 padding:8px;
 border:none;
 border-radius:8px;
+background:#ffd700;
+font-weight:bold;
+cursor:pointer;
 }
-.box button{background:#ffd700;font-weight:bold;cursor:pointer}
 </style>
 </head>
 <body>
@@ -112,7 +145,7 @@ border-radius:8px;
 <canvas id="space"></canvas>
 
 <div class="profile" onclick="openPopup()">
-<img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
 </div>
 
 <div class="logo">
@@ -130,13 +163,16 @@ border-radius:8px;
 <div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
 </div>
 
+<div class="products" id="products"></div>
+
 <div class="popup" id="popup">
-<div class="box" id="popupContent"></div>
+<div class="box">
+<h3>Account</h3>
+<button onclick="popup.style.display='none'">Close</button>
+</div>
 </div>
 
 <script>
-
-/* Canvas */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -161,20 +197,19 @@ ctx.fillRect(s.x,s.y,1.2,1.2);
 });
 }
 
-/* ===== Smoke Only Inside Menu Area ===== */
+/* Smoke inside menu */
 let smokes=[];
 let explosionActive=false;
 let explosionStart=0;
 
 function createSmoke(){
 const menuRect = menu.getBoundingClientRect();
-
 return{
-x: menuRect.left - 60,
+x: menuRect.left - 50,
 y: menuRect.top + Math.random()*menuRect.height,
-r: Math.random()*50+30,
+r: Math.random()*40+25,
 a: 0.8,
-speed: Math.random()*2+1.5
+speed: Math.random()*2+1
 };
 }
 
@@ -183,15 +218,13 @@ const menuRect = menu.getBoundingClientRect();
 const maxWidth = menuRect.left + menuRect.width * 0.75;
 
 ctx.save();
-
-/* نحدد الرسم داخل مساحة المينيو فقط */
 ctx.beginPath();
 ctx.rect(menuRect.left, menuRect.top, menuRect.width, menuRect.height);
 ctx.clip();
 
 smokes.forEach((s,i)=>{
 s.x+=s.speed;
-s.a-=0.004;
+s.a-=0.005;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
 g.addColorStop(0,`rgba(200,200,200,${s.a})`);
@@ -202,7 +235,6 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fill();
 
-/* يتشال لو خرج بره ٣/٤ المساحة */
 if(s.a<=0 || s.x>maxWidth){
 smokes.splice(i,1);
 }
@@ -222,7 +254,7 @@ ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
 
 if(explosionActive){
-if(Date.now()-explosionStart<8000){
+if(Date.now()-explosionStart<7000){
 if(Math.random()<0.5){
 smokes.push(createSmoke());
 }
@@ -240,33 +272,39 @@ animate();
 const menu=document.getElementById("menu");
 const sectionTitle=document.getElementById("sectionTitle");
 const backBtn=document.getElementById("backBtn");
+const products=document.getElementById("products");
+
+const data={
+HOODIES:["Black Hoodie","Red Hoodie","MIT Hoodie"],
+PANTS:["Black Pants","Grey Pants","Cargo Pants"],
+ACCESSORIES:["Cap","Bag","Chain"]
+};
 
 document.querySelectorAll(".item").forEach(item=>{
 item.onclick=()=>{
-menu.style.display="none";
 sectionTitle.style.display="block";
 backBtn.style.display="block";
+products.style.display="flex";
 sectionTitle.innerText=item.dataset.name;
+products.innerHTML="";
+data[item.dataset.name].forEach(p=>{
+products.innerHTML+=`<div class="product">${p}</div>`;
+});
 startExplosion();
 };
 });
 
 backBtn.onclick=()=>{
-menu.style.display="flex";
 sectionTitle.style.display="none";
 backBtn.style.display="none";
+products.style.display="none";
+products.innerHTML="";
 };
 
 /* Popup */
 const popup=document.getElementById("popup");
-const popupContent=document.getElementById("popupContent");
-
-window.openPopup=()=>{
-popup.style.display="flex";
-popupContent.innerHTML=`<h3>Account</h3>
-<button onclick="popup.style.display='none'">Close</button>`;
-};
-
+window.openPopup=()=>{popup.style.display="flex";}
 </script>
+
 </body>
 </html>
