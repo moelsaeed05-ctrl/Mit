@@ -223,7 +223,7 @@ s.y+=s.vy;
 s.a-=0.008;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,rgba(220,220,220,${s.a}));
+g.addColorStop(0,`rgba(220,220,220,${s.a})`);
 g.addColorStop(1,"transparent");
 
 ctx.fillStyle=g;
@@ -290,12 +290,12 @@ page.style.display="flex";
 products.innerHTML="";
 
 data[item.dataset.name].forEach(p=>{
-products.innerHTML+=
+products.innerHTML+=`
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
 <img src="${p.img}">
 <div>${p.name}</div>
 <div style="color:#ffd700">${p.price}</div>
-</div>;
+</div>`;
 });
 
 activeRect=item;
@@ -317,13 +317,13 @@ function showDetail(name,img,price){
 
 detail.style.display="flex";
 
-detailBox.innerHTML=
+detailBox.innerHTML=`
 <h3>${name}</h3>
 <img src="${img}" style="width:100%;border-radius:10px;margin-top:15px">
 <div style="margin-top:10px;color:#ffd700">${price}</div>
 <button onclick="addCart()">Add To Cart</button>
 <button onclick="detail.style.display='none'">Close</button>
-;
+`;
 }
 
 function addCart(){
