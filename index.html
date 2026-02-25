@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT STORE</title>
+<title>MIT</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI Emoji,Arial}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:black;color:white;overflow:hidden}
 
-/* Canvas */
-canvas{position:fixed;top:0;left:0;z-index:0}
+canvas{position:fixed;top:0;left:0}
 
 /* Logo */
 .logo{
@@ -20,10 +19,26 @@ left:50%;
 transform:translateX(-50%);
 font-size:36px;
 letter-spacing:6px;
+white-space:nowrap;
 z-index:10;
 }
 .yellow{color:#ffd700}
 .red{color:#ff1a1a}
+
+/* Profile */
+.profile{
+position:absolute;
+top:20px;
+left:20px;
+width:55px;
+height:55px;
+border-radius:50%;
+overflow:hidden;
+border:2px solid #ffd700;
+cursor:pointer;
+z-index:20;
+}
+.profile img{width:100%;height:100%;object-fit:cover}
 
 /* Menu */
 .menu{
@@ -45,37 +60,60 @@ transition:.3s;
 }
 .item:hover{transform:scale(1.2)}
 
-/* Auth Box */
-.auth-box{
-position:fixed;
-bottom:20px;
+/* Section */
+.section-title{
+position:absolute;
+top:90px;
 left:50%;
 transform:translateX(-50%);
+color:#ffd700;
+display:none;
+z-index:10;
+}
+.back{
+position:absolute;
+top:90px;
+right:30px;
+cursor:pointer;
+display:none;
+z-index:10;
+}
+
+/* Popup */
+.popup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
+}
+.box{
 background:#111;
-padding:20px;
+padding:25px;
 border-radius:15px;
-width:300px;
+width:280px;
 display:flex;
 flex-direction:column;
 gap:10px;
-z-index:30;
+text-align:center;
 }
-.auth-box input,
-.auth-box button{
+.box input,.box button{
 padding:8px;
 border:none;
 border-radius:8px;
 }
-.auth-box button{
-background:#ffd700;
-font-weight:bold;
-cursor:pointer;
-}
+.box button{background:#ffd700;font-weight:bold;cursor:pointer}
 </style>
 </head>
 <body>
 
 <canvas id="space"></canvas>
+
+<div class="profile" onclick="openPopup()">
+<img id="profileImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+</div>
 
 <div class="logo">
 <span class="yellow">𝔐</span>
@@ -83,154 +121,159 @@ cursor:pointer;
 <span class="yellow">𝔗</span>
 </div>
 
-<div class="menu">
-<div class="item">🧥 HOODIES</div>
-<div class="item">👖 PANTS</div>
-<div class="item">⌚ ACCESSORIES</div>
+<div class="section-title" id="sectionTitle"></div>
+<div class="back" id="backBtn">BACK</div>
+
+<div class="menu" id="menu">
+<div class="item" data-name="HOODIES">HOODIES</div>
+<div class="item" data-name="PANTS">PANTS</div>
+<div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
 </div>
 
-<!-- AUTH SYSTEM -->
-<div class="auth-box" id="authBox">
-  <h3 id="authTitle">Login</h3>
-
-  <input type="text" id="authName" placeholder="Full Name" style="display:none;">
-  <input type="text" id="authPhone" placeholder="Phone Number" style="display:none;">
-
-  <input type="email" id="authEmail" placeholder="Email">
-  <input type="password" id="authPass" placeholder="Password">
-
-  <button id="authBtn">Login</button>
-  <button id="switchBtn">Create Account</button>
+<div class="popup" id="popup">
+<div class="box" id="popupContent"></div>
 </div>
 
 <script type="module">
 
-/* ================= FIREBASE ================= */
-
+/* Firebase */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  updateProfile,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword,
+signInWithEmailAndPassword, onAuthStateChanged,
+updateProfile, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import {
-  getFirestore,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-authDomain:"mit-store-bd580.firebaseapp.com",
-projectId:"mit-store-bd580",
-storageBucket:"mit-store-bd580.firebasestorage.app",
-messagingSenderId:"382577223227",
-appId:"1:382577223227:web:113177bef81c5afb06de1e"
+const firebaseConfig={
+apiKey:"YOUR_API_KEY",
+authDomain:"YOUR_DOMAIN",
+projectId:"YOUR_PROJECT_ID",
+storageBucket:"YOUR_BUCKET",
+messagingSenderId:"YOUR_MSG_ID",
+appId:"YOUR_APP_ID"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-setPersistence(auth, browserLocalPersistence);
+/* ================= Canvas Animation ================= */
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-/* ================= CANVAS STARS ================= */
-
-const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d");
-
-function resize(){
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
-
-let stars = [];
+/* Stars */
+let stars=[];
 for(let i=0;i<250;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-speed:Math.random()*0.5+0.2
+speed:Math.random()*0.6+0.2
 });
 }
 
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
+function drawStars(){
 stars.forEach(s=>{
 s.x-=s.speed;
 if(s.x<0)s.x=canvas.width;
 ctx.fillStyle="white";
-ctx.fillRect(s.x,s.y,1,1);
+ctx.fillRect(s.x,s.y,1.2,1.2);
 });
+}
 
+/* Explosion Smoke */
+let smokes=[];
+let explosionActive=false;
+let explosionStart=0;
+
+function createExplosionSmoke(){
+return{
+x:-100,
+y:canvas.height/2 + (Math.random()*300-150),
+r:Math.random()*60+40,
+a:1,
+speed:Math.random()*4+2
+};
+}
+
+function drawSmoke(){
+smokes.forEach((s,i)=>{
+s.x+=s.speed;
+s.a-=0.003;
+
+let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(220,220,220,${s.a})`);
+g.addColorStop(1,"rgba(0,0,0,0)");
+
+ctx.fillStyle=g;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+
+if(s.a<=0 || s.x>canvas.width*1.2){
+smokes.splice(i,1);
+}
+});
+}
+
+function startExplosion(){
+explosionActive=true;
+explosionStart=Date.now();
+smokes=[];
+}
+
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+drawStars();
+
+if(explosionActive){
+if(Date.now()-explosionStart<10000){
+if(Math.random()<0.6){
+smokes.push(createExplosionSmoke());
+}
+}else{
+explosionActive=false;
+}
+}
+
+drawSmoke();
 requestAnimationFrame(animate);
 }
 animate();
 
-/* ================= AUTH SYSTEM ================= */
+/* Sections */
+const menu=document.getElementById("menu");
+const sectionTitle=document.getElementById("sectionTitle");
+const backBtn=document.getElementById("backBtn");
 
-const authBox = document.getElementById("authBox");
-const authTitle = document.getElementById("authTitle");
-const authName = document.getElementById("authName");
-const authPhone = document.getElementById("authPhone");
-const authEmail = document.getElementById("authEmail");
-const authPass = document.getElementById("authPass");
-const authBtn = document.getElementById("authBtn");
-const switchBtn = document.getElementById("switchBtn");
+document.querySelectorAll(".item").forEach(item=>{
+item.onclick=()=>{
+menu.style.display="none";
+sectionTitle.style.display="block";
+backBtn.style.display="block";
+sectionTitle.innerText=item.dataset.name;
+startExplosion();
+};
+});
 
-let isLogin = true;
-
-switchBtn.onclick = ()=>{
-isLogin=!isLogin;
-
-authTitle.innerText = isLogin ? "Login" : "Create Account";
-authBtn.innerText = isLogin ? "Login" : "Create";
-switchBtn.innerText = isLogin ? "Create Account" : "Back to Login";
-
-authName.style.display = isLogin ? "none" : "block";
-authPhone.style.display = isLogin ? "none" : "block";
+backBtn.onclick=()=>{
+menu.style.display="flex";
+sectionTitle.style.display="none";
+backBtn.style.display="none";
 };
 
-authBtn.onclick = async ()=>{
-try{
-if(isLogin){
-await signInWithEmailAndPassword(auth,authEmail.value,authPass.value);
-alert("Logged in ✅");
-}else{
-const userCred = await createUserWithEmailAndPassword(auth,authEmail.value,authPass.value);
+/* Popup */
+const popup=document.getElementById("popup");
+const popupContent=document.getElementById("popupContent");
 
-await updateProfile(userCred.user,{
-displayName:authName.value
-});
-
-await setDoc(doc(db,"users",userCred.user.uid),{
-name:authName.value,
-phone:authPhone.value,
-email:authEmail.value,
-createdAt:new Date()
-});
-
-alert("Account Created 🔥");
-}
-}catch(err){
-alert(err.message);
-}
+window.openPopup=()=>{
+popup.style.display="flex";
+popupContent.innerHTML=`<h3>Account</h3>
+<button onclick="popup.style.display='none'">Close</button>`;
 };
-
-onAuthStateChanged(auth,(user)=>{
-if(user){
-authBox.style.display="none";
-}else{
-authBox.style.display="flex";
-}
-});
 
 </script>
 </body>
