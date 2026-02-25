@@ -134,32 +134,9 @@ border-radius:8px;
 <div class="box" id="popupContent"></div>
 </div>
 
-<script type="module">
+<script>
 
-/* Firebase */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword,
-signInWithEmailAndPassword, onAuthStateChanged,
-updateProfile, signOut }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import { getFirestore, doc, setDoc, getDoc }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_DOMAIN",
-projectId:"YOUR_PROJECT_ID",
-storageBucket:"YOUR_BUCKET",
-messagingSenderId:"YOUR_MSG_ID",
-appId:"YOUR_APP_ID"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-/* ================= Canvas Animation ================= */
+/* Canvas */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -184,28 +161,40 @@ ctx.fillRect(s.x,s.y,1.2,1.2);
 });
 }
 
-/* Explosion Smoke */
+/* ===== Smoke Only Inside Menu Area ===== */
 let smokes=[];
 let explosionActive=false;
 let explosionStart=0;
 
-function createExplosionSmoke(){
+function createSmoke(){
+const menuRect = menu.getBoundingClientRect();
+
 return{
-x:-100,
-y:canvas.height/2 + (Math.random()*300-150),
-r:Math.random()*60+40,
-a:1,
-speed:Math.random()*4+2
+x: menuRect.left - 60,
+y: menuRect.top + Math.random()*menuRect.height,
+r: Math.random()*50+30,
+a: 0.8,
+speed: Math.random()*2+1.5
 };
 }
 
 function drawSmoke(){
+const menuRect = menu.getBoundingClientRect();
+const maxWidth = menuRect.left + menuRect.width * 0.75;
+
+ctx.save();
+
+/* نحدد الرسم داخل مساحة المينيو فقط */
+ctx.beginPath();
+ctx.rect(menuRect.left, menuRect.top, menuRect.width, menuRect.height);
+ctx.clip();
+
 smokes.forEach((s,i)=>{
 s.x+=s.speed;
-s.a-=0.003;
+s.a-=0.004;
 
 let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(220,220,220,${s.a})`);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
 g.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle=g;
@@ -213,10 +202,13 @@ ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fill();
 
-if(s.a<=0 || s.x>canvas.width*1.2){
+/* يتشال لو خرج بره ٣/٤ المساحة */
+if(s.a<=0 || s.x>maxWidth){
 smokes.splice(i,1);
 }
 });
+
+ctx.restore();
 }
 
 function startExplosion(){
@@ -230,9 +222,9 @@ ctx.clearRect(0,0,canvas.width,canvas.height);
 drawStars();
 
 if(explosionActive){
-if(Date.now()-explosionStart<10000){
-if(Math.random()<0.6){
-smokes.push(createExplosionSmoke());
+if(Date.now()-explosionStart<8000){
+if(Math.random()<0.5){
+smokes.push(createSmoke());
 }
 }else{
 explosionActive=false;
