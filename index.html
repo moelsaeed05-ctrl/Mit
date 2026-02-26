@@ -7,18 +7,12 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:black;color:white;overflow:hidden;}
 
-body{
-background:black;
-color:white;
-overflow:hidden;
-}
-
-/* Canvas */
-canvas{
+/* Stars Canvas */
+#space{
 position:fixed;
-top:0;
-left:0;
+inset:0;
 z-index:0;
 pointer-events:none;
 }
@@ -73,7 +67,6 @@ position:relative;
 text-align:center;
 }
 
-/* Neon Effect */
 .item::after{
 content:attr(data-name);
 position:absolute;
@@ -90,11 +83,8 @@ color:#ffd700;
 text-shadow:0 0 8px #ffd700,0 0 15px #ff1a1a;
 }
 
-.item:hover::after{
-opacity:1;
-}
+.item:hover::after{opacity:1;}
 
-/* Products Page */
 .fullscreen{
 position:fixed;
 inset:0;
@@ -117,6 +107,7 @@ padding:6px 14px;
 border-radius:8px;
 cursor:pointer;
 font-weight:bold;
+z-index:5;
 }
 
 .products{
@@ -125,7 +116,7 @@ gap:20px;
 flex-wrap:wrap;
 justify-content:center;
 width:95%;
-z-index:2;
+z-index:5;
 }
 
 .product{
@@ -148,7 +139,7 @@ transform:scale(1.08);
 box-shadow:0 0 10px #ffd700;
 }
 
-/* Detail Popup */
+/* Detail */
 .detail{
 position:fixed;
 inset:0;
@@ -188,21 +179,28 @@ z-index:80;
 }
 
 .loginBox{
-background:#111;
+background:linear-gradient(145deg,#111,#1a1a1a);
 padding:30px;
 border-radius:18px;
-width:300px;
+width:320px;
 text-align:center;
+box-shadow:0 0 15px #ffd70044;
 }
 
 .loginBox input{
 width:100%;
-padding:10px;
+padding:12px;
 margin:8px 0;
 border:none;
-border-radius:6px;
+border-radius:8px;
+background:#222;
+color:white;
+outline:none;
 }
 
+.loginBox input:focus{
+box-shadow:0 0 8px #ffd700;
+}
 </style>
 </head>
 
@@ -233,12 +231,14 @@ border-radius:6px;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
-<!-- LOGIN MODAL -->
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
-<h3>Account</h3>
+<h3>Create Account</h3>
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="phone" placeholder="Phone Number">
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
+<input type="password" id="confirm" placeholder="Confirm Password">
 <button onclick="register()">Register</button>
 <button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
@@ -246,54 +246,64 @@ border-radius:6px;
 </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-  authDomain: "mit-store-15e1d.firebaseapp.com",
-  projectId: "mit-store-15e1d",
-  storageBucket: "mit-store-15e1d.firebasestorage.app",
-  messagingSenderId: "168416523904",
-  appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865",
-  measurementId: "G-3MMQMGS7TP"
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_AUTH_DOMAIN",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_STORAGE_BUCKET",
+messagingSenderId: "YOUR_SENDER_ID",
+appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
-getAnalytics(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-window.register = function(){
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
+window.register = async function(){
+const name=nameInput.value;
+const phone=phoneInput.value;
+const email=emailInput.value;
+const password=passwordInput.value;
+const confirm=confirmInput.value;
 
-createUserWithEmailAndPassword(auth,email,password)
-.then(()=>alert("Account Created ✅"))
-.catch(e=>alert(e.message));
+if(password!==confirm){alert("Passwords not match");return;}
+
+const user=await createUserWithEmailAndPassword(auth,email,password);
+await setDoc(doc(db,"users",user.user.uid),{
+name,phone,email
+});
+alert("Account Created ✅");
+closeLogin();
 }
 
-window.login = function(){
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-signInWithEmailAndPassword(auth,email,password)
-.then(()=>alert("Logged In ✅"))
-.catch(e=>alert(e.message));
+window.login = async function(){
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+alert("Logged In ✅");
+closeLogin();
 }
 
 window.logout = function(){
-signOut(auth).then(()=>alert("Logged Out"));
+signOut(auth);
+alert("Logged Out");
 }
+
+onAuthStateChanged(auth,(user)=>{
+if(user){
+document.querySelector(".loginBtn").innerText=user.email;
+}
+});
 
 </script>
 
 <script>
 
-/* STARS */
+/* Stars */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -316,24 +326,56 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* PRODUCTS DATA */
+/* Smoke */
+const page=document.getElementById("page");
+const smokeCanvas=document.createElement("canvas");
+smokeCanvas.style.position="fixed";
+smokeCanvas.style.inset="0";
+smokeCanvas.style.zIndex="1";
+page.appendChild(smokeCanvas);
+
+const smokeCtx=smokeCanvas.getContext("2d");
+function resize(){smokeCanvas.width=innerWidth;smokeCanvas.height=innerHeight;}
+resize();
+window.onresize=resize;
+
+let smokes=[];
+function createSmoke(){
+return{
+x:Math.random()*smokeCanvas.width,
+y:Math.random()*smokeCanvas.height,
+r:Math.random()*120+60,
+a:0.4,
+vx:(Math.random()-0.5)*1.5,
+vy:(Math.random()-0.5)*1.5
+};
+}
+
+function animateSmoke(){
+smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
+if(Math.random()<0.4){smokes.push(createSmoke());}
+smokes.forEach((s,i)=>{
+s.x+=s.vx;s.y+=s.vy;s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
+});
+requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
+/* Products */
 const data={
-HOODIES:[
-{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
-{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"},
-{name:"Gray Hoodie",img:"https://images.unsplash.com/photo-1520975916090-3105956dac38",price:"60$"}
-],
-PANTS:[
-{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"},
-{name:"Blue Jeans",img:"https://images.unsplash.com/photo-1541099649105-f69ad21f3246",price:"45$"}
-],
-ACCESSORIES:[
-{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"},
-{name:"Chain",img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f",price:"25$"}
-]
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
 };
 
-const page=document.getElementById("page");
 const products=document.getElementById("products");
 
 document.querySelectorAll(".item").forEach(item=>{
