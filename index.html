@@ -5,27 +5,8 @@
 <title>MIT STORE</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial;
-}
-
-body{
-background:black;
-color:white;
-overflow:hidden;
-}
-
-/* Canvas */
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:0;
-pointer-events:none;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:black;color:white;overflow:hidden}
 
 /* Logo */
 .logo{
@@ -38,88 +19,54 @@ letter-spacing:6px;
 z-index:10;
 }
 
-/* Menu */
-.menu{
+/* Login Button */
+.loginBtn{
 position:absolute;
-top:45%;
-left:50%;
-transform:translate(-50%,-50%);
-display:flex;
-flex-direction:column;
-gap:40px;
-z-index:10;
-}
-
-.item{
-cursor:pointer;
-font-size:22px;
-padding:12px 40px;
-border:1px solid #333;
-border-radius:12px;
-transition:.4s;
-}
-
-.item:hover{
-transform:scale(1.1);
-}
-
-/* Products Page */
-.fullscreen{
-position:fixed;
-inset:0;
-background:black;
-display:none;
-justify-content:center;
-align-items:center;
-z-index:40;
-}
-
-/* Products */
-.products{
-display:flex;
-gap:25px;
-flex-wrap:wrap;
-justify-content:center;
-width:90%;
-}
-
-.product{
-background:#111;
-padding:12px;
-border-radius:14px;
-width:150px;
-cursor:pointer;
-transition:.4s;
-}
-
-.product img{
-width:100%;
+top:25px;
+right:40px;
+background:#ffd700;
+color:black;
+padding:8px 18px;
 border-radius:8px;
-margin-bottom:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
 }
 
-.product:hover{
-transform:scale(1.08);
-border:1px solid #ffd700;
+/* User Info */
+.userInfo{
+position:absolute;
+top:25px;
+right:40px;
+z-index:10;
+display:none;
 }
 
-/* Detail Popup */
-.detail{
+/* Modal */
+.modal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.95);
+background:rgba(0,0,0,.9);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:60;
+z-index:100;
 }
 
-.detailBox{
+.modalBox{
 background:#111;
 padding:30px;
 border-radius:18px;
+width:300px;
 text-align:center;
-width:320px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:none;
 }
 
 button{
@@ -129,13 +76,12 @@ border:none;
 border-radius:8px;
 background:#ffd700;
 cursor:pointer;
+width:100%;
 }
 </style>
 </head>
 
 <body>
-
-<canvas id="space"></canvas>
 
 <div class="logo">
 <span style="color:#ffd700">𝔐</span>
@@ -143,192 +89,127 @@ cursor:pointer;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="menu" id="menu">
-<div class="item" data-name="HOODIES">HOODIES</div>
-<div class="item" data-name="PANTS">PANTS</div>
-<div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
+<div class="loginBtn" id="loginBtn">LOGIN</div>
+
+<div class="userInfo" id="userInfo">
+<span id="userEmail"></span>
+<button onclick="logout()" style="width:auto;padding:6px 12px;margin-left:10px">Logout</button>
 </div>
 
-<div class="fullscreen" id="page">
-<div class="products" id="products"></div>
+<!-- Login Modal -->
+<div class="modal" id="authModal">
+<div class="modalBox">
+<h3 id="modalTitle">Login</h3>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="register()">Create Account</button>
+<button onclick="closeModal()">Close</button>
+</div>
 </div>
 
-<div class="detail" id="detail">
-<div class="detailBox" id="detailBox"></div>
-</div>
+<script type="module">
 
-<script>
+/* ===========================
+   FIREBASE IMPORT
+=========================== */
 
-/* Canvas */
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+/* ===========================
+   FIREBASE CONFIG
+=========================== */
 
-/* Stars */
-let stars=[];
-for(let i=0;i<220;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-speed:Math.random()*0.7+0.2
-});
-}
-
-function drawStars(){
-stars.forEach(s=>{
-s.x-=s.speed;
-if(s.x<0)s.x=canvas.width;
-
-ctx.fillStyle="white";
-ctx.fillRect(s.x,s.y,1.5,1.5);
-});
-}
-
-/* Smoke */
-let smokes=[];
-let activeRect=null;
-
-function createSmoke(){
-const rect=activeRect.getBoundingClientRect();
-
-return{
-x: rect.left - 60,
-y: rect.top + Math.random()*rect.height,
-r: Math.random()*50+30,
-a:0.9,
-vx:Math.random()*3+1,
-vy:(Math.random()-0.5)*1
-};
-}
-
-function drawSmoke(){
-
-if(!activeRect) return;
-
-const rect=activeRect.getBoundingClientRect();
-const maxX=rect.left + rect.width*0.75;
-
-ctx.save();
-
-ctx.beginPath();
-ctx.rect(rect.left,rect.top,rect.width,rect.height);
-ctx.clip();
-
-smokes.forEach((s,i)=>{
-
-s.x+=s.vx;
-s.y+=s.vy;
-s.a-=0.008;
-
-let g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(220,220,220,${s.a})`);
-g.addColorStop(1,"transparent");
-
-ctx.fillStyle=g;
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-
-if(s.a<=0 || s.x>maxX){
-smokes.splice(i,1);
-}
-
-});
-
-ctx.restore();
-}
-
-/* Animation */
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-drawStars();
-
-if(activeRect && Math.random()<0.5){
-smokes.push(createSmoke());
-}
-
-drawSmoke();
-
-requestAnimationFrame(animate);
-}
-
-animate();
-
-/* Data */
-const data={
-HOODIES:[
-{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
-{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"}
-],
-PANTS:[
-{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}
-],
-ACCESSORIES:[
-{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}
-]
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865",
+  measurementId: "G-3MMQMGS7TP"
 };
 
-/* Menu Click */
-const menu=document.getElementById("menu");
-const page=document.getElementById("page");
-const products=document.getElementById("products");
-const detail=document.getElementById("detail");
-const detailBox=document.getElementById("detailBox");
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
 
-document.querySelectorAll(".item").forEach(item=>{
-item.onclick=()=>{
+/* ===========================
+   UI ELEMENTS
+=========================== */
 
-document.querySelectorAll(".item").forEach(i=>{
-if(i!==item) i.style.display="none";
-});
+const authModal=document.getElementById("authModal");
+const loginBtn=document.getElementById("loginBtn");
+const userInfo=document.getElementById("userInfo");
+const userEmail=document.getElementById("userEmail");
 
-page.style.display="flex";
+loginBtn.onclick=()=>authModal.style.display="flex";
 
-products.innerHTML="";
-
-data[item.dataset.name].forEach(p=>{
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
-<img src="${p.img}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
-</div>`;
-});
-
-activeRect=item;
-};
-});
-
-/* Back */
-page.onclick=(e)=>{
-if(e.target===page){
-document.querySelectorAll(".item").forEach(i=>i.style.display="block");
-page.style.display="none";
-activeRect=null;
-smokes=[];
-}
-};
-
-/* Detail */
-function showDetail(name,img,price){
-
-detail.style.display="flex";
-
-detailBox.innerHTML=`
-<h3>${name}</h3>
-<img src="${img}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${price}</div>
-<button onclick="addCart()">Add To Cart</button>
-<button onclick="detail.style.display='none'">Close</button>
-`;
+window.closeModal=()=>{
+authModal.style.display="none";
 }
 
-function addCart(){
-alert("Added To Cart");
+/* ===========================
+   REGISTER
+=========================== */
+
+window.register=()=>{
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+createUserWithEmailAndPassword(auth,email,password)
+.then(()=>{
+alert("Account Created ✅");
+closeModal();
+})
+.catch(error=>{
+alert(error.message);
+});
 }
+
+/* ===========================
+   LOGIN
+=========================== */
+
+window.login=()=>{
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+signInWithEmailAndPassword(auth,email,password)
+.then(()=>{
+alert("Login Success ✅");
+closeModal();
+})
+.catch(error=>{
+alert(error.message);
+});
+}
+
+/* ===========================
+   LOGOUT
+=========================== */
+
+window.logout=()=>{
+signOut(auth);
+}
+
+/* ===========================
+   AUTH STATE
+=========================== */
+
+onAuthStateChanged(auth,(user)=>{
+if(user){
+loginBtn.style.display="none";
+userInfo.style.display="block";
+userEmail.innerText=user.email;
+}else{
+loginBtn.style.display="block";
+userInfo.style.display="none";
+}
+});
 
 </script>
 
