@@ -9,15 +9,8 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
 
-/* Stars */
-#space{
-position:fixed;
-inset:0;
-z-index:0;
-pointer-events:none;
-}
+#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* Logo */
 .logo{
 position:absolute;
 top:20px;
@@ -28,7 +21,6 @@ letter-spacing:6px;
 z-index:10;
 }
 
-/* Login */
 .loginBtn{
 position:absolute;
 top:20px;
@@ -43,7 +35,6 @@ font-weight:bold;
 font-size:14px;
 }
 
-/* Menu */
 .menu{
 position:absolute;
 top:50%;
@@ -63,14 +54,12 @@ font-size:22px;
 padding:12px 30px;
 border-radius:12px;
 transition:.4s;
-position:relative;
 }
 
 .item:hover{
 text-shadow:0 0 10px #ffd700;
 }
 
-/* Products Page */
 .fullscreen{
 position:fixed;
 inset:0;
@@ -124,7 +113,6 @@ transform:scale(1.08);
 box-shadow:0 0 10px #ffd700;
 }
 
-/* Smoke */
 .smokeCanvas{
 position:fixed;
 inset:0;
@@ -132,7 +120,6 @@ z-index:1;
 pointer-events:none;
 }
 
-/* Detail */
 .detail{
 position:fixed;
 inset:0;
@@ -158,9 +145,9 @@ border:none;
 border-radius:8px;
 background:#ffd700;
 cursor:pointer;
+width:100%;
 }
 
-/* Login Modal */
 .loginModal{
 position:fixed;
 inset:0;
@@ -187,6 +174,13 @@ border:none;
 border-radius:6px;
 background:#222;
 color:white;
+}
+
+.smallLink{
+font-size:13px;
+margin-top:10px;
+color:#ffd700;
+cursor:pointer;
 }
 </style>
 </head>
@@ -219,57 +213,78 @@ color:white;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
+<!-- Login Modal -->
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
-<h3>إنشاء حساب / تسجيل دخول</h3>
-<input type="text" id="nameInput" placeholder="الاسم بالكامل">
-<input type="text" id="phoneInput" placeholder="رقم الهاتف">
+
+<!-- Login Section -->
+<div id="loginSection">
+<h3>تسجيل الدخول</h3>
 <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
 <input type="password" id="passwordInput" placeholder="كلمة المرور">
-<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
-<button onclick="register()">إنشاء حساب</button>
 <button onclick="login()">تسجيل دخول</button>
-<button onclick="logout()">تسجيل خروج</button>
+<div class="smallLink" onclick="showRegister()">إنشاء حساب جديد</div>
+</div>
+
+<!-- Register Section -->
+<div id="registerSection" style="display:none;">
+<h3>إنشاء حساب جديد</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="text" id="phoneInput" placeholder="رقم الهاتف">
+<input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+<input type="password" id="regPass" placeholder="كلمة المرور">
+<input type="password" id="confirmPass" placeholder="تأكيد كلمة المرور">
+<button onclick="register()">إنشاء حساب</button>
+<div class="smallLink" onclick="showLogin()">لديك حساب بالفعل؟ تسجيل دخول</div>
+</div>
+
 <button onclick="closeLogin()">إغلاق</button>
 </div>
 </div>
 
-<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-
-/* Firebase */
 const firebaseConfig = {
-apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain: "mit-store-15e1d.firebaseapp.com",
-projectId: "mit-store-15e1d",
-storageBucket: "mit-store-15e1d.firebasestorage.app",
-messagingSenderId: "168416523904",
-appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865"
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_AUTH_DOMAIN",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_BUCKET",
+messagingSenderId: "YOUR_ID",
+appId: "YOUR_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+/* Switch */
+function showRegister(){
+loginSection.style.display="none";
+registerSection.style.display="block";
+}
+function showLogin(){
+registerSection.style.display="none";
+loginSection.style.display="block";
+}
+
 /* Auth */
 function register(){
-if(passwordInput.value!==confirmInput.value){
+if(regPass.value!==confirmPass.value){
 alert("كلمة المرور غير متطابقة");return;
 }
 
-auth.createUserWithEmailAndPassword(emailInput.value,passwordInput.value)
+auth.createUserWithEmailAndPassword(regEmail.value,regPass.value)
 .then((user)=>{
 return db.collection("users").doc(user.user.uid).set({
 name:nameInput.value,
 phone:phoneInput.value,
-email:emailInput.value
+email:regEmail.value
 });
 })
-.then(()=>{alert("تم إنشاء الحساب");closeLogin();})
+.then(()=>{alert("تم إنشاء الحساب");showLogin();})
 .catch(e=>alert(e.message));
 }
 
@@ -279,110 +294,8 @@ auth.signInWithEmailAndPassword(emailInput.value,passwordInput.value)
 .catch(e=>alert(e.message));
 }
 
-function logout(){
-auth.signOut().then(()=>alert("تم تسجيل الخروج"));
-}
-
-auth.onAuthStateChanged((user)=>{
-if(user){
-db.collection("users").doc(user.uid).get().then(doc=>{
-document.querySelector(".loginBtn").innerText=doc.data().name;
-});
-}else{
-document.querySelector(".loginBtn").innerText="تسجيل الدخول";
-}
-});
-
-/* Login Modal */
 function openLogin(){loginModal.style.display="flex";}
 function closeLogin(){loginModal.style.display="none";}
-
-/* Stars */
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<200;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
-}
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
-});
-requestAnimationFrame(animate);
-}
-animate();
-
-/* Smoke */
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-
-let smokes=[];
-function createSmoke(){
-return{
-x:Math.random()*smokeCanvas.width,
-y:Math.random()*smokeCanvas.height,
-r:Math.random()*100+50,
-a:0.4,
-vx:(Math.random()-0.5)*2,
-vy:(Math.random()-0.5)*2
-};
-}
-function animateSmoke(){
-smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.x+=s.vx;s.y+=s.vy;s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
-
-/* Products */
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
-};
-
-function openCategory(cat){
-page.style.display="flex";
-products.innerHTML="";
-data[cat].forEach(p=>{
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
-<img src="${p.img}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
-</div>`;
-});
-}
-
-function goBack(){page.style.display="none";}
-function showDetail(n,i,p){
-detail.style.display="flex";
-detailBox.innerHTML=`
-<h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}</div>
-<button onclick="detail.style.display='none'">إغلاق</button>
-`;
-}
-
 </script>
 
 </body>
