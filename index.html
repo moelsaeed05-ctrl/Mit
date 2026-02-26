@@ -8,7 +8,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
-
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
 .logo{
@@ -57,19 +56,10 @@ display:none;
 z-index:200;
 color:#00ffcc;
 text-align:center;
-box-shadow:
-0 0 10px #00ffcc,
-0 0 20px #00ffcc,
-0 0 40px #00ffcc,
-0 0 80px #00ffcc;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
 animation:fadeOut 3s forwards;
 }
-
-@keyframes fadeOut{
-0%{opacity:1;}
-80%{opacity:1;}
-100%{opacity:0;}
-}
+@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
 .menu{
 position:absolute;
@@ -91,10 +81,7 @@ padding:12px 30px;
 border-radius:12px;
 transition:.4s;
 }
-
-.item:hover{
-text-shadow:0 0 10px #ffd700;
-}
+.item:hover{text-shadow:0 0 10px #ffd700;}
 
 .fullscreen{
 position:fixed;
@@ -210,6 +197,13 @@ background:#ffd700;
 cursor:pointer;
 width:100%;
 }
+
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
+}
 </style>
 </head>
 
@@ -235,13 +229,12 @@ width:100%;
 <div class="fullscreen" id="page">
 <div class="closeX" onclick="goHome()">✖</div>
 <canvas class="smokeCanvas" id="smoke"></canvas>
+<div class="categoryTitle" id="categoryTitle"></div>
 <div class="products" id="products"></div>
 </div>
 
 <div class="detail" id="detail">
-<div class="detailBox" id="detailBox">
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
-</div>
+<div class="detailBox" id="detailBox"></div>
 </div>
 
 <div class="loginModal" id="loginModal">
@@ -278,12 +271,12 @@ import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_AUTH_DOMAIN",
-projectId:"YOUR_PROJECT_ID",
-storageBucket:"YOUR_STORAGE_BUCKET",
-messagingSenderId:"YOUR_MSG_ID",
-appId:"YOUR_APP_ID"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -347,7 +340,6 @@ window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
 window.goHome=()=>{page.style.display="none";}
 
-/* النجوم */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -368,7 +360,6 @@ requestAnimationFrame(animateStars);
 }
 animateStars();
 
-/* الدخان */
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
 smokeCanvas.width=innerWidth;
@@ -395,7 +386,6 @@ requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
 
-/* المنتجات */
 const data={
 HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
 PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
@@ -405,6 +395,7 @@ ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-67
 window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
+categoryTitle.innerText=cat;
 data[cat].forEach(p=>{
 products.innerHTML+=`
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
