@@ -2,15 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIT STORE</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 
 body{
 background:black;
@@ -30,10 +26,10 @@ pointer-events:none;
 /* Logo */
 .logo{
 position:absolute;
-top:25px;
+top:20px;
 left:50%;
 transform:translateX(-50%);
-font-size:36px;
+font-size:28px;
 letter-spacing:6px;
 z-index:10;
 }
@@ -41,42 +37,61 @@ z-index:10;
 /* Login Button */
 .loginBtn{
 position:absolute;
-top:25px;
-right:40px;
+top:20px;
+right:20px;
 background:#ffd700;
 color:black;
-padding:8px 18px;
+padding:6px 14px;
 border-radius:8px;
 cursor:pointer;
 z-index:10;
 font-weight:bold;
+font-size:14px;
 }
 
 /* Menu */
 .menu{
 position:absolute;
-top:45%;
+top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 display:flex;
 flex-direction:column;
-gap:40px;
+gap:35px;
 z-index:10;
+width:80%;
+align-items:center;
 }
 
 .item{
 cursor:pointer;
 font-size:22px;
-padding:12px 40px;
-border:1px solid #333;
+padding:12px 30px;
 border-radius:12px;
 transition:.4s;
 position:relative;
-overflow:hidden;
+text-align:center;
+}
+
+/* Neon Effect */
+.item::after{
+content:attr(data-name);
+position:absolute;
+top:-25px;
+left:50%;
+transform:translateX(-50%);
+font-size:14px;
+opacity:0;
+transition:.3s;
+color:#ffd700;
 }
 
 .item:hover{
-transform:scale(1.1);
+text-shadow:0 0 8px #ffd700,0 0 15px #ff1a1a;
+}
+
+.item:hover::after{
+opacity:1;
 }
 
 /* Products Page */
@@ -88,37 +103,28 @@ display:none;
 flex-direction:column;
 align-items:center;
 z-index:40;
-padding-top:100px;
+padding-top:90px;
+overflow:auto;
 }
 
-/* Back Button */
 .backBtn{
 position:absolute;
-top:30px;
-left:40px;
+top:20px;
+left:20px;
 background:#ffd700;
 color:black;
-padding:8px 18px;
+padding:6px 14px;
 border-radius:8px;
 cursor:pointer;
 font-weight:bold;
 }
 
-/* Smoke Behind Products */
-.smokeBg{
-position:absolute;
-inset:0;
-z-index:1;
-pointer-events:none;
-}
-
-/* Products */
 .products{
 display:flex;
-gap:25px;
+gap:20px;
 flex-wrap:wrap;
 justify-content:center;
-width:90%;
+width:95%;
 z-index:2;
 }
 
@@ -126,7 +132,7 @@ z-index:2;
 background:#111;
 padding:12px;
 border-radius:14px;
-width:150px;
+width:140px;
 cursor:pointer;
 transition:.4s;
 }
@@ -139,7 +145,7 @@ margin-bottom:8px;
 
 .product:hover{
 transform:scale(1.08);
-border:1px solid #ffd700;
+box-shadow:0 0 10px #ffd700;
 }
 
 /* Detail Popup */
@@ -155,20 +161,48 @@ z-index:60;
 
 .detailBox{
 background:#111;
-padding:30px;
+padding:25px;
 border-radius:18px;
 text-align:center;
-width:320px;
+width:300px;
 }
 
 button{
 padding:10px;
-margin-top:15px;
+margin-top:10px;
 border:none;
 border-radius:8px;
 background:#ffd700;
 cursor:pointer;
 }
+
+/* Login Modal */
+.loginModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
+}
+
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:300px;
+text-align:center;
+}
+
+.loginBox input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+}
+
 </style>
 </head>
 
@@ -184,17 +218,14 @@ cursor:pointer;
 
 <div class="loginBtn" onclick="openLogin()">LOGIN</div>
 
-<div class="menu" id="menu">
+<div class="menu">
 <div class="item" data-name="HOODIES">HOODIES</div>
 <div class="item" data-name="PANTS">PANTS</div>
 <div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
 </div>
 
 <div class="fullscreen" id="page">
-
 <div class="backBtn" onclick="goBack()">← Back</div>
-<canvas class="smokeBg" id="smokeCanvas"></canvas>
-
 <div class="products" id="products"></div>
 </div>
 
@@ -202,127 +233,113 @@ cursor:pointer;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
+<!-- LOGIN MODAL -->
+<div class="loginModal" id="loginModal">
+<div class="loginBox">
+<h3>Account</h3>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+<button onclick="closeLogin()">Close</button>
+</div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865",
+  measurementId: "G-3MMQMGS7TP"
+};
+
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+const auth = getAuth(app);
+
+window.register = function(){
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+createUserWithEmailAndPassword(auth,email,password)
+.then(()=>alert("Account Created ✅"))
+.catch(e=>alert(e.message));
+}
+
+window.login = function(){
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+signInWithEmailAndPassword(auth,email,password)
+.then(()=>alert("Logged In ✅"))
+.catch(e=>alert(e.message));
+}
+
+window.logout = function(){
+signOut(auth).then(()=>alert("Logged Out"));
+}
+
+</script>
+
 <script>
 
-/* ===========================
-   STARS BACKGROUND
-=========================== */
-
+/* STARS */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
 let stars=[];
 for(let i=0;i<200;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-speed:Math.random()*0.5+0.2
-});
+stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
 }
 
-function drawStars(){
-stars.forEach(s=>{
-s.x-=s.speed;
-if(s.x<0)s.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(s.x,s.y,1.5,1.5);
-});
-}
-
-function animateStars(){
+function animate(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
-drawStars();
-requestAnimationFrame(animateStars);
-}
-animateStars();
-
-/* ===========================
-   SMOKE BEHIND PRODUCTS
-=========================== */
-
-const smokeCanvas=document.getElementById("smokeCanvas");
-const smokeCtx=smokeCanvas.getContext("2d");
-
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-
-let smokes=[];
-
-function createSmoke(){
-return{
-x:0,
-y:Math.random()*smokeCanvas.height,
-r:Math.random()*80+50,
-a:0.4,
-vx:Math.random()*2+1
-};
-}
-
-function drawSmoke(){
-
-smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
-
-if(Math.random()<0.3){
-smokes.push(createSmoke());
-}
-
-smokes.forEach((s,i)=>{
-s.x+=s.vx;
-s.a-=0.002;
-
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-
-if(s.a<=0){
-smokes.splice(i,1);
-}
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
 });
-
-requestAnimationFrame(drawSmoke);
+requestAnimationFrame(animate);
 }
-drawSmoke();
+animate();
 
-/* ===========================
-   DATA
-=========================== */
-
+/* PRODUCTS DATA */
 const data={
 HOODIES:[
 {name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
-{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"}
+{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"},
+{name:"Gray Hoodie",img:"https://images.unsplash.com/photo-1520975916090-3105956dac38",price:"60$"}
 ],
 PANTS:[
-{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}
+{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"},
+{name:"Blue Jeans",img:"https://images.unsplash.com/photo-1541099649105-f69ad21f3246",price:"45$"}
 ],
 ACCESSORIES:[
-{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}
+{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"},
+{name:"Chain",img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f",price:"25$"}
 ]
 };
-
-/* ===========================
-   MENU
-=========================== */
 
 const page=document.getElementById("page");
 const products=document.getElementById("products");
 
 document.querySelectorAll(".item").forEach(item=>{
 item.onclick=()=>{
-
-document.querySelectorAll(".item").forEach(i=>i.style.display="none");
-
 page.style.display="flex";
 products.innerHTML="";
-
 data[item.dataset.name].forEach(p=>{
 products.innerHTML+=`
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
@@ -334,35 +351,20 @@ products.innerHTML+=`
 };
 });
 
-function goBack(){
-document.querySelectorAll(".item").forEach(i=>i.style.display="block");
-page.style.display="none";
-}
-
-/* ===========================
-   DETAIL
-=========================== */
-
-function showDetail(name,img,price){
+function goBack(){page.style.display="none";}
+function showDetail(n,i,p){
 detail.style.display="flex";
 detailBox.innerHTML=`
-<h3>${name}</h3>
-<img src="${img}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${price}</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
 <button>Add To Cart</button>
 <button onclick="detail.style.display='none'">Close</button>
 `;
 }
 
-/* ===========================
-   LOGIN (جاهز للفيربيس)
-=========================== */
-
-function openLogin(){
-alert("Firebase Login System Will Be Connected Here");
-}
-
-/* لما تبعتلي كود فيربيس هنربطه هنا */
+function openLogin(){loginModal.style.display="flex";}
+function closeLogin(){loginModal.style.display="none";}
 
 </script>
 
