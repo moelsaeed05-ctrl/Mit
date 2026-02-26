@@ -5,8 +5,27 @@
 <title>MIT STORE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:black;color:white;overflow:hidden}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:black;
+color:white;
+overflow:hidden;
+}
+
+/* Canvas */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+pointer-events:none;
+}
 
 /* Logo */
 .logo{
@@ -33,40 +52,113 @@ z-index:10;
 font-weight:bold;
 }
 
-/* User Info */
-.userInfo{
+/* Menu */
+.menu{
 position:absolute;
-top:25px;
-right:40px;
+top:45%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:40px;
 z-index:10;
-display:none;
 }
 
-/* Modal */
-.modal{
+.item{
+cursor:pointer;
+font-size:22px;
+padding:12px 40px;
+border:1px solid #333;
+border-radius:12px;
+transition:.4s;
+position:relative;
+overflow:hidden;
+}
+
+.item:hover{
+transform:scale(1.1);
+}
+
+/* Products Page */
+.fullscreen{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.9);
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:100px;
+}
+
+/* Back Button */
+.backBtn{
+position:absolute;
+top:30px;
+left:40px;
+background:#ffd700;
+color:black;
+padding:8px 18px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* Smoke Behind Products */
+.smokeBg{
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
+}
+
+/* Products */
+.products{
+display:flex;
+gap:25px;
+flex-wrap:wrap;
+justify-content:center;
+width:90%;
+z-index:2;
+}
+
+.product{
+background:#111;
+padding:12px;
+border-radius:14px;
+width:150px;
+cursor:pointer;
+transition:.4s;
+}
+
+.product img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
+}
+
+.product:hover{
+transform:scale(1.08);
+border:1px solid #ffd700;
+}
+
+/* Detail Popup */
+.detail{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.95);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:100;
+z-index:60;
 }
 
-.modalBox{
+.detailBox{
 background:#111;
 padding:30px;
 border-radius:18px;
-width:300px;
 text-align:center;
-}
-
-input{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:none;
+width:320px;
 }
 
 button{
@@ -76,12 +168,13 @@ border:none;
 border-radius:8px;
 background:#ffd700;
 cursor:pointer;
-width:100%;
 }
 </style>
 </head>
 
 <body>
+
+<canvas id="space"></canvas>
 
 <div class="logo">
 <span style="color:#ffd700">𝔐</span>
@@ -89,127 +182,187 @@ width:100%;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" id="loginBtn">LOGIN</div>
+<div class="loginBtn" onclick="openLogin()">LOGIN</div>
 
-<div class="userInfo" id="userInfo">
-<span id="userEmail"></span>
-<button onclick="logout()" style="width:auto;padding:6px 12px;margin-left:10px">Logout</button>
+<div class="menu" id="menu">
+<div class="item" data-name="HOODIES">HOODIES</div>
+<div class="item" data-name="PANTS">PANTS</div>
+<div class="item" data-name="ACCESSORIES">ACCESSORIES</div>
 </div>
 
-<!-- Login Modal -->
-<div class="modal" id="authModal">
-<div class="modalBox">
-<h3 id="modalTitle">Login</h3>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<button onclick="register()">Create Account</button>
-<button onclick="closeModal()">Close</button>
-</div>
+<div class="fullscreen" id="page">
+
+<div class="backBtn" onclick="goBack()">← Back</div>
+<canvas class="smokeBg" id="smokeCanvas"></canvas>
+
+<div class="products" id="products"></div>
 </div>
 
-<script type="module">
+<div class="detail" id="detail">
+<div class="detailBox" id="detailBox"></div>
+</div>
+
+<script>
 
 /* ===========================
-   FIREBASE IMPORT
+   STARS BACKGROUND
 =========================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let stars=[];
+for(let i=0;i<200;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+speed:Math.random()*0.5+0.2
+});
+}
+
+function drawStars(){
+stars.forEach(s=>{
+s.x-=s.speed;
+if(s.x<0)s.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(s.x,s.y,1.5,1.5);
+});
+}
+
+function animateStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+drawStars();
+requestAnimationFrame(animateStars);
+}
+animateStars();
 
 /* ===========================
-   FIREBASE CONFIG
+   SMOKE BEHIND PRODUCTS
 =========================== */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-  authDomain: "mit-store-15e1d.firebaseapp.com",
-  projectId: "mit-store-15e1d",
-  storageBucket: "mit-store-15e1d.firebasestorage.app",
-  messagingSenderId: "168416523904",
-  appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865",
-  measurementId: "G-3MMQMGS7TP"
+const smokeCanvas=document.getElementById("smokeCanvas");
+const smokeCtx=smokeCanvas.getContext("2d");
+
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+
+let smokes=[];
+
+function createSmoke(){
+return{
+x:0,
+y:Math.random()*smokeCanvas.height,
+r:Math.random()*80+50,
+a:0.4,
+vx:Math.random()*2+1
+};
+}
+
+function drawSmoke(){
+
+smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
+
+if(Math.random()<0.3){
+smokes.push(createSmoke());
+}
+
+smokes.forEach((s,i)=>{
+s.x+=s.vx;
+s.a-=0.002;
+
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+
+if(s.a<=0){
+smokes.splice(i,1);
+}
+});
+
+requestAnimationFrame(drawSmoke);
+}
+drawSmoke();
+
+/* ===========================
+   DATA
+=========================== */
+
+const data={
+HOODIES:[
+{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
+{name:"Red Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"}
+],
+PANTS:[
+{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}
+],
+ACCESSORIES:[
+{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}
+]
 };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-
 /* ===========================
-   UI ELEMENTS
+   MENU
 =========================== */
 
-const authModal=document.getElementById("authModal");
-const loginBtn=document.getElementById("loginBtn");
-const userInfo=document.getElementById("userInfo");
-const userEmail=document.getElementById("userEmail");
+const page=document.getElementById("page");
+const products=document.getElementById("products");
 
-loginBtn.onclick=()=>authModal.style.display="flex";
+document.querySelectorAll(".item").forEach(item=>{
+item.onclick=()=>{
 
-window.closeModal=()=>{
-authModal.style.display="none";
-}
+document.querySelectorAll(".item").forEach(i=>i.style.display="none");
 
-/* ===========================
-   REGISTER
-=========================== */
+page.style.display="flex";
+products.innerHTML="";
 
-window.register=()=>{
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-createUserWithEmailAndPassword(auth,email,password)
-.then(()=>{
-alert("Account Created ✅");
-closeModal();
-})
-.catch(error=>{
-alert(error.message);
+data[item.dataset.name].forEach(p=>{
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<img src="${p.img}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
 });
-}
-
-/* ===========================
-   LOGIN
-=========================== */
-
-window.login=()=>{
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-signInWithEmailAndPassword(auth,email,password)
-.then(()=>{
-alert("Login Success ✅");
-closeModal();
-})
-.catch(error=>{
-alert(error.message);
+};
 });
+
+function goBack(){
+document.querySelectorAll(".item").forEach(i=>i.style.display="block");
+page.style.display="none";
 }
 
 /* ===========================
-   LOGOUT
+   DETAIL
 =========================== */
 
-window.logout=()=>{
-signOut(auth);
+function showDetail(name,img,price){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<h3>${name}</h3>
+<img src="${img}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${price}</div>
+<button>Add To Cart</button>
+<button onclick="detail.style.display='none'">Close</button>
+`;
 }
 
 /* ===========================
-   AUTH STATE
+   LOGIN (جاهز للفيربيس)
 =========================== */
 
-onAuthStateChanged(auth,(user)=>{
-if(user){
-loginBtn.style.display="none";
-userInfo.style.display="block";
-userEmail.innerText=user.email;
-}else{
-loginBtn.style.display="block";
-userInfo.style.display="none";
+function openLogin(){
+alert("Firebase Login System Will Be Connected Here");
 }
-});
+
+/* لما تبعتلي كود فيربيس هنربطه هنا */
 
 </script>
 
