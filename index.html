@@ -9,15 +9,8 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
 
-/* Stars */
-#space{
-position:fixed;
-inset:0;
-z-index:0;
-pointer-events:none;
-}
+#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* Logo */
 .logo{
 position:absolute;
 top:20px;
@@ -28,7 +21,6 @@ letter-spacing:6px;
 z-index:10;
 }
 
-/* Login Button */
 .loginBtn{
 position:absolute;
 top:20px;
@@ -43,7 +35,6 @@ font-weight:bold;
 font-size:14px;
 }
 
-/* X Close */
 .closeX{
 position:absolute;
 top:15px;
@@ -53,7 +44,6 @@ cursor:pointer;
 color:#ff4444;
 }
 
-/* Neon Message */
 .neonMessage{
 position:fixed;
 top:50%;
@@ -81,7 +71,6 @@ animation:fadeOut 3s forwards;
 100%{opacity:0;}
 }
 
-/* Menu */
 .menu{
 position:absolute;
 top:50%;
@@ -107,7 +96,6 @@ transition:.4s;
 text-shadow:0 0 10px #ffd700;
 }
 
-/* Products */
 .fullscreen{
 position:fixed;
 inset:0;
@@ -150,7 +138,6 @@ transform:scale(1.08);
 box-shadow:0 0 10px #ffd700;
 }
 
-/* Smoke */
 .smokeCanvas{
 position:absolute;
 inset:0;
@@ -158,7 +145,6 @@ z-index:1;
 pointer-events:none;
 }
 
-/* Detail */
 .detail{
 position:fixed;
 inset:0;
@@ -178,7 +164,6 @@ width:300px;
 position:relative;
 }
 
-/* Login Modal */
 .loginModal{
 position:fixed;
 inset:0;
@@ -239,7 +224,7 @@ width:100%;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
@@ -293,17 +278,27 @@ import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain:"mit-store-15e1d.firebaseapp.com",
-projectId:"mit-store-15e1d",
-storageBucket:"mit-store-15e1d.firebasestorage.app",
-messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
+apiKey:"YOUR_API_KEY",
+authDomain:"YOUR_AUTH_DOMAIN",
+projectId:"YOUR_PROJECT_ID",
+storageBucket:"YOUR_STORAGE_BUCKET",
+messagingSenderId:"YOUR_MSG_ID",
+appId:"YOUR_APP_ID"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
+
+function clearInputs(){
+emailInput.value="";
+passwordInput.value="";
+nameInput.value="";
+regEmailInput.value="";
+regPasswordInput.value="";
+confirmInput.value="";
+}
 
 function showNeon(text){
 neonMsg.innerText=text;
@@ -321,7 +316,8 @@ name:nameInput.value,
 email:regEmailInput.value
 });
 showNeon("تم إنشاء الحساب");
-showLogin();
+clearInputs();
+closeLogin();
 }catch(e){showNeon(e.message);}
 }
 
@@ -329,6 +325,7 @@ window.login=async function(){
 try{
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
 showNeon("تم تسجيل الدخول");
+clearInputs();
 closeLogin();
 }catch(e){showNeon(e.message);}
 }
@@ -337,11 +334,10 @@ onAuthStateChanged(auth,async(user)=>{
 if(user){
 const snap=await getDoc(doc(db,"users",user.uid));
 if(snap.exists()){
-document.querySelector(".loginBtn").innerText=snap.data().name;
+loginBtn.innerText=snap.data().name;
 }
-loginModal.style.display="none";
 }else{
-document.querySelector(".loginBtn").innerText="تسجيل الدخول";
+loginBtn.innerText="تسجيل الدخول";
 }
 });
 
@@ -349,13 +345,13 @@ window.showRegister=()=>{loginForm.style.display="none";registerForm.style.displ
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
 window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
-
 window.goHome=()=>{page.style.display="none";}
 
-/* Stars */
+/* النجوم */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;canvas.height=innerHeight;
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 let stars=[];
 for(let i=0;i<250;i++){
 stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
@@ -363,7 +359,8 @@ stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.ra
 function animateStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 stars.forEach(st=>{
-st.x-=st.s;if(st.x<0)st.x=canvas.width;
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
 ctx.fillStyle="white";
 ctx.fillRect(st.x,st.y,1.5,1.5);
 });
@@ -371,7 +368,7 @@ requestAnimationFrame(animateStars);
 }
 animateStars();
 
-/* Smoke */
+/* الدخان */
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
 smokeCanvas.width=innerWidth;
@@ -398,7 +395,7 @@ requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
 
-/* Products */
+/* المنتجات */
 const data={
 HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
 PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
@@ -430,4 +427,4 @@ detailBox.innerHTML=`
 
 </script>
 </body>
-  </html>
+</html>
