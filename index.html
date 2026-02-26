@@ -63,7 +63,6 @@ font-size:22px;
 padding:12px 30px;
 border-radius:12px;
 transition:.4s;
-position:relative;
 }
 
 .item:hover{
@@ -101,7 +100,6 @@ gap:20px;
 flex-wrap:wrap;
 justify-content:center;
 width:95%;
-z-index:5;
 }
 
 .product{
@@ -234,74 +232,74 @@ color:white;
 </div>
 </div>
 
-<!-- Firebase CDN -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script type="module">
 
-<script>
+/* ===== Firebase Modular ===== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* Firebase */
 const firebaseConfig = {
-apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain: "mit-store-15e1d.firebaseapp.com",
-projectId: "mit-store-15e1d",
-storageBucket: "mit-store-15e1d.firebasestorage.app",
-messagingSenderId: "168416523904",
-appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865",
+measurementId:"G-3MMQMGS7TP"
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 /* Auth */
-function register(){
+window.register = async function(){
 if(passwordInput.value!==confirmInput.value){
-alert("كلمة المرور غير متطابقة");return;
-}
-
-auth.createUserWithEmailAndPassword(emailInput.value,passwordInput.value)
-.then((user)=>{
-return db.collection("users").doc(user.user.uid).set({
+alert("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
 name:nameInput.value,
 phone:phoneInput.value,
 email:emailInput.value
 });
-})
-.then(()=>{alert("تم إنشاء الحساب");closeLogin();})
-.catch(e=>alert(e.message));
+alert("تم إنشاء الحساب 🔥");closeLogin();
+}catch(e){alert(e.message);}
 }
 
-function login(){
-auth.signInWithEmailAndPassword(emailInput.value,passwordInput.value)
-.then(()=>{alert("تم تسجيل الدخول");closeLogin();})
-.catch(e=>alert(e.message));
+window.login = async function(){
+try{
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+alert("تم تسجيل الدخول 🔥");closeLogin();
+}catch(e){alert(e.message);}
 }
 
-function logout(){
-auth.signOut().then(()=>alert("تم تسجيل الخروج"));
+window.logout = async function(){
+await signOut(auth);alert("تم تسجيل الخروج");
 }
 
-auth.onAuthStateChanged((user)=>{
+onAuthStateChanged(auth,async(user)=>{
 if(user){
-db.collection("users").doc(user.uid).get().then(doc=>{
-document.querySelector(".loginBtn").innerText=doc.data().name;
-});
+const snap=await getDoc(doc(db,"users",user.uid));
+if(snap.exists())document.querySelector(".loginBtn").innerText=snap.data().name;
 }else{
 document.querySelector(".loginBtn").innerText="تسجيل الدخول";
 }
 });
 
 /* Login Modal */
-function openLogin(){loginModal.style.display="flex";}
-function closeLogin(){loginModal.style.display="none";}
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
 
-/* Stars */
+/* Stars Animation */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+canvas.width=innerWidth;canvas.height=innerHeight;
 let stars=[];
 for(let i=0;i<200;i++){
 stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
@@ -317,41 +315,6 @@ requestAnimationFrame(animate);
 }
 animate();
 
-/* Smoke */
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-
-let smokes=[];
-function createSmoke(){
-return{
-x:Math.random()*smokeCanvas.width,
-y:Math.random()*smokeCanvas.height,
-r:Math.random()*100+50,
-a:0.4,
-vx:(Math.random()-0.5)*2,
-vy:(Math.random()-0.5)*2
-};
-}
-function animateSmoke(){
-smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.x+=s.vx;s.y+=s.vy;s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
-
 /* Products */
 const data={
 HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
@@ -359,7 +322,7 @@ PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-
 ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
 };
 
-function openCategory(cat){
+window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
 data[cat].forEach(p=>{
@@ -372,8 +335,9 @@ products.innerHTML+=`
 });
 }
 
-function goBack(){page.style.display="none";}
-function showDetail(n,i,p){
+window.goBack=()=>page.style.display="none";
+
+window.showDetail=function(n,i,p){
 detail.style.display="flex";
 detailBox.innerHTML=`
 <h3>${n}</h3>
@@ -384,6 +348,5 @@ detailBox.innerHTML=`
 }
 
 </script>
-
 </body>
 </html>
