@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,6 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
 
-/* Stars Canvas */
 #space{
 position:fixed;
 inset:0;
@@ -17,7 +16,6 @@ z-index:0;
 pointer-events:none;
 }
 
-/* Logo */
 .logo{
 position:absolute;
 top:20px;
@@ -28,7 +26,6 @@ letter-spacing:6px;
 z-index:10;
 }
 
-/* Login Button */
 .loginBtn{
 position:absolute;
 top:20px;
@@ -43,7 +40,6 @@ font-weight:bold;
 font-size:14px;
 }
 
-/* Menu */
 .menu{
 position:absolute;
 top:50%;
@@ -139,7 +135,6 @@ transform:scale(1.08);
 box-shadow:0 0 10px #ffd700;
 }
 
-/* Detail */
 .detail{
 position:fixed;
 inset:0;
@@ -167,7 +162,6 @@ background:#ffd700;
 cursor:pointer;
 }
 
-/* Login Modal */
 .loginModal{
 position:fixed;
 inset:0;
@@ -214,7 +208,7 @@ box-shadow:0 0 8px #ffd700;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" onclick="openLogin()">LOGIN</div>
+<div class="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
 <div class="menu">
 <div class="item" data-name="HOODIES">HOODIES</div>
@@ -223,7 +217,7 @@ box-shadow:0 0 8px #ffd700;
 </div>
 
 <div class="fullscreen" id="page">
-<div class="backBtn" onclick="goBack()">← Back</div>
+<div class="backBtn" onclick="goBack()">رجوع</div>
 <div class="products" id="products"></div>
 </div>
 
@@ -233,16 +227,18 @@ box-shadow:0 0 8px #ffd700;
 
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
-<h3>Create Account</h3>
-<input type="text" id="name" placeholder="Full Name">
-<input type="text" id="phone" placeholder="Phone Number">
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<input type="password" id="confirm" placeholder="Confirm Password">
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-<button onclick="closeLogin()">Close</button>
+<h3>إنشاء حساب / تسجيل دخول</h3>
+
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="text" id="phoneInput" placeholder="رقم الهاتف">
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+
+<button id="registerBtn">إنشاء حساب</button>
+<button id="loginBtn">تسجيل دخول</button>
+<button id="logoutBtn">تسجيل خروج</button>
+<button onclick="closeLogin()">إغلاق</button>
 </div>
 </div>
 
@@ -253,50 +249,59 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "YOUR_API_KEY",
-authDomain: "YOUR_AUTH_DOMAIN",
-projectId: "YOUR_PROJECT_ID",
-storageBucket: "YOUR_STORAGE_BUCKET",
-messagingSenderId: "YOUR_SENDER_ID",
-appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-window.register = async function(){
-const name=nameInput.value;
-const phone=phoneInput.value;
-const email=emailInput.value;
-const password=passwordInput.value;
-const confirm=confirmInput.value;
+const nameInput = document.getElementById("nameInput");
+const phoneInput = document.getElementById("phoneInput");
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const confirmInput = document.getElementById("confirmInput");
 
-if(password!==confirm){alert("Passwords not match");return;}
+document.getElementById("registerBtn").addEventListener("click", async () => {
+if(passwordInput.value !== confirmInput.value){
+alert("كلمة المرور غير متطابقة ❌");
+return;
+}
 
-const user=await createUserWithEmailAndPassword(auth,email,password);
+try{
+const user = await createUserWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
 await setDoc(doc(db,"users",user.user.uid),{
-name,phone,email
+name:nameInput.value,
+phone:phoneInput.value,
+email:emailInput.value
 });
-alert("Account Created ✅");
+alert("تم إنشاء الحساب بنجاح ✅");
 closeLogin();
-}
+}catch(e){alert(e.message);}
+});
 
-window.login = async function(){
+document.getElementById("loginBtn").addEventListener("click", async () => {
+try{
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-alert("Logged In ✅");
+alert("تم تسجيل الدخول ✅");
 closeLogin();
-}
+}catch(e){alert(e.message);}
+});
 
-window.logout = function(){
-signOut(auth);
-alert("Logged Out");
-}
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+await signOut(auth);
+alert("تم تسجيل الخروج");
+});
 
 onAuthStateChanged(auth,(user)=>{
-if(user){
-document.querySelector(".loginBtn").innerText=user.email;
-}
+const loginButton=document.querySelector(".loginBtn");
+if(user){loginButton.innerText=user.email;}
+else{loginButton.innerText="تسجيل الدخول";}
 });
 
 </script>
@@ -368,45 +373,6 @@ if(s.a<=0)smokes.splice(i,1);
 requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
-
-/* Products */
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
-};
-
-const products=document.getElementById("products");
-
-document.querySelectorAll(".item").forEach(item=>{
-item.onclick=()=>{
-page.style.display="flex";
-products.innerHTML="";
-data[item.dataset.name].forEach(p=>{
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
-<img src="${p.img}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
-</div>`;
-});
-};
-});
-
-function goBack(){page.style.display="none";}
-function showDetail(n,i,p){
-detail.style.display="flex";
-detailBox.innerHTML=`
-<h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}</div>
-<button>Add To Cart</button>
-<button onclick="detail.style.display='none'">Close</button>
-`;
-}
-
-function openLogin(){loginModal.style.display="flex";}
-function closeLogin(){loginModal.style.display="none";}
 
 </script>
 
