@@ -43,6 +43,16 @@ font-weight:bold;
 font-size:14px;
 }
 
+/* X Close */
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
+}
+
 /* Neon Message */
 .neonMessage{
 position:fixed;
@@ -110,18 +120,6 @@ padding-top:90px;
 overflow:auto;
 }
 
-.backBtn{
-position:absolute;
-top:20px;
-left:20px;
-background:#ffd700;
-color:black;
-padding:6px 14px;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
-
 .products{
 display:flex;
 gap:20px;
@@ -177,6 +175,7 @@ padding:25px;
 border-radius:18px;
 text-align:center;
 width:300px;
+position:relative;
 }
 
 /* Login Modal */
@@ -196,6 +195,7 @@ padding:30px;
 border-radius:18px;
 width:320px;
 text-align:center;
+position:relative;
 }
 
 .loginBox input{
@@ -248,17 +248,21 @@ width:100%;
 </div>
 
 <div class="fullscreen" id="page">
+<div class="closeX" onclick="goHome()">✖</div>
 <canvas class="smokeCanvas" id="smoke"></canvas>
-<div class="backBtn" onclick="goBack()">رجوع</div>
 <div class="products" id="products"></div>
 </div>
 
 <div class="detail" id="detail">
-<div class="detailBox" id="detailBox"></div>
+<div class="detailBox" id="detailBox">
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+</div>
 </div>
 
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
+
 <div id="loginForm">
 <h3>تسجيل دخول</h3>
 <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
@@ -274,8 +278,9 @@ width:100%;
 <input type="password" id="regPasswordInput" placeholder="كلمة المرور">
 <input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
 <button onclick="register()">إنشاء حساب</button>
-<span class="smallLink" onclick="showLogin()">رجوع لتسجيل الدخول</span>
+<span class="smallLink" onclick="showLogin()">رجوع</span>
 </div>
+
 </div>
 </div>
 
@@ -288,43 +293,44 @@ import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_AUTH_DOMAIN",
-projectId:"YOUR_PROJECT_ID",
-appId:"YOUR_APP_ID"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-/* Neon Message */
 function showNeon(text){
 neonMsg.innerText=text;
 neonMsg.style.display="block";
-neonMsg.style.opacity="1";
 setTimeout(()=>{neonMsg.style.display="none";},3000);
 }
 
-/* Auth */
 window.register=async function(){
 if(regPasswordInput.value!==confirmInput.value){
-showNeon("كلمة المرور غير متطابقة");
-return;
-}
+showNeon("كلمة المرور غير متطابقة");return;}
+try{
 const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
 await setDoc(doc(db,"users",user.user.uid),{
 name:nameInput.value,
 email:regEmailInput.value
 });
-showNeon("تم إنشاء الحساب ✅");
+showNeon("تم إنشاء الحساب");
 showLogin();
+}catch(e){showNeon(e.message);}
 }
 
 window.login=async function(){
+try{
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول ✅");
+showNeon("تم تسجيل الدخول");
 closeLogin();
+}catch(e){showNeon(e.message);}
 }
 
 onAuthStateChanged(auth,async(user)=>{
@@ -339,13 +345,14 @@ document.querySelector(".loginBtn").innerText="تسجيل الدخول";
 }
 });
 
-/* Toggle Forms */
 window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
 window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
 
-/* Stars Animation */
+window.goHome=()=>{page.style.display="none";}
+
+/* Stars */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;canvas.height=innerHeight;
@@ -356,8 +363,7 @@ stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.ra
 function animateStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 stars.forEach(st=>{
-st.x-=st.s;
-if(st.x<0)st.x=canvas.width;
+st.x-=st.s;if(st.x<0)st.x=canvas.width;
 ctx.fillStyle="white";
 ctx.fillRect(st.x,st.y,1.5,1.5);
 });
@@ -372,7 +378,7 @@ smokeCanvas.width=innerWidth;
 smokeCanvas.height=innerHeight;
 let smokes=[];
 function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*100+50,a:0.3};
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
 }
 function animateSmoke(){
 smokeCtx.clearRect(0,0,innerWidth,innerHeight);
@@ -412,14 +418,13 @@ products.innerHTML+=`
 });
 }
 
-window.goBack=()=>page.style.display="none";
 window.showDetail=function(n,i,p){
 detail.style.display="flex";
 detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
 <h3>${n}</h3>
 <img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
 <div style="margin-top:10px;color:#ffd700">${p}</div>
-<button onclick="detail.style.display='none'">إغلاق</button>
 `;
 }
 
