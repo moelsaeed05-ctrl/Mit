@@ -6,428 +6,261 @@
 <title>MIT STORE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:black;color:white;overflow:hidden;}
-
-/* Stars */
-#space{
-position:fixed;
-inset:0;
-z-index:0;
-pointer-events:none;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
 }
 
-/* Logo */
-.logo{
+body{
+background:black;
+color:white;
+overflow:hidden;
+}
+
+/* ===== النجوم ===== */
+.stars{
+position:fixed;
+width:100%;
+height:100%;
+background:transparent;
+overflow:hidden;
+z-index:0;
+}
+
+.star{
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle{
+from{opacity:0.2;}
+to{opacity:1;}
+}
+
+/* ===== دخان ===== */
+.smoke{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:100%;
+background:radial-gradient(circle at 20% 80%, rgba(255,255,255,0.15), transparent 60%);
+animation: smokeMove 8s infinite alternate;
+z-index:1;
+}
+
+@keyframes smokeMove{
+from{transform:translateX(-10%);}
+to{transform:translateX(10%);}
+}
+
+/* ===== الفورم ===== */
+.auth-box{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#111;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 20px #0ff;
+z-index:5;
+width:300px;
+text-align:center;
+}
+
+.auth-box h2{
+margin-bottom:15px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:8px 0;
+background:black;
+border:1px solid #0ff;
+color:white;
+}
+
+button{
+width:100%;
+padding:10px;
+margin-top:10px;
+background:#0ff;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+.small-link{
+font-size:12px;
+margin-top:10px;
+cursor:pointer;
+color:#0ff;
+}
+
+/* رسالة نيون */
+.message{
 position:absolute;
 top:20px;
 left:50%;
 transform:translateX(-50%);
-font-size:28px;
-letter-spacing:6px;
+padding:10px 20px;
+border:2px solid #0ff;
+box-shadow:0 0 15px #0ff,0 0 30px #0ff;
+display:none;
 z-index:10;
 }
 
-/* Login Button */
-.loginBtn{
+/* الرئيسية */
+.main{
+display:none;
 position:absolute;
-top:20px;
-right:20px;
-background:#ffd700;
-color:black;
-padding:6px 14px;
-border-radius:8px;
-cursor:pointer;
-z-index:10;
-font-weight:bold;
-font-size:14px;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:4;
+text-align:center;
 }
 
-/* X Close */
-.closeX{
+.header{
+padding:20px;
+font-size:20px;
+}
+
+.close{
 position:absolute;
 top:15px;
-left:15px;
-font-size:22px;
+right:20px;
+font-size:25px;
 cursor:pointer;
-color:#ff4444;
-}
-
-/* Neon Message */
-.neonMessage{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-padding:20px 40px;
-border-radius:15px;
-background:#111;
-font-size:22px;
-display:none;
-z-index:200;
-color:#00ffcc;
-text-align:center;
-box-shadow:
-0 0 10px #00ffcc,
-0 0 20px #00ffcc,
-0 0 40px #00ffcc,
-0 0 80px #00ffcc;
-animation:fadeOut 3s forwards;
-}
-
-@keyframes fadeOut{
-0%{opacity:1;}
-80%{opacity:1;}
-100%{opacity:0;}
-}
-
-/* Menu */
-.menu{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-display:flex;
-flex-direction:column;
-gap:35px;
-z-index:10;
-width:80%;
-align-items:center;
-}
-
-.item{
-cursor:pointer;
-font-size:22px;
-padding:12px 30px;
-border-radius:12px;
-transition:.4s;
-}
-
-.item:hover{
-text-shadow:0 0 10px #ffd700;
-}
-
-/* Products */
-.fullscreen{
-position:fixed;
-inset:0;
-background:black;
-display:none;
-flex-direction:column;
-align-items:center;
-z-index:40;
-padding-top:90px;
-overflow:auto;
+color:red;
 }
 
 .products{
+margin-top:100px;
 display:flex;
-gap:20px;
-flex-wrap:wrap;
 justify-content:center;
-width:95%;
-position:relative;
-z-index:5;
+gap:40px;
 }
 
 .product{
 background:#111;
-padding:12px;
-border-radius:14px;
-width:140px;
-cursor:pointer;
-transition:.4s;
-}
-
-.product img{
-width:100%;
-border-radius:8px;
-margin-bottom:8px;
-}
-
-.product:hover{
-transform:scale(1.08);
-box-shadow:0 0 10px #ffd700;
-}
-
-/* Smoke */
-.smokeCanvas{
-position:absolute;
-inset:0;
-z-index:1;
-pointer-events:none;
-}
-
-/* Detail */
-.detail{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.95);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:60;
-}
-
-.detailBox{
-background:#111;
-padding:25px;
-border-radius:18px;
-text-align:center;
-width:300px;
-position:relative;
-}
-
-/* Login Modal */
-.loginModal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.9);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:80;
-}
-
-.loginBox{
-background:#111;
-padding:30px;
-border-radius:18px;
-width:320px;
-text-align:center;
-position:relative;
-}
-
-.loginBox input{
-width:100%;
-padding:10px;
-margin:8px 0;
-border:none;
-border-radius:6px;
-background:#222;
-color:white;
-}
-
-.smallLink{
-font-size:13px;
-color:#ffd700;
-cursor:pointer;
-margin-top:8px;
-display:block;
-}
-
-button{
-padding:10px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#ffd700;
-cursor:pointer;
-width:100%;
+padding:20px;
+border:1px solid #0ff;
+box-shadow:0 0 15px #0ff;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="space"></canvas>
-<div class="neonMessage" id="neonMsg"></div>
+<div class="stars" id="stars"></div>
+<div class="smoke"></div>
 
-<div class="logo">
-<span style="color:#ffd700">𝔐</span>
-<span style="color:#ff1a1a">𝔦</span>
-<span style="color:#ffd700">𝔗</span>
+<div class="message" id="message"></div>
+
+<div class="auth-box" id="authBox">
+<h2>تسجيل الدخول</h2>
+
+<input type="text" id="name" placeholder="الاسم (عند إنشاء حساب)" style="display:none;">
+<input type="email" id="email" placeholder="الايميل">
+<input type="password" id="password" placeholder="الباسورد">
+
+<button onclick="login()">تسجيل الدخول</button>
+
+<div class="small-link" onclick="toggleRegister()">إنشاء حساب</div>
 </div>
 
-<div class="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+<div class="main" id="main">
+<div class="close" onclick="logout()">✖</div>
+<div class="header">أهلاً <span id="username"></span></div>
 
-<div class="menu">
-<div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
-<div class="item" onclick="openCategory('PANTS')">PANTS</div>
-<div class="item" onclick="openCategory('ACCESSORIES')">ACCESSORIES</div>
-</div>
-
-<div class="fullscreen" id="page">
-<div class="closeX" onclick="goHome()">✖</div>
-<canvas class="smokeCanvas" id="smoke"></canvas>
-<div class="products" id="products"></div>
-</div>
-
-<div class="detail" id="detail">
-<div class="detailBox" id="detailBox">
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
-</div>
-</div>
-
-<div class="loginModal" id="loginModal">
-<div class="loginBox">
-<div class="closeX" onclick="closeLogin()">✖</div>
-
-<div id="loginForm">
-<h3>تسجيل دخول</h3>
-<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="passwordInput" placeholder="كلمة المرور">
-<button onclick="login()">تسجيل دخول</button>
-<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
-</div>
-
-<div id="registerForm" style="display:none">
-<h3>إنشاء حساب</h3>
-<input type="text" id="nameInput" placeholder="الاسم بالكامل">
-<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
-<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
-<button onclick="register()">إنشاء حساب</button>
-<span class="smallLink" onclick="showLogin()">رجوع</span>
-</div>
-
+<div class="products">
+<div class="product">منتج 1</div>
+<div class="product">منتج 2</div>
+<div class="product">منتج 3</div>
 </div>
 </div>
 
-<script type="module">
+<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain:"mit-store-15e1d.firebaseapp.com",
-projectId:"mit-store-15e1d",
-storageBucket:"mit-store-15e1d.firebasestorage.app",
-messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-function showNeon(text){
-neonMsg.innerText=text;
-neonMsg.style.display="block";
-setTimeout(()=>{neonMsg.style.display="none";},3000);
+/* ===== نجوم عشوائية ===== */
+const starsContainer = document.getElementById("stars");
+for(let i=0;i<120;i++){
+let star=document.createElement("div");
+star.className="star";
+star.style.top=Math.random()*100+"%";
+star.style.left=Math.random()*100+"%";
+star.style.animationDuration=(Math.random()*3+1)+"s";
+starsContainer.appendChild(star);
 }
 
-window.register=async function(){
-if(regPasswordInput.value!==confirmInput.value){
-showNeon("كلمة المرور غير متطابقة");return;}
-try{
-const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
-await setDoc(doc(db,"users",user.user.uid),{
-name:nameInput.value,
-email:regEmailInput.value
-});
-showNeon("تم إنشاء الحساب");
-showLogin();
-}catch(e){showNeon(e.message);}
+/* ===== تسجيل حساب ===== */
+let registerMode=false;
+
+function toggleRegister(){
+registerMode=!registerMode;
+document.getElementById("name").style.display=registerMode?"block":"none";
+document.querySelector(".auth-box h2").innerText=registerMode?"إنشاء حساب":"تسجيل الدخول";
+document.querySelector("button").innerText=registerMode?"إنشاء حساب":"تسجيل الدخول";
 }
 
-window.login=async function(){
-try{
-await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول");
-closeLogin();
-}catch(e){showNeon(e.message);}
+/* ===== عرض رسالة نيون ===== */
+function showMessage(text){
+let msg=document.getElementById("message");
+msg.innerText=text;
+msg.style.display="block";
+setTimeout(()=>{msg.style.display="none";},2000);
 }
 
-onAuthStateChanged(auth,async(user)=>{
-if(user){
-const snap=await getDoc(doc(db,"users",user.uid));
-if(snap.exists()){
-document.querySelector(".loginBtn").innerText=snap.data().name;
-}
-loginModal.style.display="none";
+/* ===== إنشاء حساب ===== */
+function login(){
+let name=document.getElementById("name").value;
+let email=document.getElementById("email").value;
+let pass=document.getElementById("password").value;
+
+if(registerMode){
+if(name==""||email==""||pass==""){alert("املأ البيانات");return;}
+localStorage.setItem("user",JSON.stringify({name,email,pass}));
+showMessage("تم إنشاء الحساب");
+toggleRegister();
 }else{
-document.querySelector(".loginBtn").innerText="تسجيل الدخول";
+let saved=JSON.parse(localStorage.getItem("user"));
+if(!saved){alert("لا يوجد حساب");return;}
+if(email===saved.email && pass===saved.pass){
+document.getElementById("username").innerText=saved.name;
+document.getElementById("authBox").style.display="none";
+document.getElementById("main").style.display="block";
+showMessage("تم تسجيل الدخول");
+}else{
+alert("بيانات غلط");
 }
-});
-
-window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
-window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
-
-window.goHome=()=>{page.style.display="none";}
-
-/* Stars */
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<250;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
 }
-function animateStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
-});
-requestAnimationFrame(animateStars);
-}
-animateStars();
-
-/* Smoke */
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-let smokes=[];
-function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
-}
-function animateSmoke(){
-smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
-
-/* Products */
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
-};
-
-window.openCategory=function(cat){
-page.style.display="flex";
-products.innerHTML="";
-data[cat].forEach(p=>{
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
-<img src="${p.img}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
-</div>`;
-});
 }
 
-window.showDetail=function(n,i,p){
-detail.style.display="flex";
-detailBox.innerHTML=`
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
-<h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}</div>
-`;
+/* ===== تسجيل خروج ===== */
+function logout(){
+document.getElementById("main").style.display="none";
+document.getElementById("authBox").style.display="block";
+document.getElementById("email").value="";
+document.getElementById("password").value="";
 }
 
+/* ===== لو كان مسجل قبل كده ===== */
+window.onload=function(){
+let saved=JSON.parse(localStorage.getItem("user"));
+if(saved){
+document.getElementById("username").innerText=saved.name;
+}
+}
 </script>
+
 </body>
 </html>
