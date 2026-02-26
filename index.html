@@ -28,7 +28,7 @@ letter-spacing:6px;
 z-index:10;
 }
 
-/* Login */
+/* Login Button */
 .loginBtn{
 position:absolute;
 top:20px;
@@ -100,6 +100,8 @@ gap:20px;
 flex-wrap:wrap;
 justify-content:center;
 width:95%;
+position:relative;
+z-index:5;
 }
 
 .product{
@@ -124,7 +126,7 @@ box-shadow:0 0 10px #ffd700;
 
 /* Smoke */
 .smokeCanvas{
-position:fixed;
+position:absolute;
 inset:0;
 z-index:1;
 pointer-events:none;
@@ -147,15 +149,6 @@ padding:25px;
 border-radius:18px;
 text-align:center;
 width:300px;
-}
-
-button{
-padding:10px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#ffd700;
-cursor:pointer;
 }
 
 /* Login Modal */
@@ -185,6 +178,24 @@ border:none;
 border-radius:6px;
 background:#222;
 color:white;
+}
+
+.smallLink{
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
+display:block;
+}
+
+button{
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
 }
 </style>
 </head>
@@ -219,101 +230,117 @@ color:white;
 
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
-<h3>إنشاء حساب / تسجيل دخول</h3>
-<input type="text" id="nameInput" placeholder="الاسم بالكامل">
-<input type="text" id="phoneInput" placeholder="رقم الهاتف">
+
+<!-- LOGIN FORM -->
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
 <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
 <input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل دخول</button>
+<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
+</div>
+
+<!-- REGISTER FORM -->
+<div id="registerForm" style="display:none">
+<h3>إنشاء حساب</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="text" id="phoneInput" placeholder="رقم الهاتف">
+<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
 <input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
 <button onclick="register()">إنشاء حساب</button>
-<button onclick="login()">تسجيل دخول</button>
-<button onclick="logout()">تسجيل خروج</button>
-<button onclick="closeLogin()">إغلاق</button>
+<span class="smallLink" onclick="showLogin()">رجوع لتسجيل الدخول</span>
+</div>
+
 </div>
 </div>
 
 <script type="module">
 
-/* ===== Firebase Modular ===== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
+const firebaseConfig={
 apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
 authDomain:"mit-store-15e1d.firebaseapp.com",
 projectId:"mit-store-15e1d",
 storageBucket:"mit-store-15e1d.firebasestorage.app",
 messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865",
-measurementId:"G-3MMQMGS7TP"
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
-const app = initializeApp(firebaseConfig);
-getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
 /* Auth */
-window.register = async function(){
-if(passwordInput.value!==confirmInput.value){
-alert("كلمة المرور غير متطابقة");return;}
-try{
-const user=await createUserWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){alert("كلمة المرور غير متطابقة");return;}
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
 await setDoc(doc(db,"users",user.user.uid),{
 name:nameInput.value,
 phone:phoneInput.value,
-email:emailInput.value
+email:regEmailInput.value
 });
-alert("تم إنشاء الحساب 🔥");closeLogin();
-}catch(e){alert(e.message);}
+alert("تم إنشاء الحساب");
+showLogin();
 }
 
-window.login = async function(){
-try{
+window.login=async function(){
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-alert("تم تسجيل الدخول 🔥");closeLogin();
-}catch(e){alert(e.message);}
-}
-
-window.logout = async function(){
-await signOut(auth);alert("تم تسجيل الخروج");
+alert("تم تسجيل الدخول");
+closeLogin();
 }
 
 onAuthStateChanged(auth,async(user)=>{
 if(user){
 const snap=await getDoc(doc(db,"users",user.uid));
-if(snap.exists())document.querySelector(".loginBtn").innerText=snap.data().name;
+if(snap.exists()){
+document.querySelector(".loginBtn").innerText=snap.data().name;
+}
+loginModal.style.display="none";
 }else{
 document.querySelector(".loginBtn").innerText="تسجيل الدخول";
 }
 });
 
-/* Login Modal */
+/* Forms Toggle */
+window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
+window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+
 window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
 
-/* Stars Animation */
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<200;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+/* Smoke */
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+
+let smokes=[];
+function createSmoke(){
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3,vx:(Math.random()-0.5)*1.5,vy:(Math.random()-0.5)*1.5};
 }
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
+function animateSmoke(){
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+if(Math.random()<0.3)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.x+=s.vx;s.y+=s.vy;s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
 });
-requestAnimationFrame(animate);
+requestAnimationFrame(animateSmoke);
 }
-animate();
+animateSmoke();
 
 /* Products */
 const data={
