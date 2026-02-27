@@ -10,28 +10,27 @@
 body{background:black;color:white;overflow-x:hidden; position: relative;}
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* Logo */
+/* Logo - تعديل المكان */
 .logo{
 position:absolute;
-top:20px;
-left:20px;
+top:30px;
+left:50%;
+transform:translateX(-50%);
 font-size:28px;
 letter-spacing:6px;
 z-index:10;
 }
 
-/* Menu Icon (3 bars) */
+/* Menu Icon */
 .menuIcon {
 position: fixed;
-top: 20px;
-right: 20px;
+top: 25px;
+right: 25px;
 font-size: 30px;
 cursor: pointer;
 z-index: 100;
 color: #ffd700;
-transition: 0.3s;
 }
-.menuIcon:hover { transform: scale(1.1); text-shadow: 0 0 10px #ffd700; }
 
 /* Sidebar */
 .sidebar {
@@ -40,13 +39,12 @@ top: 0;
 right: -280px;
 width: 260px;
 height: 100%;
-background: rgba(15, 15, 15, 0.95);
+background: rgba(15, 15, 15, 0.98);
 backdrop-filter: blur(10px);
 z-index: 200;
 transition: 0.4s ease-in-out;
-padding: 70px 20px;
+padding: 80px 20px;
 box-shadow: -5px 0 20px rgba(0,0,0,0.8);
-border-left: 1px solid #333;
 }
 .sidebar.active { right: 0; }
 
@@ -60,33 +58,14 @@ display: flex;
 align-items: center;
 gap: 15px;
 transition: 0.3s;
-background: rgba(255,255,255,0.03);
+background: rgba(255,255,255,0.05);
 }
-.sideItem:hover { background: rgba(255,215,0,0.1); color: #ffd700; }
-.sideItem span { font-size: 20px; }
+.sideItem:hover { background: #ffd700; color: black; }
 
-/* Main UI */
-.neonMessage{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-padding:20px 40px;
-border-radius:15px;
-background:#111;
-font-size:22px;
-display:none;
-z-index:300;
-color:#00ffcc;
-text-align:center;
-box-shadow:0 0 10px #00ffcc,0 0 40px #00ffcc;
-animation:fadeOut 3s forwards;
-}
-@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
-
+/* الأقسام - تعديل المسافة من فوق */
 .menu{
 position:absolute;
-top:50%;
+top:55%; /* نزلت الأقسام لتحت شوية */
 left:50%;
 transform:translate(-50%,-50%);
 display:flex;
@@ -99,13 +78,27 @@ align-items:center;
 
 .item{
 cursor:pointer;
-font-size:22px;
-padding:12px 30px;
-border-radius:12px;
+font-size:24px;
+padding:10px 20px;
 transition:.4s;
-border: 1px solid transparent;
 }
-.item:hover{text-shadow:0 0 15px #ffd700; border-bottom: 1px solid #ffd700;}
+.item:hover{text-shadow:0 0 15px #ffd700; border-bottom: 2px solid #ffd700;}
+
+.neonMessage{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:20px;
+display:none;
+z-index:1000;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 20px #00ffcc;
+}
 
 .fullscreen{
 position:fixed;
@@ -115,7 +108,7 @@ display:none;
 flex-direction:column;
 align-items:center;
 z-index:40;
-padding-top:90px;
+padding-top:100px;
 overflow:auto;
 }
 
@@ -125,9 +118,7 @@ gap:20px;
 flex-wrap:wrap;
 justify-content:center;
 width:95%;
-position:relative;
 z-index:5;
-padding-bottom: 50px;
 }
 
 .product{
@@ -139,21 +130,21 @@ cursor:pointer;
 transition:.4s;
 text-align: center;
 }
-.product img{ width:100%; border-radius:8px; margin-bottom:8px; }
-.product:hover{ transform:translateY(-10px); box-shadow:0 0 15px #ffd700; }
+.product img{ width:100%; border-radius:8px; }
+.product:hover{ transform:scale(1.05); box-shadow:0 0 15px #ffd700; }
 
 .smokeCanvas{ position:absolute; inset:0; z-index:1; pointer-events:none; }
 
 .detail{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.95);
+background:rgba(0,0,0,.9);
 display:none;
 justify-content:center;
 align-items:center;
 z-index:500;
 }
-.detailBox{ background:#111; padding:25px; border-radius:18px; text-align:center; width:320px; position:relative; }
+.detailBox{ background:#111; padding:25px; border-radius:18px; text-align:center; width:320px; }
 
 .loginModal{
 position:fixed;
@@ -165,11 +156,10 @@ align-items:center;
 z-index:600;
 }
 .loginBox{ background:#111; padding:30px; border-radius:18px; width:320px; text-align:center; position:relative; }
-.loginBox input{ width:100%; padding:12px; margin:8px 0; border:none; border-radius:6px; background:#222; color:white; text-align: right; }
-.smallLink{ font-size:13px; color:#ffd700; cursor:pointer; margin-top:8px; display:block; }
+.loginBox input{ width:100%; padding:12px; margin:8px 0; border-radius:6px; background:#222; color:white; border:none; text-align: center; }
 button{ padding:12px; margin-top:10px; border:none; border-radius:8px; background:#ffd700; color: black; font-weight: bold; cursor:pointer; width:100%; }
-.closeX{ position:absolute; top:15px; left:15px; font-size:25px; cursor:pointer; color:#ff4444; z-index: 10; }
-.categoryTitle{ font-size:26px; margin-bottom:20px; letter-spacing:3px; z-index:10; color: #ffd700;}
+.closeX{ position:absolute; top:15px; left:15px; font-size:25px; cursor:pointer; color:#ff4444; }
+.categoryTitle{ font-size:26px; margin-bottom:20px; color: #ffd700;}
 </style>
 </head>
 
@@ -192,10 +182,10 @@ button{ padding:12px; margin-top:10px; border:none; border-radius:8px; backgroun
         <div class="sideItem" id="loginBtnSide" onclick="openLogin(); toggleSidebar()">
             <span>👤</span> تسجيل الدخول
         </div>
-        <div class="sideItem" onclick="showNeon('قريباً: السلة'); toggleSidebar()">
+        <div class="sideItem" onclick="showNeon('السلة فارغة حالياً'); toggleSidebar()">
             <span>🛒</span> السلة
         </div>
-        <div class="sideItem" onclick="showNeon('قريباً: سجل الطلبات'); toggleSidebar()">
+        <div class="sideItem" onclick="showNeon('لا يوجد طلبات سابقة'); toggleSidebar()">
             <span>📜</span> سجل الطلبات
         </div>
         <div class="sideItem" id="logoutBtn" style="display:none" onclick="handleLogout()">
@@ -229,16 +219,15 @@ button{ padding:12px; margin-top:10px; border:none; border-radius:8px; backgroun
             <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
             <input type="password" id="passwordInput" placeholder="كلمة المرور">
             <button onclick="login()">دخول</button>
-            <span class="smallLink" onclick="showRegister()">إنشاء حساب جديد</span>
+            <span style="color:#ffd700; cursor:pointer;" onclick="showRegister()">إنشاء حساب</span>
         </div>
         <div id="registerForm" style="display:none">
-            <h3>إنشاء حساب</h3>
-            <input type="text" id="nameInput" placeholder="الاسم بالكامل">
-            <input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
-            <input type="password" id="regPasswordInput" placeholder="كلمة المرور">
-            <input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
-            <button onclick="register()">إنشاء الحساب</button>
-            <span class="smallLink" onclick="showLogin()">لديك حساب؟ سجل دخول</span>
+            <h3>حساب جديد</h3>
+            <input type="text" id="nameInput" placeholder="الاسم">
+            <input type="email" id="regEmailInput" placeholder="الايميل">
+            <input type="password" id="regPasswordInput" placeholder="الباسورد">
+            <button onclick="register()">إنشاء</button>
+            <span style="color:#ffd700; cursor:pointer;" onclick="showLogin()">رجوع</span>
         </div>
     </div>
 </div>
@@ -261,7 +250,6 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-// --- Functions ---
 window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("active");
 window.openLogin = () => loginModal.style.display="flex";
 window.closeLogin = () => loginModal.style.display="none";
@@ -269,33 +257,24 @@ window.showRegister=()=>{loginForm.style.display="none";registerForm.style.displ
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
 window.goHome=()=>{page.style.display="none";}
 
-function showNeon(text){
-    neonMsg.innerText=text;
-    neonMsg.style.display="block";
-    setTimeout(()=>{neonMsg.style.display="none";},3000);
-}
-
-window.register=async function(){
-    if(regPasswordInput.value!==confirmInput.value){showNeon("كلمة المرور غير متطابقة");return;}
-    try{
-        const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
-        await setDoc(doc(db,"users",user.user.uid),{ name:nameInput.value, email:regEmailInput.value });
-        showNeon("تم إنشاء الحساب");
-        closeLogin();
-    }catch(e){showNeon(e.message);}
+window.showNeon = function(text){
+    const msg = document.getElementById("neonMsg");
+    msg.innerText=text;
+    msg.style.display="block";
+    setTimeout(()=>{msg.style.display="none";},2500);
 }
 
 window.login=async function(){
     try{
         await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-        showNeon("تم تسجيل الدخول");
+        showNeon("أهلاً بك مجدداً");
         closeLogin();
-    }catch(e){showNeon(e.message);}
+    }catch(e){showNeon("خطأ في البيانات");}
 }
 
 window.handleLogout = async function() {
     await signOut(auth);
-    showNeon("تم تسجيل الخروج");
+    showNeon("تم الخروج");
     toggleSidebar();
 }
 
@@ -304,27 +283,23 @@ onAuthStateChanged(auth,async(user)=>{
     const logoutBtn = document.getElementById("logoutBtn");
     if(user){
         const snap=await getDoc(doc(db,"users",user.uid));
-        if(snap.exists()){ loginBtnSide.innerHTML=`<span>👤</span> ${snap.data().name}`; logoutBtn.style.display="flex"; }
+        loginBtnSide.innerHTML=`<span>👤</span> ${snap.exists() ? snap.data().name : 'مستخدم'}`;
+        logoutBtn.style.display="flex";
     }else{
-        loginBtnSide.innerHTML=`<span>👤</span> تسجيل الدخول`; logoutBtn.style.display="none";
+        loginBtnSide.innerHTML=`<span>👤</span> تسجيل الدخول`;
+        logoutBtn.style.display="none";
     }
 });
 
-// --- Space & Smoke Animation (النجوم والدخان) ---
+// Animations
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
-window.onresize=resize; resize();
-
+canvas.width=innerWidth; canvas.height=innerHeight;
 let stars=[];
-for(let i=0;i<250;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
-
+for(let i=0;i<200;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5});
 function animateStars(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    stars.forEach(st=>{
-        st.x-=st.s; if(st.x<0)st.x=canvas.width;
-        ctx.fillStyle="white"; ctx.fillRect(st.x,st.y,1.5,1.5);
-    });
+    stars.forEach(st=>{ st.x-=st.s; if(st.x<0)st.x=canvas.width; ctx.fillStyle="white"; ctx.fillRect(st.x,st.y,1.2,1.2); });
     requestAnimationFrame(animateStars);
 }
 animateStars();
@@ -335,11 +310,11 @@ smokeCanvas.width=innerWidth; smokeCanvas.height=innerHeight;
 let smokes=[];
 function animateSmoke(){
     smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-    if(Math.random()<0.2) smokes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*100+50,a:0.3});
+    if(Math.random()<0.1) smokes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*100+50,a:0.2});
     smokes.forEach((s,i)=>{
-        s.a-=0.002;
+        s.a-=0.001;
         let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-        g.addColorStop(0,`rgba(150,150,150,${s.a})`);
+        g.addColorStop(0,`rgba(100,100,100,${s.a})`);
         g.addColorStop(1,"transparent");
         smokeCtx.fillStyle=g; smokeCtx.beginPath(); smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2); smokeCtx.fill();
         if(s.a<=0)smokes.splice(i,1);
@@ -348,7 +323,6 @@ function animateSmoke(){
 }
 animateSmoke();
 
-// --- Data & Categories ---
 const data={
     HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
     PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
@@ -360,12 +334,7 @@ window.openCategory=function(cat){
     products.innerHTML="";
     categoryTitle.innerText=cat;
     data[cat].forEach(p=>{
-        products.innerHTML+=`
-        <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
-            <img src="${p.img}">
-            <div>${p.name}</div>
-            <div style="color:#ffd700">${p.price}</div>
-        </div>`;
+        products.innerHTML+=`<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'><img src="${p.img}"><div>${p.name}</div><div style="color:#ffd700">${p.price}</div></div>`;
     });
 }
 
@@ -373,11 +342,10 @@ window.showDetail=function(n,i,p){
     detail.style.display="flex";
     detailBox.innerHTML=`
     <div class="closeX" onclick="detail.style.display='none'">✖</div>
-    <img src="${i}" style="width:100%;border-radius:10px;margin-bottom:15px">
-    <h3 style="color:white">${n}</h3>
-    <div style="margin:10px 0;color:#ffd700;font-size:20px">${p}</div>
-    <button onclick="showNeon('تمت إضافة ${n} للسلة')">إضافة إلى السلة</button>
-    `;
+    <img src="${i}" style="width:100%;border-radius:10px;">
+    <h3 style="margin:10px 0">${n}</h3>
+    <div style="color:#ffd700;font-size:20px;margin-bottom:10px">${p}</div>
+    <button onclick="showNeon('تمت الإضافة للسلة')">إضافة إلى السلة</button>`;
 }
 </script>
 </body>
