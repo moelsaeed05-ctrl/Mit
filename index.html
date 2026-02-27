@@ -20,25 +20,18 @@ letter-spacing:6px;
 z-index:10;
 }
 
-.headerIcons{
+.loginBtn{
 position:absolute;
 top:20px;
 right:20px;
-display:flex;
-gap:18px;
-z-index:20;
-font-size:22px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
 cursor:pointer;
-}
-
-.cartCount{
-position:absolute;
-top:-8px;
-right:-8px;
-background:red;
-font-size:11px;
-padding:2px 6px;
-border-radius:50%;
+z-index:10;
+font-weight:bold;
+font-size:14px;
 }
 
 .closeX{
@@ -64,7 +57,9 @@ z-index:200;
 color:#00ffcc;
 text-align:center;
 box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+animation:fadeOut 3s forwards;
 }
+@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
 .menu{
 position:absolute;
@@ -114,7 +109,7 @@ z-index:5;
 background:#111;
 padding:12px;
 border-radius:14px;
-width:150px;
+width:140px;
 cursor:pointer;
 transition:.4s;
 }
@@ -185,6 +180,14 @@ background:#222;
 color:white;
 }
 
+.smallLink{
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
+display:block;
+}
+
 button{
 padding:10px;
 margin-top:10px;
@@ -193,6 +196,13 @@ border-radius:8px;
 background:#ffd700;
 cursor:pointer;
 width:100%;
+}
+
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
 }
 </style>
 </head>
@@ -208,17 +218,7 @@ width:100%;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="headerIcons">
-<div onclick="openLogin()">👤</div>
-
-<div style="position:relative" onclick="openCart()">
-🛒
-<span id="cartCount" class="cartCount">0</span>
-</div>
-
-<div onclick="openOrders()">📜</div>
-<div onclick="logout()" id="logoutBtn" style="display:none">🚪</div>
-</div>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
@@ -229,7 +229,7 @@ width:100%;
 <div class="fullscreen" id="page">
 <div class="closeX" onclick="goHome()">✖</div>
 <canvas class="smokeCanvas" id="smoke"></canvas>
-<div id="categoryTitle" style="font-size:26px;margin-bottom:20px"></div>
+<div class="categoryTitle" id="categoryTitle"></div>
 <div class="products" id="products"></div>
 </div>
 
@@ -237,37 +237,61 @@ width:100%;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
-<div class="fullscreen" id="cartPage">
-<div class="closeX" onclick="cartPage.style.display='none'">✖</div>
-<h2>السلة</h2>
-<div id="cartItems"></div>
-<h3 id="totalPrice"></h3>
-<button onclick="checkout()">إتمام الشراء</button>
+<div class="loginModal" id="loginModal">
+<div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
+
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل دخول</button>
+<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
 </div>
 
-<div class="fullscreen" id="ordersPage">
-<div class="closeX" onclick="ordersPage.style.display='none'">✖</div>
-<h2>سجل المشتريات</h2>
-<div id="ordersList"></div>
+<div id="registerForm" style="display:none">
+<h3>إنشاء حساب</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
+<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+<button onclick="register()">إنشاء حساب</button>
+<span class="smallLink" onclick="showLogin()">رجوع</span>
+</div>
+
+</div>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"YOUR_KEY",
-authDomain:"YOUR_DOMAIN",
-projectId:"YOUR_ID",
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
+const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
 
-let cart=[];
-let orders=[];
+function clearInputs(){
+emailInput.value="";
+passwordInput.value="";
+nameInput.value="";
+regEmailInput.value="";
+regPasswordInput.value="";
+confirmInput.value="";
+}
 
 function showNeon(text){
 neonMsg.innerText=text;
@@ -275,32 +299,109 @@ neonMsg.style.display="block";
 setTimeout(()=>{neonMsg.style.display="none";},3000);
 }
 
-window.logout=async function(){
-await signOut(auth);
-showNeon("تم تسجيل الخروج");
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+showNeon("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+showNeon("تم إنشاء الحساب");
+clearInputs();
+closeLogin();
+}catch(e){showNeon(e.message);}
 }
 
-onAuthStateChanged(auth,(user)=>{
-logoutBtn.style.display=user?"block":"none";
+window.login=async function(){
+try{
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+showNeon("تم تسجيل الدخول");
+clearInputs();
+closeLogin();
+}catch(e){showNeon(e.message);}
+}
+
+onAuthStateChanged(auth,async(user)=>{
+if(user){
+const snap=await getDoc(doc(db,"users",user.uid));
+if(snap.exists()){
+loginBtn.innerText=snap.data().name;
+}
+}else{
+loginBtn.innerText="تسجيل الدخول";
+}
 });
 
+window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
+window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+}
+function animateStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
+});
+requestAnimationFrame(animateStars);
+}
+animateStars();
+
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+let smokes=[];
+function createSmoke(){
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
+}
+function animateSmoke(){
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+if(Math.random()<0.3)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
+});
+requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
 const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:50}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:40}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:20}]
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
 };
 
 window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
-
 data[cat].forEach(p=>{
 products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}",${p.price})'>
+<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
 <img src="${p.img}">
 <div>${p.name}</div>
-<div style="color:#ffd700">${p.price}$</div>
+<div style="color:#ffd700">${p.price}</div>
 </div>`;
 });
 }
@@ -311,86 +412,9 @@ detailBox.innerHTML=`
 <div class="closeX" onclick="detail.style.display='none'">✖</div>
 <h3>${n}</h3>
 <img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}$</div>
-
-<select id="sizeSelect" style="margin-top:10px;width:100%;padding:8px;background:#222;color:white;border:none;border-radius:6px">
-<option>S</option><option>M</option><option>L</option><option>XL</option>
-</select>
-
-<input type="number" id="qtyInput" value="1" min="1"
-style="margin-top:10px;width:100%;padding:8px;background:#222;color:white;border:none;border-radius:6px">
-
-<button onclick="addToCart('${n}','${i}',${p})">إضافة للسلة</button>
+<div style="margin-top:10px;color:#ffd700">${p}</div>
 `;
 }
-
-window.addToCart=function(n,i,p){
-let size=sizeSelect.value;
-let qty=parseInt(qtyInput.value);
-
-cart.push({name:n,img:i,price:p,size,qty});
-cartCount.innerText=cart.length;
-
-showNeon("تم إضافة المنتج للسلة ✨");
-detail.style.display="none";
-}
-
-window.openCart=function(){
-cartPage.style.display="flex";
-renderCart();
-}
-
-function renderCart(){
-cartItems.innerHTML="";
-let total=0;
-
-cart.forEach((item,index)=>{
-total+=item.price*item.qty;
-
-cartItems.innerHTML+=`
-<div style="background:#111;padding:10px;margin:10px;border-radius:10px">
-<img src="${item.img}" width="60"><br>
-${item.name}<br>
-المقاس: ${item.size}<br>
-الكمية: ${item.qty}<br>
-السعر: ${item.price*item.qty}$<br>
-<button onclick="removeItem(${index})">حذف</button>
-</div>
-`;
-});
-
-totalPrice.innerText="الإجمالي: "+total+"$";
-}
-
-window.removeItem=function(i){
-cart.splice(i,1);
-cartCount.innerText=cart.length;
-renderCart();
-showNeon("تم حذف المنتج");
-}
-
-window.checkout=function(){
-if(cart.length==0){showNeon("السلة فارغة");return;}
-orders.push([...cart]);
-cart=[];
-cartCount.innerText=0;
-renderCart();
-showNeon("تم إتمام الشراء 🎉");
-}
-
-window.openOrders=function(){
-ordersPage.style.display="flex";
-ordersList.innerHTML="";
-orders.forEach((order,i)=>{
-ordersList.innerHTML+=`
-<div style="background:#111;padding:15px;margin:10px;border-radius:10px">
-طلب رقم ${i+1} - عدد المنتجات: ${order.length}
-</div>
-`;
-});
-}
-
-window.goHome=()=>{page.style.display="none";}
 
 </script>
 </body>
