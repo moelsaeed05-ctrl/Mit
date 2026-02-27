@@ -1,67 +1,71 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIT STORE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:black;color:white;overflow:hidden;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+body{background:black;color:white;overflow-x:hidden; position: relative;}
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
+/* Logo */
 .logo{
 position:absolute;
 top:20px;
-left:50%;
-transform:translateX(-50%);
+left:20px;
 font-size:28px;
 letter-spacing:6px;
 z-index:10;
 }
 
-.loginBtn{
-position:absolute;
-top:20px;
-right:20px;
-background:#ffd700;
-color:black;
-padding:6px 14px;
-border-radius:8px;
-cursor:pointer;
-z-index:10;
-font-weight:bold;
-font-size:14px;
+/* Menu Icon (3 bars) */
+.menuIcon {
+position: fixed;
+top: 20px;
+right: 20px;
+font-size: 30px;
+cursor: pointer;
+z-index: 100;
+color: #ffd700;
+transition: 0.3s;
 }
+.menuIcon:hover { transform: scale(1.1); text-shadow: 0 0 10px #ffd700; }
 
-.profileMenu{
-position:absolute;
-top:60px;
-right:20px;
-background:#111;
-padding:10px;
-border-radius:10px;
-display:none;
-z-index:100;
-width:180px;
+/* Sidebar */
+.sidebar {
+position: fixed;
+top: 0;
+right: -280px;
+width: 260px;
+height: 100%;
+background: rgba(15, 15, 15, 0.95);
+backdrop-filter: blur(10px);
+z-index: 200;
+transition: 0.4s ease-in-out;
+padding: 70px 20px;
+box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+border-left: 1px solid #333;
 }
+.sidebar.active { right: 0; }
 
-.profileMenu div{
-padding:8px;
-cursor:pointer;
-border-bottom:1px solid #333;
+.sideItem {
+padding: 15px;
+margin-bottom: 10px;
+border-radius: 10px;
+cursor: pointer;
+font-size: 18px;
+display: flex;
+align-items: center;
+gap: 15px;
+transition: 0.3s;
+background: rgba(255,255,255,0.03);
 }
-.profileMenu div:hover{color:#ffd700;}
+.sideItem:hover { background: rgba(255,215,0,0.1); color: #ffd700; }
+.sideItem span { font-size: 20px; }
 
-.closeX{
-position:absolute;
-top:15px;
-left:15px;
-font-size:22px;
-cursor:pointer;
-color:#ff4444;
-}
-
+/* Main UI */
 .neonMessage{
 position:fixed;
 top:50%;
@@ -72,10 +76,10 @@ border-radius:15px;
 background:#111;
 font-size:22px;
 display:none;
-z-index:200;
+z-index:300;
 color:#00ffcc;
 text-align:center;
-box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+box-shadow:0 0 10px #00ffcc,0 0 40px #00ffcc;
 animation:fadeOut 3s forwards;
 }
 @keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
@@ -96,15 +100,12 @@ align-items:center;
 .item{
 cursor:pointer;
 font-size:22px;
-padding:14px 40px;
-border-radius:14px;
+padding:12px 30px;
+border-radius:12px;
 transition:.4s;
-box-shadow:0 0 10px rgba(255,215,0,.3);
+border: 1px solid transparent;
 }
-.item:hover{
-text-shadow:0 0 10px #ffd700;
-box-shadow:0 0 15px #ffd700;
-}
+.item:hover{text-shadow:0 0 15px #ffd700; border-bottom: 1px solid #ffd700;}
 
 .fullscreen{
 position:fixed;
@@ -126,34 +127,22 @@ justify-content:center;
 width:95%;
 position:relative;
 z-index:5;
+padding-bottom: 50px;
 }
 
 .product{
 background:#111;
 padding:12px;
 border-radius:14px;
-width:160px;
+width:150px;
 cursor:pointer;
 transition:.4s;
+text-align: center;
 }
+.product img{ width:100%; border-radius:8px; margin-bottom:8px; }
+.product:hover{ transform:translateY(-10px); box-shadow:0 0 15px #ffd700; }
 
-.product img{
-width:100%;
-border-radius:8px;
-margin-bottom:8px;
-}
-
-.product:hover{
-transform:scale(1.08);
-box-shadow:0 0 10px #ffd700;
-}
-
-.smokeCanvas{
-position:absolute;
-inset:0;
-z-index:1;
-pointer-events:none;
-}
+.smokeCanvas{ position:absolute; inset:0; z-index:1; pointer-events:none; }
 
 .detail{
 position:fixed;
@@ -162,64 +151,25 @@ background:rgba(0,0,0,.95);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:60;
+z-index:500;
 }
+.detailBox{ background:#111; padding:25px; border-radius:18px; text-align:center; width:320px; position:relative; }
 
-.detailBox{
-background:#111;
-padding:25px;
-border-radius:18px;
-text-align:center;
-width:320px;
-position:relative;
-}
-
-.cartModal{
+.loginModal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.95);
+background:rgba(0,0,0,.9);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:90;
+z-index:600;
 }
-
-.cartBox{
-background:#111;
-padding:20px;
-border-radius:18px;
-width:350px;
-max-height:80vh;
-overflow:auto;
-position:relative;
-}
-
-button{
-padding:8px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#ffd700;
-cursor:pointer;
-width:100%;
-}
-
-select,input[type=number]{
-width:100%;
-margin-top:8px;
-padding:6px;
-border:none;
-border-radius:6px;
-background:#222;
-color:white;
-}
-
-.categoryTitle{
-font-size:26px;
-margin-bottom:20px;
-letter-spacing:3px;
-z-index:10;
-}
+.loginBox{ background:#111; padding:30px; border-radius:18px; width:320px; text-align:center; position:relative; }
+.loginBox input{ width:100%; padding:12px; margin:8px 0; border:none; border-radius:6px; background:#222; color:white; text-align: right; }
+.smallLink{ font-size:13px; color:#ffd700; cursor:pointer; margin-top:8px; display:block; }
+button{ padding:12px; margin-top:10px; border:none; border-radius:8px; background:#ffd700; color: black; font-weight: bold; cursor:pointer; width:100%; }
+.closeX{ position:absolute; top:15px; left:15px; font-size:25px; cursor:pointer; color:#ff4444; z-index: 10; }
+.categoryTitle{ font-size:26px; margin-bottom:20px; letter-spacing:3px; z-index:10; color: #ffd700;}
 </style>
 </head>
 
@@ -234,12 +184,24 @@ z-index:10;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" id="loginBtn" onclick="toggleProfile()">تسجيل الدخول</div>
+<div class="menuIcon" onclick="toggleSidebar()">☰</div>
 
-<div class="profileMenu" id="profileMenu">
-<div onclick="openCart()">🛒 السلة</div>
-<div onclick="openOrders()">📦 سجل المشتريات</div>
-<div onclick="logout()">🚪 تسجيل خروج</div>
+<div class="sidebar" id="sidebar">
+    <div class="closeX" onclick="toggleSidebar()">×</div>
+    <div class="sidebarItems">
+        <div class="sideItem" id="loginBtnSide" onclick="openLogin(); toggleSidebar()">
+            <span>👤</span> تسجيل الدخول
+        </div>
+        <div class="sideItem" onclick="showNeon('قريباً: السلة'); toggleSidebar()">
+            <span>🛒</span> السلة
+        </div>
+        <div class="sideItem" onclick="showNeon('قريباً: سجل الطلبات'); toggleSidebar()">
+            <span>📜</span> سجل الطلبات
+        </div>
+        <div class="sideItem" id="logoutBtn" style="display:none" onclick="handleLogout()">
+            <span>🚪</span> تسجيل الخروج
+        </div>
+    </div>
 </div>
 
 <div class="menu">
@@ -259,118 +221,164 @@ z-index:10;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
-<div class="cartModal" id="cartModal">
-<div class="cartBox">
-<div class="closeX" onclick="cartModal.style.display='none'">✖</div>
-<h3>السلة</h3>
-<div id="cartItems"></div>
-<h4 id="totalPrice"></h4>
-<button onclick="confirmOrder()">تأكيد الطلب</button>
+<div class="loginModal" id="loginModal">
+    <div class="loginBox">
+        <div class="closeX" onclick="closeLogin()">✖</div>
+        <div id="loginForm">
+            <h3>تسجيل دخول</h3>
+            <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+            <input type="password" id="passwordInput" placeholder="كلمة المرور">
+            <button onclick="login()">دخول</button>
+            <span class="smallLink" onclick="showRegister()">إنشاء حساب جديد</span>
+        </div>
+        <div id="registerForm" style="display:none">
+            <h3>إنشاء حساب</h3>
+            <input type="text" id="nameInput" placeholder="الاسم بالكامل">
+            <input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+            <input type="password" id="regPasswordInput" placeholder="كلمة المرور">
+            <input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+            <button onclick="register()">إنشاء الحساب</button>
+            <span class="smallLink" onclick="showLogin()">لديك حساب؟ سجل دخول</span>
+        </div>
+    </div>
 </div>
-</div>
 
-<script>
-let cart=[];
-let orders=[];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function showNeon(t){
-neonMsg.innerText=t;
-neonMsg.style.display="block";
-setTimeout(()=>{neonMsg.style.display="none";},3000);
-}
-
-function toggleProfile(){
-profileMenu.style.display=profileMenu.style.display=="block"?"none":"block";
-}
-
-function logout(){
-location.reload();
-}
-
-function openCart(){
-cartModal.style.display="flex";
-renderCart();
-}
-
-function renderCart(){
-cartItems.innerHTML="";
-let total=0;
-cart.forEach((item,i)=>{
-total+=item.price*item.qty;
-cartItems.innerHTML+=`
-<div style="border-bottom:1px solid #333;padding:8px 0">
-<input type="checkbox" checked id="check${i}">
-${item.name} (${item.size}) x${item.qty} - ${item.price*item.qty}$
-</div>`;
-});
-totalPrice.innerText="الإجمالي: "+total+"$";
-}
-
-function confirmOrder(){
-orders.push(...cart);
-cart=[];
-renderCart();
-showNeon("تم تأكيد الطلب");
-cartModal.style.display="none";
-}
-
-function openOrders(){
-let text="سجل المشتريات:\n";
-orders.forEach(o=>text+=`${o.name} (${o.size}) x${o.qty}\n`);
-alert(text);
-}
-
-const data={
-HOODIES:[
-{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:50},
-{name:"Gray Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:55}
-],
-PANTS:[
-{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:40},
-{name:"Cargo Pants",img:"https://images.unsplash.com/photo-1593030761757-71fae45fa0e7",price:45}
-],
-ACCESSORIES:[
-{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:20},
-{name:"Chain",img:"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519",price:30}
-]
+const firebaseConfig={
+    apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+    authDomain:"mit-store-15e1d.firebaseapp.com",
+    projectId:"mit-store-15e1d",
+    storageBucket:"mit-store-15e1d.firebasestorage.app",
+    messagingSenderId:"168416523904",
+    appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
-function openCategory(cat){
-page.style.display="flex";
-products.innerHTML="";
-categoryTitle.innerText=cat;
-data[cat].forEach(p=>{
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}",${p.price})'>
-<img src="${p.img}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}$</div>
-</div>`;
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+// --- Functions ---
+window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("active");
+window.openLogin = () => loginModal.style.display="flex";
+window.closeLogin = () => loginModal.style.display="none";
+window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
+window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+window.goHome=()=>{page.style.display="none";}
+
+function showNeon(text){
+    neonMsg.innerText=text;
+    neonMsg.style.display="block";
+    setTimeout(()=>{neonMsg.style.display="none";},3000);
+}
+
+window.register=async function(){
+    if(regPasswordInput.value!==confirmInput.value){showNeon("كلمة المرور غير متطابقة");return;}
+    try{
+        const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+        await setDoc(doc(db,"users",user.user.uid),{ name:nameInput.value, email:regEmailInput.value });
+        showNeon("تم إنشاء الحساب");
+        closeLogin();
+    }catch(e){showNeon(e.message);}
+}
+
+window.login=async function(){
+    try{
+        await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+        showNeon("تم تسجيل الدخول");
+        closeLogin();
+    }catch(e){showNeon(e.message);}
+}
+
+window.handleLogout = async function() {
+    await signOut(auth);
+    showNeon("تم تسجيل الخروج");
+    toggleSidebar();
+}
+
+onAuthStateChanged(auth,async(user)=>{
+    const loginBtnSide = document.getElementById("loginBtnSide");
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(user){
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(snap.exists()){ loginBtnSide.innerHTML=`<span>👤</span> ${snap.data().name}`; logoutBtn.style.display="flex"; }
+    }else{
+        loginBtnSide.innerHTML=`<span>👤</span> تسجيل الدخول`; logoutBtn.style.display="none";
+    }
 });
+
+// --- Space & Smoke Animation (النجوم والدخان) ---
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+window.onresize=resize; resize();
+
+let stars=[];
+for(let i=0;i<250;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+
+function animateStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(st=>{
+        st.x-=st.s; if(st.x<0)st.x=canvas.width;
+        ctx.fillStyle="white"; ctx.fillRect(st.x,st.y,1.5,1.5);
+    });
+    requestAnimationFrame(animateStars);
+}
+animateStars();
+
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
+smokeCanvas.width=innerWidth; smokeCanvas.height=innerHeight;
+let smokes=[];
+function animateSmoke(){
+    smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+    if(Math.random()<0.2) smokes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*100+50,a:0.3});
+    smokes.forEach((s,i)=>{
+        s.a-=0.002;
+        let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+        g.addColorStop(0,`rgba(150,150,150,${s.a})`);
+        g.addColorStop(1,"transparent");
+        smokeCtx.fillStyle=g; smokeCtx.beginPath(); smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2); smokeCtx.fill();
+        if(s.a<=0)smokes.splice(i,1);
+    });
+    requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
+// --- Data & Categories ---
+const data={
+    HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+    PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+    ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
+};
+
+window.openCategory=function(cat){
+    page.style.display="flex";
+    products.innerHTML="";
+    categoryTitle.innerText=cat;
+    data[cat].forEach(p=>{
+        products.innerHTML+=`
+        <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+            <img src="${p.img}">
+            <div>${p.name}</div>
+            <div style="color:#ffd700">${p.price}</div>
+        </div>`;
+    });
 }
 
-function showDetail(n,i,p){
-detail.style.display="flex";
-detailBox.innerHTML=`
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
-<h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<select id="size">
-<option>S</option><option>M</option><option>L</option><option>XL</option>
-</select>
-<input type="number" id="qty" value="1" min="1">
-<button onclick="addToCart('${n}',${p})">إضافة للسلة</button>
-`;
-}
-
-function addToCart(n,p){
-let size=document.getElementById("size").value;
-let qty=parseInt(document.getElementById("qty").value);
-cart.push({name:n,price:p,size:size,qty:qty});
-showNeon("تم إضافة للسلة");
-detail.style.display="none";
+window.showDetail=function(n,i,p){
+    detail.style.display="flex";
+    detailBox.innerHTML=`
+    <div class="closeX" onclick="detail.style.display='none'">✖</div>
+    <img src="${i}" style="width:100%;border-radius:10px;margin-bottom:15px">
+    <h3 style="color:white">${n}</h3>
+    <div style="margin:10px 0;color:#ffd700;font-size:20px">${p}</div>
+    <button onclick="showNeon('تمت إضافة ${n} للسلة')">إضافة إلى السلة</button>
+    `;
 }
 </script>
-
 </body>
 </html>
