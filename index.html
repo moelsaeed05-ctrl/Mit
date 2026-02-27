@@ -20,46 +20,53 @@ letter-spacing:6px;
 z-index:10;
 }
 
-.loginBtn{
+.userMenu{
 position:absolute;
 top:20px;
 right:20px;
+z-index:20;
+}
+
+.loginBtn{
 background:#ffd700;
 color:black;
 padding:6px 14px;
 border-radius:8px;
 cursor:pointer;
-z-index:10;
 font-weight:bold;
 font-size:14px;
 }
 
-.closeX{
-position:absolute;
-top:15px;
-left:15px;
-font-size:22px;
-cursor:pointer;
-color:#ff4444;
+.dropdown{
+display:none;
+flex-direction:column;
+background:#111;
+margin-top:5px;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 0 10px #ffd700;
 }
 
-.neonMessage{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-padding:20px 40px;
-border-radius:15px;
-background:#111;
-font-size:22px;
-display:none;
-z-index:200;
-color:#00ffcc;
-text-align:center;
-box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
-animation:fadeOut 3s forwards;
+.dropdown div{
+padding:10px;
+cursor:pointer;
+border-bottom:1px solid #222;
 }
-@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
+.dropdown div:hover{
+background:#222;
+}
+
+.categoryTitle{
+font-size:28px;
+margin-bottom:20px;
+letter-spacing:3px;
+animation:neonGlow 1.5s ease-in-out;
+}
+@keyframes neonGlow{
+0%{text-shadow:0 0 5px #ffd700;}
+50%{text-shadow:0 0 20px #ffd700,0 0 40px #ffd700;}
+100%{text-shadow:0 0 5px #ffd700;}
+}
 
 .menu{
 position:absolute;
@@ -101,76 +108,55 @@ gap:20px;
 flex-wrap:wrap;
 justify-content:center;
 width:95%;
-position:relative;
-z-index:5;
 }
 
 .product{
 background:#111;
 padding:12px;
 border-radius:14px;
-width:140px;
-cursor:pointer;
+width:160px;
 transition:.4s;
 }
-
 .product img{
 width:100%;
 border-radius:8px;
 margin-bottom:8px;
 }
-
 .product:hover{
 transform:scale(1.08);
 box-shadow:0 0 10px #ffd700;
 }
 
-.smokeCanvas{
-position:absolute;
-inset:0;
-z-index:1;
-pointer-events:none;
+button{
+padding:8px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
+margin-top:5px;
 }
 
-.detail{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.95);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:60;
-}
-
-.detailBox{
-background:#111;
-padding:25px;
-border-radius:18px;
-text-align:center;
-width:300px;
-position:relative;
-}
-
-.loginModal{
+.modal{
 position:fixed;
 inset:0;
 background:rgba(0,0,0,.9);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:80;
+z-index:100;
 }
 
-.loginBox{
+.modalBox{
 background:#111;
-padding:30px;
+padding:25px;
 border-radius:18px;
 width:320px;
-text-align:center;
-position:relative;
+max-height:80vh;
+overflow:auto;
 }
 
-.loginBox input{
+input{
 width:100%;
 padding:10px;
 margin:8px 0;
@@ -179,46 +165,23 @@ border-radius:6px;
 background:#222;
 color:white;
 }
-
-.smallLink{
-font-size:13px;
-color:#ffd700;
-cursor:pointer;
-margin-top:8px;
-display:block;
-}
-
-button{
-padding:10px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#ffd700;
-cursor:pointer;
-width:100%;
-}
-
-.categoryTitle{
-font-size:26px;
-margin-bottom:20px;
-letter-spacing:3px;
-z-index:10;
-}
 </style>
 </head>
 
 <body>
 
 <canvas id="space"></canvas>
-<div class="neonMessage" id="neonMsg"></div>
 
-<div class="logo">
-<span style="color:#ffd700">𝔐</span>
-<span style="color:#ff1a1a">𝔦</span>
-<span style="color:#ffd700">𝔗</span>
+<div class="logo">MIT</div>
+
+<div class="userMenu">
+<div class="loginBtn" id="loginBtn" onclick="toggleMenu()">تسجيل الدخول</div>
+<div class="dropdown" id="dropdown">
+<div onclick="openCart()">🛒 السلة</div>
+<div onclick="openOrders()">📦 مشترياتي</div>
+<div onclick="logout()">🚪 تسجيل خروج</div>
 </div>
-
-<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
@@ -227,195 +190,152 @@ z-index:10;
 </div>
 
 <div class="fullscreen" id="page">
-<div class="closeX" onclick="goHome()">✖</div>
-<canvas class="smokeCanvas" id="smoke"></canvas>
 <div class="categoryTitle" id="categoryTitle"></div>
 <div class="products" id="products"></div>
 </div>
 
-<div class="detail" id="detail">
-<div class="detailBox" id="detailBox"></div>
-</div>
-
-<div class="loginModal" id="loginModal">
-<div class="loginBox">
-<div class="closeX" onclick="closeLogin()">✖</div>
-
-<div id="loginForm">
+<div class="modal" id="loginModal">
+<div class="modalBox">
 <h3>تسجيل دخول</h3>
-<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<input type="email" id="email" placeholder="البريد">
+<input type="password" id="pass" placeholder="كلمة المرور">
 <button onclick="login()">تسجيل دخول</button>
-<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
-</div>
-
-<div id="registerForm" style="display:none">
+<hr style="margin:10px 0">
 <h3>إنشاء حساب</h3>
-<input type="text" id="nameInput" placeholder="الاسم بالكامل">
-<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
-<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+<input type="text" id="name" placeholder="الاسم">
+<input type="email" id="regEmail" placeholder="البريد">
+<input type="password" id="regPass" placeholder="كلمة المرور">
 <button onclick="register()">إنشاء حساب</button>
-<span class="smallLink" onclick="showLogin()">رجوع</span>
+</div>
 </div>
 
+<div class="modal" id="cartModal">
+<div class="modalBox" id="cartBox"></div>
 </div>
+
+<div class="modal" id="ordersModal">
+<div class="modalBox" id="ordersBox"></div>
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc }
+import { getFirestore,doc,setDoc,getDoc,updateDoc,arrayUnion }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain:"mit-store-15e1d.firebaseapp.com",
-projectId:"mit-store-15e1d",
-storageBucket:"mit-store-15e1d.firebasestorage.app",
-messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
+apiKey:"YOUR_KEY",
+authDomain:"YOUR_DOMAIN",
+projectId:"YOUR_ID"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-const loginBtn=document.getElementById("loginBtn");
 
-function clearInputs(){
-emailInput.value="";
-passwordInput.value="";
-nameInput.value="";
-regEmailInput.value="";
-regPasswordInput.value="";
-confirmInput.value="";
-}
-
-function showNeon(text){
-neonMsg.innerText=text;
-neonMsg.style.display="block";
-setTimeout(()=>{neonMsg.style.display="none";},3000);
-}
-
-window.register=async function(){
-if(regPasswordInput.value!==confirmInput.value){
-showNeon("كلمة المرور غير متطابقة");return;}
-try{
-const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
-await setDoc(doc(db,"users",user.user.uid),{
-name:nameInput.value,
-email:regEmailInput.value
-});
-showNeon("تم إنشاء الحساب");
-clearInputs();
-closeLogin();
-}catch(e){showNeon(e.message);}
-}
-
-window.login=async function(){
-try{
-await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول");
-clearInputs();
-closeLogin();
-}catch(e){showNeon(e.message);}
-}
+let currentUser=null;
+let cart=[];
 
 onAuthStateChanged(auth,async(user)=>{
 if(user){
+currentUser=user;
 const snap=await getDoc(doc(db,"users",user.uid));
-if(snap.exists()){
 loginBtn.innerText=snap.data().name;
-}
+dropdown.style.display="flex";
 }else{
 loginBtn.innerText="تسجيل الدخول";
+dropdown.style.display="none";
 }
 });
 
-window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
-window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
-window.goHome=()=>{page.style.display="none";}
-
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<250;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+window.toggleMenu=()=>{
+if(!currentUser){loginModal.style.display="flex";}
+else dropdown.style.display=dropdown.style.display==="flex"?"none":"flex";
 }
-function animateStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;
-if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
-});
-requestAnimationFrame(animateStars);
-}
-animateStars();
 
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-let smokes=[];
-function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
+window.register=async()=>{
+const user=await createUserWithEmailAndPassword(auth,regEmail.value,regPass.value);
+await setDoc(doc(db,"users",user.user.uid),{name:name.value,cart:[],orders:[]});
 }
-function animateSmoke(){
-smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
+
+window.login=async()=>{
+await signInWithEmailAndPassword(auth,email.value,pass.value);
+loginModal.style.display="none";
 }
-animateSmoke();
 
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
-};
+window.logout=()=>signOut(auth);
 
-window.openCategory=function(cat){
+window.openCategory=(cat)=>{
 page.style.display="flex";
-products.innerHTML="";
 categoryTitle.innerText=cat;
+products.innerHTML="";
 data[cat].forEach(p=>{
 products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<div class="product">
 <img src="${p.img}">
 <div>${p.name}</div>
 <div style="color:#ffd700">${p.price}</div>
+<button onclick='addToCart(${JSON.stringify(p)})'>إضافة للسلة</button>
 </div>`;
 });
 }
 
-window.showDetail=function(n,i,p){
-detail.style.display="flex";
-detailBox.innerHTML=`
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
-<h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}</div>
-`;
+window.addToCart=(p)=>{
+cart.push(p);
+alert("تمت الإضافة للسلة");
 }
 
+window.openCart=()=>{
+cartModal.style.display="flex";
+cartBox.innerHTML="<h3>السلة</h3>";
+cart.forEach(p=>{
+cartBox.innerHTML+=`<div>${p.name} - ${p.price}</div>`;
+});
+cartBox.innerHTML+=`<button onclick="checkout()">إتمام الشراء</button>`;
+}
+
+window.checkout=async()=>{
+await updateDoc(doc(db,"users",currentUser.uid),{
+orders:arrayUnion(...cart)
+});
+cart=[];
+cartModal.style.display="none";
+alert("تم الشراء");
+}
+
+window.openOrders=async()=>{
+ordersModal.style.display="flex";
+const snap=await getDoc(doc(db,"users",currentUser.uid));
+ordersBox.innerHTML="<h3>مشترياتي</h3>";
+snap.data().orders.forEach(o=>{
+ordersBox.innerHTML+=`<div>${o.name} - ${o.price}</div>`;
+});
+}
+
+const data={
+HOODIES:[
+{name:"Black Hoodie",img:"https://picsum.photos/200?1",price:"50$"},
+{name:"Gray Hoodie",img:"https://picsum.photos/200?2",price:"55$"},
+{name:"Red Hoodie",img:"https://picsum.photos/200?3",price:"60$"},
+{name:"White Hoodie",img:"https://picsum.photos/200?4",price:"65$"},
+{name:"Blue Hoodie",img:"https://picsum.photos/200?5",price:"70$"}
+],
+PANTS:[
+{name:"Black Pants",img:"https://picsum.photos/200?6",price:"40$"},
+{name:"Jogger",img:"https://picsum.photos/200?7",price:"45$"},
+{name:"Cargo",img:"https://picsum.photos/200?8",price:"50$"},
+{name:"Slim Fit",img:"https://picsum.photos/200?9",price:"55$"},
+{name:"Classic",img:"https://picsum.photos/200?10",price:"60$"}
+],
+ACCESSORIES:[
+{name:"Cap",img:"https://picsum.photos/200?11",price:"20$"},
+{name:"Bag",img:"https://picsum.photos/200?12",price:"25$"},
+{name:"Watch",img:"https://picsum.photos/200?13",price:"80$"},
+{name:"Chain",img:"https://picsum.photos/200?14",price:"30$"},
+{name:"Bracelet",img:"https://picsum.photos/200?15",price:"15$"}
+]
+};
 </script>
 </body>
 </html>
