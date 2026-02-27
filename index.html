@@ -20,25 +20,34 @@ letter-spacing:6px;
 z-index:10;
 }
 
-.topIcons{
+.headerIcons{
 position:absolute;
 top:20px;
 right:20px;
 display:flex;
-gap:15px;
-z-index:10;
-}
-
-.topIcons div{
+gap:18px;
+z-index:20;
+font-size:22px;
 cursor:pointer;
-background:#111;
-padding:6px 12px;
-border-radius:8px;
-font-size:14px;
 }
 
-.topIcons div:hover{
-box-shadow:0 0 10px #ffd700;
+.cartCount{
+position:absolute;
+top:-8px;
+right:-8px;
+background:red;
+font-size:11px;
+padding:2px 6px;
+border-radius:50%;
+}
+
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
 }
 
 .neonMessage{
@@ -55,9 +64,7 @@ z-index:200;
 color:#00ffcc;
 text-align:center;
 box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
-animation:fadeOut 3s forwards;
 }
-@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
 .menu{
 position:absolute;
@@ -68,6 +75,7 @@ display:flex;
 flex-direction:column;
 gap:35px;
 z-index:10;
+width:80%;
 align-items:center;
 }
 
@@ -109,7 +117,6 @@ border-radius:14px;
 width:150px;
 cursor:pointer;
 transition:.4s;
-text-align:center;
 }
 
 .product img{
@@ -130,7 +137,7 @@ z-index:1;
 pointer-events:none;
 }
 
-.detail,.cartModal,.historyModal{
+.detail{
 position:fixed;
 inset:0;
 background:rgba(0,0,0,.95);
@@ -140,33 +147,42 @@ align-items:center;
 z-index:60;
 }
 
-.box{
+.detailBox{
 background:#111;
 padding:25px;
 border-radius:18px;
-width:340px;
-max-height:80vh;
-overflow:auto;
+text-align:center;
+width:300px;
 position:relative;
 }
 
-.closeX{
-position:absolute;
-top:10px;
-left:10px;
-cursor:pointer;
-color:#ff4444;
-font-size:18px;
+.loginModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
 }
 
-select,input[type=number]{
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
+}
+
+.loginBox input{
 width:100%;
-padding:8px;
+padding:10px;
 margin:8px 0;
-background:#222;
 border:none;
-color:white;
 border-radius:6px;
+background:#222;
+color:white;
 }
 
 button{
@@ -178,7 +194,6 @@ background:#ffd700;
 cursor:pointer;
 width:100%;
 }
-
 </style>
 </head>
 
@@ -193,11 +208,16 @@ width:100%;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="topIcons">
+<div class="headerIcons">
 <div onclick="openLogin()">👤</div>
-<div onclick="openCart()">🛒</div>
-<div onclick="openHistory()">📦</div>
-<div onclick="logout()">🚪</div>
+
+<div style="position:relative" onclick="openCart()">
+🛒
+<span id="cartCount" class="cartCount">0</span>
+</div>
+
+<div onclick="openOrders()">📜</div>
+<div onclick="logout()" id="logoutBtn" style="display:none">🚪</div>
 </div>
 
 <div class="menu">
@@ -209,31 +229,45 @@ width:100%;
 <div class="fullscreen" id="page">
 <div class="closeX" onclick="goHome()">✖</div>
 <canvas class="smokeCanvas" id="smoke"></canvas>
-<h2 id="categoryTitle"></h2>
+<div id="categoryTitle" style="font-size:26px;margin-bottom:20px"></div>
 <div class="products" id="products"></div>
 </div>
 
 <div class="detail" id="detail">
-<div class="box" id="detailBox"></div>
+<div class="detailBox" id="detailBox"></div>
 </div>
 
-<div class="cartModal" id="cartModal">
-<div class="box" id="cartBox"></div>
+<div class="fullscreen" id="cartPage">
+<div class="closeX" onclick="cartPage.style.display='none'">✖</div>
+<h2>السلة</h2>
+<div id="cartItems"></div>
+<h3 id="totalPrice"></h3>
+<button onclick="checkout()">إتمام الشراء</button>
 </div>
 
-<div class="historyModal" id="historyModal">
-<div class="box" id="historyBox"></div>
+<div class="fullscreen" id="ordersPage">
+<div class="closeX" onclick="ordersPage.style.display='none'">✖</div>
+<h2>سجل المشتريات</h2>
+<div id="ordersList"></div>
 </div>
-<script>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig={
+apiKey:"YOUR_KEY",
+authDomain:"YOUR_DOMAIN",
+projectId:"YOUR_ID",
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
 
 let cart=[];
-let history=[];
-
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:50}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:40}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:20}]
-};
+let orders=[];
 
 function showNeon(text){
 neonMsg.innerText=text;
@@ -241,7 +275,22 @@ neonMsg.style.display="block";
 setTimeout(()=>{neonMsg.style.display="none";},3000);
 }
 
-function openCategory(cat){
+window.logout=async function(){
+await signOut(auth);
+showNeon("تم تسجيل الخروج");
+}
+
+onAuthStateChanged(auth,(user)=>{
+logoutBtn.style.display=user?"block":"none";
+});
+
+const data={
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:50}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:40}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:20}]
+};
+
+window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
@@ -256,143 +305,92 @@ products.innerHTML+=`
 });
 }
 
-function showDetail(n,i,p){
+window.showDetail=function(n,i,p){
 detail.style.display="flex";
 detailBox.innerHTML=`
 <div class="closeX" onclick="detail.style.display='none'">✖</div>
 <h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:10px">
-<div style="margin-top:10px">${p}$</div>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}$</div>
 
-<select id="size">
-<option>S</option>
-<option>M</option>
-<option>L</option>
-<option>XL</option>
+<select id="sizeSelect" style="margin-top:10px;width:100%;padding:8px;background:#222;color:white;border:none;border-radius:6px">
+<option>S</option><option>M</option><option>L</option><option>XL</option>
 </select>
 
-<input type="number" id="qty" min="1" value="1">
+<input type="number" id="qtyInput" value="1" min="1"
+style="margin-top:10px;width:100%;padding:8px;background:#222;color:white;border:none;border-radius:6px">
 
-<button onclick="addToCart('${n}',${p})">إضافة للسلة</button>
+<button onclick="addToCart('${n}','${i}',${p})">إضافة للسلة</button>
 `;
 }
 
-function addToCart(n,p){
-let size=document.getElementById("size").value;
-let qty=parseInt(document.getElementById("qty").value);
-cart.push({name:n,price:p,size,qty});
+window.addToCart=function(n,i,p){
+let size=sizeSelect.value;
+let qty=parseInt(qtyInput.value);
+
+cart.push({name:n,img:i,price:p,size,qty});
+cartCount.innerText=cart.length;
+
+showNeon("تم إضافة المنتج للسلة ✨");
 detail.style.display="none";
-showNeon("تم إضافة المنتج للسلة 🛒");
 }
 
-function openCart(){
-cartModal.style.display="flex";
+window.openCart=function(){
+cartPage.style.display="flex";
 renderCart();
 }
 
 function renderCart(){
-cartBox.innerHTML=`<div class="closeX" onclick="cartModal.style.display='none'">✖</div><h3>السلة</h3>`;
+cartItems.innerHTML="";
 let total=0;
 
 cart.forEach((item,index)=>{
-let sub=item.price*item.qty;
-total+=sub;
+total+=item.price*item.qty;
 
-cartBox.innerHTML+=`
-<div style="margin:10px 0;border-bottom:1px solid #333;padding-bottom:8px">
-${item.name} | ${item.size} | ${item.qty} × ${item.price}$ 
-<br>
+cartItems.innerHTML+=`
+<div style="background:#111;padding:10px;margin:10px;border-radius:10px">
+<img src="${item.img}" width="60"><br>
+${item.name}<br>
+المقاس: ${item.size}<br>
+الكمية: ${item.qty}<br>
+السعر: ${item.price*item.qty}$<br>
 <button onclick="removeItem(${index})">حذف</button>
-</div>`;
+</div>
+`;
 });
 
-cartBox.innerHTML+=`<h3>الإجمالي: ${total}$</h3>
-<button onclick="checkout()">إتمام الشراء</button>`;
+totalPrice.innerText="الإجمالي: "+total+"$";
 }
 
-function removeItem(i){
+window.removeItem=function(i){
 cart.splice(i,1);
+cartCount.innerText=cart.length;
 renderCart();
 showNeon("تم حذف المنتج");
 }
 
-function checkout(){
-if(cart.length===0){showNeon("السلة فارغة");return;}
-history.push(...cart);
+window.checkout=function(){
+if(cart.length==0){showNeon("السلة فارغة");return;}
+orders.push([...cart]);
 cart=[];
+cartCount.innerText=0;
 renderCart();
-showNeon("تم إتمام الشراء بنجاح ✅");
+showNeon("تم إتمام الشراء 🎉");
 }
 
-function openHistory(){
-historyModal.style.display="flex";
-historyBox.innerHTML=`<div class="closeX" onclick="historyModal.style.display='none'">✖</div><h3>سجل المشتريات</h3>`;
-history.forEach(item=>{
-historyBox.innerHTML+=`
-<div style="margin:8px 0">
-${item.name} | ${item.size} | ${item.qty} × ${item.price}$
-</div>`;
+window.openOrders=function(){
+ordersPage.style.display="flex";
+ordersList.innerHTML="";
+orders.forEach((order,i)=>{
+ordersList.innerHTML+=`
+<div style="background:#111;padding:15px;margin:10px;border-radius:10px">
+طلب رقم ${i+1} - عدد المنتجات: ${order.length}
+</div>
+`;
 });
 }
 
-function logout(){
-showNeon("تم تسجيل الخروج");
-}
-
-function goHome(){
-page.style.display="none";
-}
-  <script>
-
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-
-let stars=[];
-for(let i=0;i<400;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*1});
-}
-
-function animateStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;
-if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,2,2);
-});
-requestAnimationFrame(animateStars);
-}
-animateStars();
-
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-
-let smokes=[];
-function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*200+80,a:0.4};
-}
-
-function animateSmoke(){
-smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.6)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.a-=0.003;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
+window.goHome=()=>{page.style.display="none";}
 
 </script>
 </body>
