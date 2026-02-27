@@ -8,9 +8,11 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
 body{background:black;color:white;overflow-x:hidden; position: relative;}
+
+/* Stars Canvas */
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* Logo - تعديل المكان */
+/* Logo */
 .logo{
 position:absolute;
 top:30px;
@@ -62,15 +64,15 @@ background: rgba(255,255,255,0.05);
 }
 .sideItem:hover { background: #ffd700; color: black; }
 
-/* الأقسام - تعديل المسافة من فوق */
+/* Menu Sections */
 .menu{
 position:absolute;
-top:55%; /* نزلت الأقسام لتحت شوية */
+top:55%; /* تم تعديل الموضع لتوسيط أفضل */
 left:50%;
 transform:translate(-50%,-50%);
 display:flex;
 flex-direction:column;
-gap:35px;
+gap:25px; /* قللت المسافة عشان تبقى متناسقة */
 z-index:10;
 width:80%;
 align-items:center;
@@ -79,11 +81,13 @@ align-items:center;
 .item{
 cursor:pointer;
 font-size:24px;
-padding:10px 20px;
+padding:12px 20px;
 transition:.4s;
+border-bottom:2px solid transparent;
 }
 .item:hover{text-shadow:0 0 15px #ffd700; border-bottom: 2px solid #ffd700;}
 
+/* Neon Message */
 .neonMessage{
 position:fixed;
 top:50%;
@@ -100,6 +104,7 @@ text-align:center;
 box-shadow:0 0 20px #00ffcc;
 }
 
+/* Fullscreen Category Page */
 .fullscreen{
 position:fixed;
 inset:0;
@@ -272,6 +277,44 @@ window.login=async function(){
     }catch(e){showNeon("خطأ في البيانات");}
 }
 
+// Register Function
+window.register = async function(){
+    const name = document.getElementById("nameInput").value;
+    const email = document.getElementById("regEmailInput").value;
+    const password = document.getElementById("regPasswordInput").value;
+
+    if(!name || !email || !password){
+        showNeon("املأ كل البيانات");
+        return;
+    }
+
+    try{
+        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+
+        await setDoc(doc(db,"users",userCredential.user.uid),{
+            name:name,
+            email:email,
+            createdAt:new Date()
+        });
+
+        showNeon("تم إنشاء الحساب بنجاح");
+        closeLogin();
+
+        document.getElementById("nameInput").value="";
+        document.getElementById("regEmailInput").value="";
+        document.getElementById("regPasswordInput").value="";
+
+    }catch(error){
+        if(error.code === "auth/email-already-in-use"){
+            showNeon("الإيميل مستخدم بالفعل");
+        }else if(error.code === "auth/weak-password"){
+            showNeon("الباسورد ضعيف (6 أحرف على الأقل)");
+        }else{
+            showNeon("حدث خطأ أثناء إنشاء الحساب");
+        }
+    }
+}
+
 window.handleLogout = async function() {
     await signOut(auth);
     showNeon("تم الخروج");
@@ -291,7 +334,7 @@ onAuthStateChanged(auth,async(user)=>{
     }
 });
 
-// Animations
+// Stars Animation
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth; canvas.height=innerHeight;
@@ -304,6 +347,7 @@ function animateStars(){
 }
 animateStars();
 
+// Smoke Animation
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
 smokeCanvas.width=innerWidth; smokeCanvas.height=innerHeight;
@@ -323,6 +367,7 @@ function animateSmoke(){
 }
 animateSmoke();
 
+// Products Data
 const data={
     HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
     PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
