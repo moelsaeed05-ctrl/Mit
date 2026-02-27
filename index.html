@@ -9,8 +9,12 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
 body{background:black;color:white;overflow-x:hidden; position: relative;}
 
-/* Stars Canvas */
-#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#space{
+position:fixed;
+inset:0;
+z-index:0;
+pointer-events:none;
+}
 
 /* Logo */
 .logo{
@@ -41,38 +45,48 @@ top: 0;
 right: -280px;
 width: 260px;
 height: 100%;
-background: rgba(15, 15, 15, 0.98);
+background: rgba(15,15,15,.98);
 backdrop-filter: blur(10px);
 z-index: 200;
-transition: 0.4s ease-in-out;
+transition: .4s;
 padding: 80px 20px;
-box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+box-shadow:-5px 0 20px rgba(0,0,0,.8);
 }
-.sidebar.active { right: 0; }
+.sidebar.active{right:0;}
 
-.sideItem {
-padding: 15px;
-margin-bottom: 10px;
-border-radius: 10px;
-cursor: pointer;
-font-size: 18px;
-display: flex;
-align-items: center;
-gap: 15px;
-transition: 0.3s;
-background: rgba(255,255,255,0.05);
+.sideItem{
+padding:15px;
+margin-bottom:10px;
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+display:flex;
+align-items:center;
+gap:15px;
+transition:.3s;
+background:rgba(255,255,255,.05);
 }
-.sideItem:hover { background: #ffd700; color: black; }
+.sideItem:hover{background:#ffd700;color:black;}
 
-/* Menu Sections */
+/* Cart Badge */
+.cartBadge{
+background:red;
+color:white;
+padding:2px 8px;
+border-radius:50%;
+margin-right:10px;
+font-size:14px;
+}
+
+/* Menu */
 .menu{
 position:absolute;
-top:55%; /* تم تعديل الموضع لتوسيط أفضل */
+top:60%;
 left:50%;
 transform:translate(-50%,-50%);
 display:flex;
 flex-direction:column;
-gap:25px; /* قللت المسافة عشان تبقى متناسقة */
+gap:30px;
 z-index:10;
 width:80%;
 align-items:center;
@@ -85,7 +99,7 @@ padding:12px 20px;
 transition:.4s;
 border-bottom:2px solid transparent;
 }
-.item:hover{text-shadow:0 0 15px #ffd700; border-bottom: 2px solid #ffd700;}
+.item:hover{text-shadow:0 0 15px #ffd700;border-bottom:2px solid #ffd700;}
 
 /* Neon Message */
 .neonMessage{
@@ -100,11 +114,10 @@ font-size:20px;
 display:none;
 z-index:1000;
 color:#00ffcc;
-text-align:center;
-box-shadow:0 0 20px #00ffcc;
+box-shadow:0 0 25px #00ffcc;
 }
 
-/* Fullscreen Category Page */
+/* Fullscreen Page */
 .fullscreen{
 position:fixed;
 inset:0;
@@ -133,12 +146,17 @@ border-radius:14px;
 width:150px;
 cursor:pointer;
 transition:.4s;
-text-align: center;
+text-align:center;
 }
-.product img{ width:100%; border-radius:8px; }
-.product:hover{ transform:scale(1.05); box-shadow:0 0 15px #ffd700; }
+.product img{width:100%;border-radius:8px;}
+.product:hover{transform:scale(1.05);box-shadow:0 0 18px #ffd700;}
 
-.smokeCanvas{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+.smokeCanvas{
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
+}
 
 .detail{
 position:fixed;
@@ -149,7 +167,14 @@ justify-content:center;
 align-items:center;
 z-index:500;
 }
-.detailBox{ background:#111; padding:25px; border-radius:18px; text-align:center; width:320px; }
+
+.detailBox{
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:320px;
+}
 
 .loginModal{
 position:fixed;
@@ -160,11 +185,53 @@ justify-content:center;
 align-items:center;
 z-index:600;
 }
-.loginBox{ background:#111; padding:30px; border-radius:18px; width:320px; text-align:center; position:relative; }
-.loginBox input{ width:100%; padding:12px; margin:8px 0; border-radius:6px; background:#222; color:white; border:none; text-align: center; }
-button{ padding:12px; margin-top:10px; border:none; border-radius:8px; background:#ffd700; color: black; font-weight: bold; cursor:pointer; width:100%; }
-.closeX{ position:absolute; top:15px; left:15px; font-size:25px; cursor:pointer; color:#ff4444; }
-.categoryTitle{ font-size:26px; margin-bottom:20px; color: #ffd700;}
+
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
+}
+
+.loginBox input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:6px;
+background:#222;
+color:white;
+border:none;
+text-align:center;
+}
+
+button{
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+color:black;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+}
+
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:25px;
+cursor:pointer;
+color:#ff4444;
+}
+
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+color:#ffd700;
+}
 </style>
 </head>
 
@@ -182,21 +249,24 @@ button{ padding:12px; margin-top:10px; border:none; border-radius:8px; backgroun
 <div class="menuIcon" onclick="toggleSidebar()">☰</div>
 
 <div class="sidebar" id="sidebar">
-    <div class="closeX" onclick="toggleSidebar()">×</div>
-    <div class="sidebarItems">
-        <div class="sideItem" id="loginBtnSide" onclick="openLogin(); toggleSidebar()">
-            <span>👤</span> تسجيل الدخول
-        </div>
-        <div class="sideItem" onclick="showNeon('السلة فارغة حالياً'); toggleSidebar()">
-            <span>🛒</span> السلة
-        </div>
-        <div class="sideItem" onclick="showNeon('لا يوجد طلبات سابقة'); toggleSidebar()">
-            <span>📜</span> سجل الطلبات
-        </div>
-        <div class="sideItem" id="logoutBtn" style="display:none" onclick="handleLogout()">
-            <span>🚪</span> تسجيل الخروج
-        </div>
-    </div>
+<div class="closeX" onclick="toggleSidebar()">×</div>
+
+<div class="sideItem" id="loginBtnSide" onclick="openLogin();toggleSidebar()">
+👤 تسجيل الدخول
+</div>
+
+<div class="sideItem" onclick="openCart();toggleSidebar()">
+🛒 السلة <span id="cartCount" class="cartBadge">0</span>
+</div>
+
+<div class="sideItem" onclick="openOrders();toggleSidebar()">
+📜 الطلبات
+</div>
+
+<div class="sideItem" id="logoutBtn" style="display:none" onclick="handleLogout()">
+🚪 تسجيل الخروج
+</div>
+
 </div>
 
 <div class="menu">
@@ -217,181 +287,296 @@ button{ padding:12px; margin-top:10px; border:none; border-radius:8px; backgroun
 </div>
 
 <div class="loginModal" id="loginModal">
-    <div class="loginBox">
-        <div class="closeX" onclick="closeLogin()">✖</div>
-        <div id="loginForm">
-            <h3>تسجيل دخول</h3>
-            <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-            <input type="password" id="passwordInput" placeholder="كلمة المرور">
-            <button onclick="login()">دخول</button>
-            <span style="color:#ffd700; cursor:pointer;" onclick="showRegister()">إنشاء حساب</span>
-        </div>
-        <div id="registerForm" style="display:none">
-            <h3>حساب جديد</h3>
-            <input type="text" id="nameInput" placeholder="الاسم">
-            <input type="email" id="regEmailInput" placeholder="الايميل">
-            <input type="password" id="regPasswordInput" placeholder="الباسورد">
-            <button onclick="register()">إنشاء</button>
-            <span style="color:#ffd700; cursor:pointer;" onclick="showLogin()">رجوع</span>
-        </div>
-    </div>
+<div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
+
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+<span style="color:#ffd700;cursor:pointer;" onclick="showRegister()">إنشاء حساب</span>
+</div>
+
+<div id="registerForm" style="display:none">
+<h3>حساب جديد</h3>
+<input type="text" id="nameInput" placeholder="الاسم">
+<input type="email" id="regEmailInput" placeholder="الايميل">
+<input type="password" id="regPasswordInput" placeholder="الباسورد">
+<button onclick="register()">إنشاء</button>
+<span style="color:#ffd700;cursor:pointer;" onclick="showLogin()">رجوع</span>
+</div>
+
+</div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,setDoc,getDoc,collection,query,getDocs,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-    apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-    authDomain:"mit-store-15e1d.firebaseapp.com",
-    projectId:"mit-store-15e1d",
-    storageBucket:"mit-store-15e1d.firebasestorage.app",
-    messagingSenderId:"168416523904",
-    appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRvYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("active");
-window.openLogin = () => loginModal.style.display="flex";
-window.closeLogin = () => loginModal.style.display="none";
+let currentUser=null;
+let cartData=[];
+
+/* UI Functions */
+window.toggleSidebar=()=>sidebar.classList.toggle("active");
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
 window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
-window.goHome=()=>{page.style.display="none";}
+window.goHome=()=>page.style.display="none";
 
-window.showNeon = function(text){
-    const msg = document.getElementById("neonMsg");
-    msg.innerText=text;
-    msg.style.display="block";
-    setTimeout(()=>{msg.style.display="none";},2500);
+window.showNeon=function(text){
+neonMsg.innerText=text;
+neonMsg.style.display="block";
+setTimeout(()=>neonMsg.style.display="none",2500);
 }
 
+/* Auth */
 window.login=async function(){
-    try{
-        await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-        showNeon("أهلاً بك مجدداً");
-        closeLogin();
-    }catch(e){showNeon("خطأ في البيانات");}
+try{
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+showNeon("أهلاً بك مجدداً");
+closeLogin();
+}catch{
+showNeon("خطأ في البيانات");
+}
 }
 
-// Register Function
-window.register = async function(){
-    const name = document.getElementById("nameInput").value;
-    const email = document.getElementById("regEmailInput").value;
-    const password = document.getElementById("regPasswordInput").value;
+window.register=async function(){
+const name=nameInput.value;
+const email=regEmailInput.value;
+const password=regPasswordInput.value;
 
-    if(!name || !email || !password){
-        showNeon("املأ كل البيانات");
-        return;
-    }
-
-    try{
-        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
-
-        await setDoc(doc(db,"users",userCredential.user.uid),{
-            name:name,
-            email:email,
-            createdAt:new Date()
-        });
-
-        showNeon("تم إنشاء الحساب بنجاح");
-        closeLogin();
-
-        document.getElementById("nameInput").value="";
-        document.getElementById("regEmailInput").value="";
-        document.getElementById("regPasswordInput").value="";
-
-    }catch(error){
-        if(error.code === "auth/email-already-in-use"){
-            showNeon("الإيميل مستخدم بالفعل");
-        }else if(error.code === "auth/weak-password"){
-            showNeon("الباسورد ضعيف (6 أحرف على الأقل)");
-        }else{
-            showNeon("حدث خطأ أثناء إنشاء الحساب");
-        }
-    }
+if(!name||!email||!password){
+showNeon("املأ كل البيانات");
+return;
 }
 
-window.handleLogout = async function() {
-    await signOut(auth);
-    showNeon("تم الخروج");
-    toggleSidebar();
-}
+try{
+const userCredential=await createUserWithEmailAndPassword(auth,email,password);
 
-onAuthStateChanged(auth,async(user)=>{
-    const loginBtnSide = document.getElementById("loginBtnSide");
-    const logoutBtn = document.getElementById("logoutBtn");
-    if(user){
-        const snap=await getDoc(doc(db,"users",user.uid));
-        loginBtnSide.innerHTML=`<span>👤</span> ${snap.exists() ? snap.data().name : 'مستخدم'}`;
-        logoutBtn.style.display="flex";
-    }else{
-        loginBtnSide.innerHTML=`<span>👤</span> تسجيل الدخول`;
-        logoutBtn.style.display="none";
-    }
+await setDoc(doc(db,"users",userCredential.user.uid),{
+name,email,createdAt:new Date()
 });
 
-// Stars Animation
-const canvas=document.getElementById("space");
+showNeon("تم إنشاء الحساب");
+closeLogin();
+
+}catch{
+showNeon("خطأ في إنشاء الحساب");
+}
+}
+
+window.handleLogout=async()=>{
+await signOut(auth);
+showNeon("تم الخروج");
+toggleSidebar();
+}
+
+/* Auth State */
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+
+if(user){
+const snap=await getDoc(doc(db,"users",user.uid));
+
+loginBtnSide.innerHTML=`👤 ${snap.exists()?snap.data().name:"مستخدم"}`;
+logoutBtn.style.display="flex";
+
+loadCart();
+
+}else{
+loginBtnSide.innerHTML="👤 تسجيل الدخول";
+logoutBtn.style.display="none";
+cartCount.innerText="0";
+}
+});
+
+/* Stars Animation */
+const canvas=space;
 const ctx=canvas.getContext("2d");
-canvas.width=innerWidth; canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<200;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5});
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let stars=Array.from({length:250},()=>({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+s:Math.random()*0.7
+}));
+
 function animateStars(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    stars.forEach(st=>{ st.x-=st.s; if(st.x<0)st.x=canvas.width; ctx.fillStyle="white"; ctx.fillRect(st.x,st.y,1.2,1.2); });
-    requestAnimationFrame(animateStars);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0) st.x=canvas.width;
+
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
+});
+
+requestAnimationFrame(animateStars);
 }
 animateStars();
 
-// Smoke Animation
-const smokeCanvas=document.getElementById("smoke");
+/* Strong Smoke Effect */
+const smokeCanvas=smoke;
 const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth; smokeCanvas.height=innerHeight;
+
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+
 let smokes=[];
+
 function animateSmoke(){
-    smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-    if(Math.random()<0.1) smokes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*100+50,a:0.2});
-    smokes.forEach((s,i)=>{
-        s.a-=0.001;
-        let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-        g.addColorStop(0,`rgba(100,100,100,${s.a})`);
-        g.addColorStop(1,"transparent");
-        smokeCtx.fillStyle=g; smokeCtx.beginPath(); smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2); smokeCtx.fill();
-        if(s.a<=0)smokes.splice(i,1);
-    });
-    requestAnimationFrame(animateSmoke);
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+
+/* كثافة دخان أعلى */
+if(Math.random()<0.25){
+smokes.push({
+x:Math.random()*innerWidth,
+y:Math.random()*innerHeight,
+r:Math.random()*120+60,
+a:0.35
+});
+}
+
+smokes.forEach((s,i)=>{
+s.a-=0.002;
+
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(120,120,120,${s.a})`);
+g.addColorStop(1,"transparent");
+
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+
+if(s.a<=0) smokes.splice(i,1);
+});
+
+requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
 
-// Products Data
+/* Products */
 const data={
-    HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-    PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-    ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
 };
 
 window.openCategory=function(cat){
-    page.style.display="flex";
-    products.innerHTML="";
-    categoryTitle.innerText=cat;
-    data[cat].forEach(p=>{
-        products.innerHTML+=`<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'><img src="${p.img}"><div>${p.name}</div><div style="color:#ffd700">${p.price}</div></div>`;
-    });
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+
+data[cat].forEach(p=>{
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<img src="${p.img}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
+}
+
+/* Cart System */
+window.addToCart=async function(name,img,price){
+
+if(!currentUser){
+showNeon("سجل الدخول أولاً");
+return;
+}
+
+const cartRef=doc(db,"users",currentUser.uid,"cart",Date.now().toString());
+
+await setDoc(cartRef,{name,img,price,time:new Date()});
+
+showNeon("تمت الإضافة للسلة");
+loadCart();
+
+/* انفجار دخان إضافي */
+for(let i=0;i<25;i++){
+smokes.push({
+x:Math.random()*innerWidth,
+y:Math.random()*innerHeight,
+r:Math.random()*150,
+a:0.5
+});
+}
+}
+
+/* Load Cart */
+window.loadCart=async function(){
+
+if(!currentUser) return;
+
+const q=query(collection(db,"users",currentUser.uid,"cart"));
+const snap=await getDocs(q);
+
+cartData=[];
+snap.forEach(doc=>cartData.push({...doc.data(),id:doc.id}));
+
+cartCount.innerText=cartData.length;
+}
+
+/* Open Cart */
+window.openCart=function(){
+let html="<h2 style='margin-bottom:20px'>السلة</h2>";
+
+cartData.forEach(item=>{
+html+=`
+<div style="background:#111;padding:12px;border-radius:10px;margin:10px 0;text-align:center">
+<img src="${item.img}" style="width:100px;border-radius:8px"><br>
+${item.name}<br>
+<span style="color:#ffd700">${item.price}</span><br>
+<button onclick="removeCart('${item.id}')">حذف</button>
+</div>`;
+});
+
+detailBox.innerHTML=html;
+detail.style.display="flex";
+}
+
+/* Orders */
+window.openOrders=function(){
+showNeon("لا يوجد طلبات حالياً");
+}
+
+window.removeCart=async function(id){
+
+await deleteDoc(doc(db,"users",currentUser.uid,"cart",id));
+showNeon("تم الحذف");
+loadCart();
 }
 
 window.showDetail=function(n,i,p){
-    detail.style.display="flex";
-    detailBox.innerHTML=`
-    <div class="closeX" onclick="detail.style.display='none'">✖</div>
-    <img src="${i}" style="width:100%;border-radius:10px;">
-    <h3 style="margin:10px 0">${n}</h3>
-    <div style="color:#ffd700;font-size:20px;margin-bottom:10px">${p}</div>
-    <button onclick="showNeon('تمت الإضافة للسلة')">إضافة إلى السلة</button>`;
+detail.style.display="flex";
+
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<img src="${i}" style="width:100%;border-radius:10px">
+<h3 style="margin:10px 0">${n}</h3>
+<div style="color:#ffd700;font-size:20px;margin-bottom:10px">${p}</div>
+<button onclick='addToCart("${n}","${i}","${p}")'>إضافة إلى السلة</button>
+`;
 }
 </script>
+
 </body>
 </html>
