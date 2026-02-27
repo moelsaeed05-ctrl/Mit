@@ -34,6 +34,25 @@ font-weight:bold;
 font-size:14px;
 }
 
+.profileMenu{
+position:absolute;
+top:60px;
+right:20px;
+background:#111;
+padding:10px;
+border-radius:10px;
+display:none;
+z-index:100;
+width:180px;
+}
+
+.profileMenu div{
+padding:8px;
+cursor:pointer;
+border-bottom:1px solid #333;
+}
+.profileMenu div:hover{color:#ffd700;}
+
 .closeX{
 position:absolute;
 top:15px;
@@ -77,11 +96,15 @@ align-items:center;
 .item{
 cursor:pointer;
 font-size:22px;
-padding:12px 30px;
-border-radius:12px;
+padding:14px 40px;
+border-radius:14px;
 transition:.4s;
+box-shadow:0 0 10px rgba(255,215,0,.3);
 }
-.item:hover{text-shadow:0 0 10px #ffd700;}
+.item:hover{
+text-shadow:0 0 10px #ffd700;
+box-shadow:0 0 15px #ffd700;
+}
 
 .fullscreen{
 position:fixed;
@@ -109,7 +132,7 @@ z-index:5;
 background:#111;
 padding:12px;
 border-radius:14px;
-width:140px;
+width:160px;
 cursor:pointer;
 transition:.4s;
 }
@@ -147,55 +170,48 @@ background:#111;
 padding:25px;
 border-radius:18px;
 text-align:center;
-width:300px;
+width:320px;
 position:relative;
 }
 
-.loginModal{
+.cartModal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.9);
+background:rgba(0,0,0,.95);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:80;
+z-index:90;
 }
 
-.loginBox{
+.cartBox{
 background:#111;
-padding:30px;
+padding:20px;
 border-radius:18px;
-width:320px;
-text-align:center;
+width:350px;
+max-height:80vh;
+overflow:auto;
 position:relative;
 }
 
-.loginBox input{
-width:100%;
-padding:10px;
-margin:8px 0;
-border:none;
-border-radius:6px;
-background:#222;
-color:white;
-}
-
-.smallLink{
-font-size:13px;
-color:#ffd700;
-cursor:pointer;
-margin-top:8px;
-display:block;
-}
-
 button{
-padding:10px;
+padding:8px;
 margin-top:10px;
 border:none;
 border-radius:8px;
 background:#ffd700;
 cursor:pointer;
 width:100%;
+}
+
+select,input[type=number]{
+width:100%;
+margin-top:8px;
+padding:6px;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
 }
 
 .categoryTitle{
@@ -218,7 +234,13 @@ z-index:10;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+<div class="loginBtn" id="loginBtn" onclick="toggleProfile()">تسجيل الدخول</div>
+
+<div class="profileMenu" id="profileMenu">
+<div onclick="openCart()">🛒 السلة</div>
+<div onclick="openOrders()">📦 سجل المشتريات</div>
+<div onclick="logout()">🚪 تسجيل خروج</div>
+</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
@@ -237,185 +259,118 @@ z-index:10;
 <div class="detailBox" id="detailBox"></div>
 </div>
 
-<div class="loginModal" id="loginModal">
-<div class="loginBox">
-<div class="closeX" onclick="closeLogin()">✖</div>
-
-<div id="loginForm">
-<h3>تسجيل دخول</h3>
-<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="passwordInput" placeholder="كلمة المرور">
-<button onclick="login()">تسجيل دخول</button>
-<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
-</div>
-
-<div id="registerForm" style="display:none">
-<h3>إنشاء حساب</h3>
-<input type="text" id="nameInput" placeholder="الاسم بالكامل">
-<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
-<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
-<button onclick="register()">إنشاء حساب</button>
-<span class="smallLink" onclick="showLogin()">رجوع</span>
-</div>
-
+<div class="cartModal" id="cartModal">
+<div class="cartBox">
+<div class="closeX" onclick="cartModal.style.display='none'">✖</div>
+<h3>السلة</h3>
+<div id="cartItems"></div>
+<h4 id="totalPrice"></h4>
+<button onclick="confirmOrder()">تأكيد الطلب</button>
 </div>
 </div>
 
-<script type="module">
+<script>
+let cart=[];
+let orders=[];
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain:"mit-store-15e1d.firebaseapp.com",
-projectId:"mit-store-15e1d",
-storageBucket:"mit-store-15e1d.firebasestorage.app",
-messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const loginBtn=document.getElementById("loginBtn");
-
-function clearInputs(){
-emailInput.value="";
-passwordInput.value="";
-nameInput.value="";
-regEmailInput.value="";
-regPasswordInput.value="";
-confirmInput.value="";
-}
-
-function showNeon(text){
-neonMsg.innerText=text;
+function showNeon(t){
+neonMsg.innerText=t;
 neonMsg.style.display="block";
 setTimeout(()=>{neonMsg.style.display="none";},3000);
 }
 
-window.register=async function(){
-if(regPasswordInput.value!==confirmInput.value){
-showNeon("كلمة المرور غير متطابقة");return;}
-try{
-const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
-await setDoc(doc(db,"users",user.user.uid),{
-name:nameInput.value,
-email:regEmailInput.value
+function toggleProfile(){
+profileMenu.style.display=profileMenu.style.display=="block"?"none":"block";
+}
+
+function logout(){
+location.reload();
+}
+
+function openCart(){
+cartModal.style.display="flex";
+renderCart();
+}
+
+function renderCart(){
+cartItems.innerHTML="";
+let total=0;
+cart.forEach((item,i)=>{
+total+=item.price*item.qty;
+cartItems.innerHTML+=`
+<div style="border-bottom:1px solid #333;padding:8px 0">
+<input type="checkbox" checked id="check${i}">
+${item.name} (${item.size}) x${item.qty} - ${item.price*item.qty}$
+</div>`;
 });
-showNeon("تم إنشاء الحساب");
-clearInputs();
-closeLogin();
-}catch(e){showNeon(e.message);}
+totalPrice.innerText="الإجمالي: "+total+"$";
 }
 
-window.login=async function(){
-try{
-await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول");
-clearInputs();
-closeLogin();
-}catch(e){showNeon(e.message);}
+function confirmOrder(){
+orders.push(...cart);
+cart=[];
+renderCart();
+showNeon("تم تأكيد الطلب");
+cartModal.style.display="none";
 }
 
-onAuthStateChanged(auth,async(user)=>{
-if(user){
-const snap=await getDoc(doc(db,"users",user.uid));
-if(snap.exists()){
-loginBtn.innerText=snap.data().name;
+function openOrders(){
+let text="سجل المشتريات:\n";
+orders.forEach(o=>text+=`${o.name} (${o.size}) x${o.qty}\n`);
+alert(text);
 }
-}else{
-loginBtn.innerText="تسجيل الدخول";
-}
-});
-
-window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
-window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
-window.goHome=()=>{page.style.display="none";}
-
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<250;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
-}
-function animateStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;
-if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
-});
-requestAnimationFrame(animateStars);
-}
-animateStars();
-
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-let smokes=[];
-function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
-}
-function animateSmoke(){
-smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
 
 const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
+HOODIES:[
+{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:50},
+{name:"Gray Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:55}
+],
+PANTS:[
+{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:40},
+{name:"Cargo Pants",img:"https://images.unsplash.com/photo-1593030761757-71fae45fa0e7",price:45}
+],
+ACCESSORIES:[
+{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:20},
+{name:"Chain",img:"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519",price:30}
+]
 };
 
-window.openCategory=function(cat){
+function openCategory(cat){
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
 data[cat].forEach(p=>{
 products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<div class="product" onclick='showDetail("${p.name}","${p.img}",${p.price})'>
 <img src="${p.img}">
 <div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
+<div style="color:#ffd700">${p.price}$</div>
 </div>`;
 });
 }
 
-window.showDetail=function(n,i,p){
+function showDetail(n,i,p){
 detail.style.display="flex";
 detailBox.innerHTML=`
 <div class="closeX" onclick="detail.style.display='none'">✖</div>
 <h3>${n}</h3>
 <img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}</div>
+<select id="size">
+<option>S</option><option>M</option><option>L</option><option>XL</option>
+</select>
+<input type="number" id="qty" value="1" min="1">
+<button onclick="addToCart('${n}',${p})">إضافة للسلة</button>
 `;
 }
 
+function addToCart(n,p){
+let size=document.getElementById("size").value;
+let qty=parseInt(document.getElementById("qty").value);
+cart.push({name:n,price:p,size:size,qty:qty});
+showNeon("تم إضافة للسلة");
+detail.style.display="none";
+}
 </script>
+
 </body>
 </html>
