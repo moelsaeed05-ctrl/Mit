@@ -8,85 +8,115 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
-
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
 .logo{
-position:absolute;top:20px;left:50%;
+position:absolute;
+top:20px;
+left:50%;
 transform:translateX(-50%);
-font-size:28px;letter-spacing:6px;z-index:10;
+font-size:28px;
+letter-spacing:6px;
+z-index:10;
 }
 
 .loginBtn{
-position:absolute;top:20px;right:20px;
-background:#ffd700;color:black;
-padding:6px 14px;border-radius:8px;
-cursor:pointer;z-index:10;font-weight:bold;font-size:14px;
+position:absolute;
+top:20px;
+right:20px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
+font-size:14px;
 }
 
 .closeX{
-position:absolute;top:15px;left:15px;
-font-size:22px;cursor:pointer;color:#ff4444;
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
 }
 
 .neonMessage{
-position:fixed;top:50%;left:50%;
+position:fixed;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-padding:20px 40px;border-radius:15px;
-background:#111;font-size:22px;display:none;
-z-index:200;color:#00ffcc;text-align:center;
-box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,
-0 0 40px #00ffcc,0 0 80px #00ffcc;
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:22px;
+display:none;
+z-index:200;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
 animation:fadeOut 3s forwards;
 }
 @keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
 .menu{
-position:absolute;top:50%;left:50%;
+position:absolute;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-display:flex;flex-direction:column;
-gap:35px;z-index:10;width:80%;
+display:flex;
+flex-direction:column;
+gap:35px;
+z-index:10;
+width:80%;
 align-items:center;
 }
 
 .item{
-cursor:pointer;font-size:22px;
-padding:12px 30px;border-radius:12px;
+cursor:pointer;
+font-size:22px;
+padding:12px 30px;
+border-radius:12px;
 transition:.4s;
 }
 .item:hover{text-shadow:0 0 10px #ffd700;}
 
 .fullscreen{
-position:fixed;inset:0;background:black;
-display:none;flex-direction:column;
-align-items:center;z-index:40;
-padding-top:90px;overflow:auto;
-}
-
-.categoryTitle{
-font-size:28px;
-margin-bottom:20px;
-letter-spacing:4px;
-color:#00ffcc;
-text-shadow:0 0 5px #00ffcc,0 0 10px #00ffcc,
-0 0 20px #00ffcc,0 0 40px #00ffcc;
-z-index:10;
+position:fixed;
+inset:0;
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:90px;
+overflow:auto;
 }
 
 .products{
-display:flex;gap:20px;flex-wrap:wrap;
-justify-content:center;width:95%;
-position:relative;z-index:5;
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:95%;
+position:relative;
+z-index:5;
 }
 
 .product{
-background:#111;padding:12px;
-border-radius:14px;width:140px;
-cursor:pointer;transition:.4s;
+background:#111;
+padding:12px;
+border-radius:14px;
+width:140px;
+cursor:pointer;
+transition:.4s;
 }
 
 .product img{
-width:100%;border-radius:8px;
+width:100%;
+border-radius:8px;
 margin-bottom:8px;
 }
 
@@ -96,54 +126,83 @@ box-shadow:0 0 10px #ffd700;
 }
 
 .smokeCanvas{
-position:absolute;inset:0;
-z-index:1;pointer-events:none;
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
 }
 
 .detail{
-position:fixed;inset:0;
+position:fixed;
+inset:0;
 background:rgba(0,0,0,.95);
-display:none;justify-content:center;
-align-items:center;z-index:60;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:60;
 }
 
 .detailBox{
-background:#111;padding:25px;
-border-radius:18px;text-align:center;
-width:300px;position:relative;
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:300px;
+position:relative;
 }
 
 .loginModal{
-position:fixed;inset:0;
+position:fixed;
+inset:0;
 background:rgba(0,0,0,.9);
-display:none;justify-content:center;
-align-items:center;z-index:80;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
 }
 
 .loginBox{
-background:#111;padding:30px;
-border-radius:18px;width:320px;
-text-align:center;position:relative;
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
 }
 
 .loginBox input{
-width:100%;padding:10px;
-margin:8px 0;border:none;
-border-radius:6px;background:#222;
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+background:#222;
 color:white;
 }
 
 .smallLink{
-font-size:13px;color:#ffd700;
-cursor:pointer;margin-top:8px;
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
 display:block;
 }
 
 button{
-padding:10px;margin-top:10px;
-border:none;border-radius:8px;
-background:#ffd700;cursor:pointer;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
 width:100%;
+}
+
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
 }
 </style>
 </head>
@@ -159,7 +218,7 @@ width:100%;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" id="loginBtn">تسجيل الدخول</div>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
@@ -206,7 +265,7 @@ width:100%;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -224,15 +283,6 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const loginBtn=document.getElementById("loginBtn");
-
-loginBtn.onclick=()=>{
-if(auth.currentUser){
-signOut(auth);
-showNeon("تم تسجيل الخروج");
-}else{
-openLogin();
-}
-};
 
 function clearInputs(){
 emailInput.value="";
@@ -275,29 +325,28 @@ closeLogin();
 
 onAuthStateChanged(auth,async(user)=>{
 if(user){
-try{
 const snap=await getDoc(doc(db,"users",user.uid));
 if(snap.exists()){
 loginBtn.innerText=snap.data().name;
-}else{
-loginBtn.innerText=user.email;
-}
-}catch{
-loginBtn.innerText=user.email;
 }
 }else{
 loginBtn.innerText="تسجيل الدخول";
 }
 });
 
-/* النجوم */
+window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
+window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 let stars=[];
 for(let i=0;i<250;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.7+0.3});
+stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
 }
 function animateStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -311,22 +360,19 @@ requestAnimationFrame(animateStars);
 }
 animateStars();
 
-/* الدخان اقوى */
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
 smokeCanvas.width=innerWidth;
 smokeCanvas.height=innerHeight;
 let smokes=[];
 function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*150+80,a:0.4};
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
 }
 function animateSmoke(){
 smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(page.style.display==="flex"){
-if(Math.random()<0.6)smokes.push(createSmoke());
-}
+if(Math.random()<0.3)smokes.push(createSmoke());
 smokes.forEach((s,i)=>{
-s.a-=0.003;
+s.a-=0.002;
 let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
 g.addColorStop(0,`rgba(200,200,200,${s.a})`);
 g.addColorStop(1,"transparent");
@@ -340,7 +386,6 @@ requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
 
-/* المنتجات */
 const data={
 HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
 PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
@@ -370,12 +415,6 @@ detailBox.innerHTML=`
 <div style="margin-top:10px;color:#ffd700">${p}</div>
 `;
 }
-
-window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
-window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
-window.goHome=()=>{page.style.display="none";}
 
 </script>
 </body>
