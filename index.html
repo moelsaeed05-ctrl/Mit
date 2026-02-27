@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIT STORE</title>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
@@ -56,18 +55,6 @@ border-bottom:1px solid #222;
 background:#222;
 }
 
-.categoryTitle{
-font-size:28px;
-margin-bottom:20px;
-letter-spacing:3px;
-animation:neonGlow 1.5s ease-in-out;
-}
-@keyframes neonGlow{
-0%{text-shadow:0 0 5px #ffd700;}
-50%{text-shadow:0 0 20px #ffd700,0 0 40px #ffd700;}
-100%{text-shadow:0 0 5px #ffd700;}
-}
-
 .menu{
 position:absolute;
 top:50%;
@@ -100,6 +87,18 @@ align-items:center;
 z-index:40;
 padding-top:90px;
 overflow:auto;
+}
+
+.categoryTitle{
+font-size:28px;
+margin-bottom:20px;
+letter-spacing:3px;
+animation:neonGlow 1.5s ease-in-out;
+}
+@keyframes neonGlow{
+0%{text-shadow:0 0 5px #ffd700;}
+50%{text-shadow:0 0 20px #ffd700,0 0 40px #ffd700;}
+100%{text-shadow:0 0 5px #ffd700;}
 }
 
 .products{
@@ -165,9 +164,16 @@ border-radius:6px;
 background:#222;
 color:white;
 }
+
+/* ===== Smoke Canvas ===== */
+.smokeCanvas{
+position:absolute;
+inset:0;
+z-index:30;
+pointer-events:none;
+}
 </style>
 </head>
-
 <body>
 
 <canvas id="space"></canvas>
@@ -190,6 +196,7 @@ color:white;
 </div>
 
 <div class="fullscreen" id="page">
+<canvas class="smokeCanvas" id="smoke"></canvas>
 <div class="categoryTitle" id="categoryTitle"></div>
 <div class="products" id="products"></div>
 </div>
@@ -219,10 +226,8 @@ color:white;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc,updateDoc,arrayUnion }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc,updateDoc,arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"YOUR_KEY",
@@ -236,6 +241,15 @@ const db=getFirestore(app);
 
 let currentUser=null;
 let cart=[];
+
+const loginBtn=document.getElementById("loginBtn");
+const dropdown=document.getElementById("dropdown");
+const loginModal=document.getElementById("loginModal");
+const page=document.getElementById("page");
+const categoryTitle=document.getElementById("categoryTitle");
+const products=document.getElementById("products");
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
 
 onAuthStateChanged(auth,async(user)=>{
 if(user){
@@ -255,13 +269,19 @@ else dropdown.style.display=dropdown.style.display==="flex"?"none":"flex";
 }
 
 window.register=async()=>{
+try{
 const user=await createUserWithEmailAndPassword(auth,regEmail.value,regPass.value);
 await setDoc(doc(db,"users",user.user.uid),{name:name.value,cart:[],orders:[]});
+alert("تم إنشاء الحساب");
+loginModal.style.display="none";
+}catch(e){alert(e.message);}
 }
 
 window.login=async()=>{
+try{
 await signInWithEmailAndPassword(auth,email.value,pass.value);
 loginModal.style.display="none";
+}catch(e){alert(e.message);}
 }
 
 window.logout=()=>signOut(auth);
@@ -270,6 +290,7 @@ window.openCategory=(cat)=>{
 page.style.display="flex";
 categoryTitle.innerText=cat;
 products.innerHTML="";
+startSmoke(); // شغل الدخان
 data[cat].forEach(p=>{
 products.innerHTML+=`
 <div class="product">
@@ -296,6 +317,7 @@ cartBox.innerHTML+=`<button onclick="checkout()">إتمام الشراء</button
 }
 
 window.checkout=async()=>{
+if(!currentUser){alert("سجل الدخول أولا");return;}
 await updateDoc(doc(db,"users",currentUser.uid),{
 orders:arrayUnion(...cart)
 });
@@ -305,6 +327,7 @@ alert("تم الشراء");
 }
 
 window.openOrders=async()=>{
+if(!currentUser){alert("سجل الدخول أولا");return;}
 ordersModal.style.display="flex";
 const snap=await getDoc(doc(db,"users",currentUser.uid));
 ordersBox.innerHTML="<h3>مشترياتي</h3>";
@@ -313,6 +336,56 @@ ordersBox.innerHTML+=`<div>${o.name} - ${o.price}</div>`;
 });
 }
 
+// ===== Stars Background =====
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let stars=[];
+for(let i=0;i<250;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});}
+function animateStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
+});
+requestAnimationFrame(animateStars);
+}
+animateStars();
+
+// ===== Smoke when section open =====
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+let smokes=[];
+let smokeInterval=null;
+function createSmoke(){return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};}
+function animateSmoke(){
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+smokes.forEach((s,i)=>{
+s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
+});
+requestAnimationFrame(animateSmoke);
+}
+function startSmoke(){
+smokes=[];
+smokeCanvas.style.display="block";
+clearInterval(smokeInterval);
+smokeInterval=setInterval(()=>{if(Math.random()<0.3)smokes.push(createSmoke());},50);
+animateSmoke();
+setTimeout(()=>{smokeCanvas.style.display="none";clearInterval(smokeInterval);},10000);
+}
+
+// ===== Products Data =====
 const data={
 HOODIES:[
 {name:"Black Hoodie",img:"https://picsum.photos/200?1",price:"50$"},
