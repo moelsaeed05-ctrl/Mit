@@ -8,85 +8,115 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:black;color:white;overflow:hidden;}
-
 #space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
 .logo{
-position:absolute;top:20px;left:50%;
+position:absolute;
+top:20px;
+left:50%;
 transform:translateX(-50%);
-font-size:28px;letter-spacing:6px;z-index:10;
+font-size:28px;
+letter-spacing:6px;
+z-index:10;
 }
 
 .loginBtn{
-position:absolute;top:20px;right:20px;
-background:#ffd700;color:black;
-padding:6px 14px;border-radius:8px;
-cursor:pointer;z-index:10;font-weight:bold;font-size:14px;
+position:absolute;
+top:20px;
+right:20px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
+font-size:14px;
 }
 
 .closeX{
-position:absolute;top:15px;left:15px;
-font-size:22px;cursor:pointer;color:#ff4444;
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
 }
 
 .neonMessage{
-position:fixed;top:50%;left:50%;
+position:fixed;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-padding:20px 40px;border-radius:15px;
-background:#111;font-size:22px;display:none;
-z-index:200;color:#00ffcc;text-align:center;
-box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,
-0 0 40px #00ffcc,0 0 80px #00ffcc;
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:22px;
+display:none;
+z-index:200;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
 animation:fadeOut 3s forwards;
 }
 @keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
 .menu{
-position:absolute;top:50%;left:50%;
+position:absolute;
+top:50%;
+left:50%;
 transform:translate(-50%,-50%);
-display:flex;flex-direction:column;
-gap:35px;z-index:10;width:80%;
+display:flex;
+flex-direction:column;
+gap:35px;
+z-index:10;
+width:80%;
 align-items:center;
 }
 
 .item{
-cursor:pointer;font-size:22px;
-padding:12px 30px;border-radius:12px;
+cursor:pointer;
+font-size:22px;
+padding:12px 30px;
+border-radius:12px;
 transition:.4s;
 }
 .item:hover{text-shadow:0 0 10px #ffd700;}
 
 .fullscreen{
-position:fixed;inset:0;background:black;
-display:none;flex-direction:column;
-align-items:center;z-index:40;
-padding-top:90px;overflow:auto;
-}
-
-.categoryTitle{
-font-size:28px;
-margin-bottom:20px;
-letter-spacing:4px;
-color:#00ffcc;
-text-shadow:0 0 5px #00ffcc,0 0 10px #00ffcc,
-0 0 20px #00ffcc,0 0 40px #00ffcc;
-z-index:10;
+position:fixed;
+inset:0;
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:90px;
+overflow:auto;
 }
 
 .products{
-display:flex;gap:20px;flex-wrap:wrap;
-justify-content:center;width:95%;
-position:relative;z-index:5;
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:95%;
+position:relative;
+z-index:5;
 }
 
 .product{
-background:#111;padding:12px;
-border-radius:14px;width:140px;
-cursor:pointer;transition:.4s;
+background:#111;
+padding:12px;
+border-radius:14px;
+width:140px;
+cursor:pointer;
+transition:.4s;
 }
 
 .product img{
-width:100%;border-radius:8px;
+width:100%;
+border-radius:8px;
 margin-bottom:8px;
 }
 
@@ -96,88 +126,84 @@ box-shadow:0 0 10px #ffd700;
 }
 
 .smokeCanvas{
-position:absolute;inset:0;
-z-index:1;pointer-events:none;
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
 }
 
 .detail{
-position:fixed;inset:0;
+position:fixed;
+inset:0;
 background:rgba(0,0,0,.95);
-display:none;justify-content:center;
-align-items:center;z-index:60;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:60;
 }
 
 .detailBox{
-background:#111;padding:25px;
-border-radius:18px;text-align:center;
-width:300px;position:relative;
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:300px;
+position:relative;
 }
 
 .loginModal{
-position:fixed;inset:0;
+position:fixed;
+inset:0;
 background:rgba(0,0,0,.9);
-display:none;justify-content:center;
-align-items:center;z-index:80;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
 }
 
 .loginBox{
-background:#111;padding:30px;
-border-radius:18px;width:340px;
-text-align:center;position:relative;
-box-shadow:0 0 20px rgba(0,255,200,.3);
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
 }
 
 .loginBox input{
-width:100%;padding:10px;
-margin:8px 0;border:none;
-border-radius:6px;background:#222;
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+background:#222;
 color:white;
 }
 
 .smallLink{
-font-size:13px;color:#ffd700;
-cursor:pointer;margin-top:8px;
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
 display:block;
 }
 
 button{
-padding:10px;margin-top:10px;
-border:none;border-radius:8px;
-background:#ffd700;cursor:pointer;
-width:100%;font-weight:bold;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
 }
 
-/* ===== PROFILE DESIGN ===== */
-.profileAvatar{
-width:80px;height:80px;
-border-radius:50%;
-background:linear-gradient(45deg,#ffd700,#00ffcc);
-display:flex;align-items:center;
-justify-content:center;
-font-size:32px;font-weight:bold;
-color:black;margin:10px auto;
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
 }
-
-.profileName{
-font-size:18px;margin-top:10px;
-color:#00ffcc;
-}
-
-.profileEmail{
-font-size:14px;
-opacity:.7;margin-top:5px;
-}
-
-.logoutBtn{
-background:#ff4444;
-color:white;
-margin-top:15px;
-}
-
-.logoutBtn:hover{
-background:#ff2222;
-}
-
 </style>
 </head>
 
@@ -192,12 +218,23 @@ background:#ff2222;
 <span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="loginBtn" id="loginBtn">تسجيل الدخول</div>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
 <div class="menu">
 <div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
 <div class="item" onclick="openCategory('PANTS')">PANTS</div>
 <div class="item" onclick="openCategory('ACCESSORIES')">ACCESSORIES</div>
+</div>
+
+<div class="fullscreen" id="page">
+<div class="closeX" onclick="goHome()">✖</div>
+<canvas class="smokeCanvas" id="smoke"></canvas>
+<div class="categoryTitle" id="categoryTitle"></div>
+<div class="products" id="products"></div>
+</div>
+
+<div class="detail" id="detail">
+<div class="detailBox" id="detailBox"></div>
 </div>
 
 <div class="loginModal" id="loginModal">
@@ -222,85 +259,163 @@ background:#ff2222;
 <span class="smallLink" onclick="showLogin()">رجوع</span>
 </div>
 
-<!-- ===== PROFILE ===== -->
-<div id="profileBox" style="display:none">
-<div class="profileAvatar" id="avatarLetter"></div>
-<div class="profileName" id="profileName"></div>
-<div class="profileEmail" id="profileEmail"></div>
-<button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
-<span class="smallLink" onclick="backToLogin()">رجوع</span>
-</div>
-
 </div>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"YOUR_API",
-authDomain:"YOUR_DOMAIN",
-projectId:"YOUR_ID",
-storageBucket:"YOUR_BUCKET",
-messagingSenderId:"YOUR_SENDER",
-appId:"YOUR_APPID"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
 
-loginBtn.onclick=()=>{
-if(auth.currentUser){
-openProfile();
-}else{
-openLogin();
+function clearInputs(){
+emailInput.value="";
+passwordInput.value="";
+nameInput.value="";
+regEmailInput.value="";
+regPasswordInput.value="";
+confirmInput.value="";
 }
-};
 
-window.logout=async function(){
-await signOut(auth);
+function showNeon(text){
+neonMsg.innerText=text;
+neonMsg.style.display="block";
+setTimeout(()=>{neonMsg.style.display="none";},3000);
+}
+
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+showNeon("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+showNeon("تم إنشاء الحساب");
+clearInputs();
 closeLogin();
-showNeon("تم تسجيل الخروج");
-};
-
-function openProfile(){
-loginForm.style.display="none";
-registerForm.style.display="none";
-profileBox.style.display="block";
-loginModal.style.display="flex";
+}catch(e){showNeon(e.message);}
 }
 
-function backToLogin(){
-profileBox.style.display="none";
-loginForm.style.display="block";
+window.login=async function(){
+try{
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+showNeon("تم تسجيل الدخول");
+clearInputs();
+closeLogin();
+}catch(e){showNeon(e.message);}
 }
 
 onAuthStateChanged(auth,async(user)=>{
 if(user){
 const snap=await getDoc(doc(db,"users",user.uid));
-let name=user.email;
-if(snap.exists()) name=snap.data().name;
-loginBtn.innerText=name;
-profileName.innerText=name;
-profileEmail.innerText=user.email;
-avatarLetter.innerText=name.charAt(0).toUpperCase();
+if(snap.exists()){
+loginBtn.innerText=snap.data().name;
+}
 }else{
 loginBtn.innerText="تسجيل الدخول";
-profileBox.style.display="none";
 }
 });
 
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
 window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+}
+function animateStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
+});
+requestAnimationFrame(animateStars);
+}
+animateStars();
+
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
+let smokes=[];
+function createSmoke(){
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
+}
+function animateSmoke(){
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+if(Math.random()<0.3)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
+});
+requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
+const data={
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
+};
+
+window.openCategory=function(cat){
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+data[cat].forEach(p=>{
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<img src="${p.img}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
+}
+
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
+}
 
 </script>
 </body>
-  </html>
+</html>
