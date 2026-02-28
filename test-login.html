@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test Login</title>
+</head>
+<body style="background:black;color:white;text-align:center;font-family:Arial">
+
+<h2>Firebase Login Test</h2>
+
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:711219a46f1c87b82e9865"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.login = async function(){
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth,email,pass);
+    alert("تم تسجيل الدخول بنجاح ✅");
+  } catch (e) {
+    alert("ERROR: " + e.code);
+    console.log(e);
+  }
+}
+
+</script>
+
+</body>
+</html>
