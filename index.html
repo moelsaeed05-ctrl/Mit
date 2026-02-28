@@ -259,17 +259,31 @@ z-index:10;
 <span class="smallLink" onclick="showLogin()">رجوع</span>
 </div>
 
-</div>
-</div>
 
 <script type="module">
-import { collection, getDocs, query, where }
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc }
+import { getFirestore,doc,setDoc,getDoc,collection,getDocs,query,where }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const firebaseConfig={
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
+
+
+// 🔥 جلب المنتجات من فايربيس
 window.openCategory = async function(cat){
 
 page.style.display="flex";
@@ -297,83 +311,28 @@ products.innerHTML+=`
 
 }
 
-const firebaseConfig={
-apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-authDomain:"mit-store-15e1d.firebaseapp.com",
-projectId:"mit-store-15e1d",
-storageBucket:"mit-store-15e1d.firebasestorage.app",
-messagingSenderId:"168416523904",
-appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
-};
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-  window.openCategory = async function(cat){
-
-page.style.display="flex";
-products.innerHTML="";
-categoryTitle.innerText=cat;
-
-const q = query(collection(db,"products"), where("category","==",cat));
-const querySnapshot = await getDocs(q);
-
-if(querySnapshot.empty){
-products.innerHTML="<p>لا توجد منتجات حالياً</p>";
-return;
-}
-
-querySnapshot.forEach((doc)=>{
-const p = doc.data();
-
-products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
-<img src="${p.image}">
-<div>${p.name}</div>
-<div style="color:#ffd700">${p.price}</div>
-</div>`;
-});
-
-  }
-const loginBtn=document.getElementById("loginBtn");
-
-function clearInputs(){
-emailInput.value="";
-passwordInput.value="";
-nameInput.value="";
-regEmailInput.value="";
-regPasswordInput.value="";
-confirmInput.value="";
-}
-
-function showNeon(text){
-neonMsg.innerText=text;
-neonMsg.style.display="block";
-setTimeout(()=>{neonMsg.style.display="none";},3000);
-}
-
+// 🔐 تسجيل دخول / تسجيل جديد
 window.register=async function(){
 if(regPasswordInput.value!==confirmInput.value){
-showNeon("كلمة المرور غير متطابقة");return;}
+alert("كلمة المرور غير متطابقة");return;}
 try{
 const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
 await setDoc(doc(db,"users",user.user.uid),{
 name:nameInput.value,
 email:regEmailInput.value
 });
-showNeon("تم إنشاء الحساب");
-clearInputs();
+alert("تم إنشاء الحساب");
 closeLogin();
-}catch(e){showNeon(e.message);}
+}catch(e){alert(e.message);}
 }
 
 window.login=async function(){
 try{
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول");
-clearInputs();
+alert("تم تسجيل الدخول");
 closeLogin();
-}catch(e){showNeon(e.message);}
+}catch(e){alert(e.message);}
 }
 
 onAuthStateChanged(auth,async(user)=>{
@@ -387,58 +346,21 @@ loginBtn.innerText="تسجيل الدخول";
 }
 });
 
-window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
-window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
 window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
 window.goHome=()=>{page.style.display="none";}
 
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-let stars=[];
-for(let i=0;i<250;i++){
-stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
 }
-function animateStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-stars.forEach(st=>{
-st.x-=st.s;
-if(st.x<0)st.x=canvas.width;
-ctx.fillStyle="white";
-ctx.fillRect(st.x,st.y,1.5,1.5);
-});
-requestAnimationFrame(animateStars);
-}
-animateStars();
-
-const smokeCanvas=document.getElementById("smoke");
-const smokeCtx=smokeCanvas.getContext("2d");
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-let smokes=[];
-function createSmoke(){
-return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
-}
-function animateSmoke(){
-smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.3)smokes.push(createSmoke());
-smokes.forEach((s,i)=>{
-s.a-=0.002;
-let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-g.addColorStop(0,`rgba(200,200,200,${s.a})`);
-g.addColorStop(1,"transparent");
-smokeCtx.fillStyle=g;
-smokeCtx.beginPath();
-smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-smokeCtx.fill();
-if(s.a<=0)smokes.splice(i,1);
-});
-requestAnimationFrame(animateSmoke);
-}
-animateSmoke();
 
 </script>
+
 </body>
                                       </html>
