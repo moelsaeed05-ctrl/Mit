@@ -261,14 +261,15 @@ z-index:10;
 
 </div>
 </div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ================= FIREBASE ================= */
 
 const firebaseConfig={
 apiKey:"YOUR_API_KEY",
@@ -281,7 +282,8 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-/* ==== DOM SAFE SELECT ==== */
+/* ================= DOM ================= */
+
 const loginBtn=document.getElementById("loginBtn");
 const loginModal=document.getElementById("loginModal");
 const loginForm=document.getElementById("loginForm");
@@ -293,16 +295,189 @@ const categoryTitle=document.getElementById("categoryTitle");
 const detail=document.getElementById("detail");
 const detailBox=document.getElementById("detailBox");
 
-/* ==== RESIZE FIX ==== */
-window.addEventListener("resize",()=>{
+/* ================= USER MENU ================= */
+
+const userMenu=document.createElement("div");
+userMenu.className="userMenu";
+userMenu.innerHTML=`<button onclick="logout()">تسجيل خروج</button>`;
+document.body.appendChild(userMenu);
+
+loginBtn.addEventListener("click",()=>{
+if(auth.currentUser){
+userMenu.style.display=
+userMenu.style.display==="flex"?"none":"flex";
+}else{
+openLogin();
+}
+});
+
+/* ================= HELPERS ================= */
+
+function showNeon(text){
+neonMsg.innerText=text;
+neonMsg.style.display="block";
+setTimeout(()=>{neonMsg.style.display="none";},3000);
+}
+
+function clearInputs(){
+document.querySelectorAll("input").forEach(i=>i.value="");
+}
+
+/* ================= AUTH ================= */
+
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+showNeon("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+showNeon("تم إنشاء الحساب");
+closeLogin();
+}catch(e){showNeon(e.message);}
+}
+
+window.login=async function(){
+try{
+await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+showNeon("تم تسجيل الدخول");
+closeLogin();
+}catch(e){showNeon(e.message);}
+}
+
+window.logout=async function(){
+await signOut(auth);
+userMenu.style.display="none";
+showNeon("تم تسجيل الخروج");
+}
+
+onAuthStateChanged(auth,async(user)=>{
+if(user){
+const snap=await getDoc(doc(db,"users",user.uid));
+if(snap.exists()){
+loginBtn.innerText=snap.data().name;
+}
+}else{
+loginBtn.innerText="تسجيل الدخول";
+userMenu.style.display="none";
+}
+});
+
+/* ================= LOGIN MODAL ================= */
+
+window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
+window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
+/* ================= STARS ================= */
+
+const canvas=document.getElementById("space");
+const ctx=canvas.getContext("2d");
+
+function resize(){
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 smokeCanvas.width=innerWidth;
 smokeCanvas.height=innerHeight;
-});
+}
+window.addEventListener("resize",resize);
+resize();
 
-/* باقي الكود زي ما هو بدون تغيير في الفكرة */
+let stars=[];
+for(let i=0;i<250;i++){
+stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
+}
+
+function animateStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+stars.forEach(st=>{
+st.x-=st.s;
+if(st.x<0)st.x=canvas.width;
+ctx.fillStyle="white";
+ctx.fillRect(st.x,st.y,1.5,1.5);
+});
+requestAnimationFrame(animateStars);
+}
+animateStars();
+
+/* ================= SMOKE ================= */
+
+const smokeCanvas=document.getElementById("smoke");
+const smokeCtx=smokeCanvas.getContext("2d");
+
+let smokes=[];
+function createSmoke(){
+return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
+}
+
+function animateSmoke(){
+smokeCtx.clearRect(0,0,innerWidth,innerHeight);
+if(Math.random()<0.2)smokes.push(createSmoke());
+smokes.forEach((s,i)=>{
+s.a-=0.002;
+let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+g.addColorStop(0,`rgba(200,200,200,${s.a})`);
+g.addColorStop(1,"transparent");
+smokeCtx.fillStyle=g;
+smokeCtx.beginPath();
+smokeCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+smokeCtx.fill();
+if(s.a<=0)smokes.splice(i,1);
+});
+requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
+/* ================= PRODUCTS ================= */
+
+const data={
+HOODIES:[
+{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
+{name:"Street Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"},
+{name:"Oversize Hoodie",img:"https://images.unsplash.com/photo-1591047139829-d91aecb6caea",price:"60$"}
+],
+PANTS:[
+{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"},
+{name:"Cargo Pants",img:"https://images.unsplash.com/photo-1617957743098-9e6d0e6f2d14",price:"48$"},
+{name:"Street Fit Pants",img:"https://images.unsplash.com/photo-1602293589930-45aad59ba3ab",price:"52$"}
+],
+ACCESSORIES:[
+{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"},
+{name:"Silver Chain",img:"https://images.unsplash.com/photo-1602752250015-52934bc45613",price:"25$"},
+{name:"Backpack",img:"https://images.unsplash.com/photo-1581605405669-fcdf81165afa",price:"35$"}
+]
+};
+
+window.openCategory=function(cat){
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+
+data[cat].forEach(p=>{
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
+<img src="${p.img}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
+}
+
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
+}
 
 </script>
+
 </body>
 </html>
