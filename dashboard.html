@@ -3,142 +3,210 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT STORE Dashboard</title>
+<title>MIT STORE - Admin Dashboard</title>
 
 <style>
 body{
-  font-family: Arial;
-  background:#111;
-  color:white;
-  text-align:center;
+background:#111;
+color:white;
+font-family:Arial;
+text-align:center;
+margin:0;
 }
 
-h1{
-  margin:20px;
-}
+h1{margin:20px;}
+
+.container{padding:20px;}
 
 input,select{
-  padding:10px;
-  margin:5px;
-  width:200px;
+padding:10px;
+margin:5px;
+width:220px;
 }
 
 button{
-  padding:10px 15px;
-  margin:5px;
-  background:#ffd700;
-  border:none;
-  cursor:pointer;
-  font-weight:bold;
+padding:10px 15px;
+margin:5px;
+background:#ffd700;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+.logout{
+background:red;
+color:white;
+position:absolute;
+top:20px;
+right:20px;
 }
 
 .product{
-  background:#222;
-  margin:10px auto;
-  padding:15px;
-  width:250px;
-  border-radius:10px;
+background:#222;
+margin:15px auto;
+padding:15px;
+width:250px;
+border-radius:10px;
 }
 
 .product img{
-  width:100%;
-  border-radius:10px;
+width:100%;
+border-radius:10px;
 }
 
 .delete{
-  background:red;
-  color:white;
+background:red;
+color:white;
+margin-top:10px;
 }
 </style>
 </head>
 <body>
 
-<h1>MIT STORE Dashboard</h1>
+<h1>MIT STORE - ADMIN</h1>
+<button class="logout" onclick="logout()">Logout</button>
 
-<input type="text" id="name" placeholder="اسم المنتج">
-<input type="text" id="price" placeholder="السعر">
-<input type="text" id="image" placeholder="رابط الصورة">
+<div class="container">
+
+<h2>إضافة منتج</h2>
+
+<input type="text" id="name" placeholder="اسم المنتج"><br>
+<input type="number" id="price" placeholder="السعر"><br>
+<input type="file" id="imageFile"><br>
 
 <select id="category">
-  <option value="">اختر الفئة</option>
-  <option value="HOODIES">HOODIES</option>
-  <option value="PANTS">PANTS</option>
-  <option value="ACCESSORIES">ACCESSORIES</option>
-</select>
+<option value="">اختر الفئة</option>
+<option value="HOODIES">HOODIES</option>
+<option value="PANTS">PANTS</option>
+<option value="ACCESSORIES">ACCESSORIES</option>
+</select><br>
 
-<br>
-<button onclick="addProduct()">اضافة منتج</button>
+<button onclick="addProduct()">إضافة منتج</button>
 
 <h2>المنتجات</h2>
 <div id="products"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+</div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
-  authDomain: "mit-store-bd580.firebaseapp.com",
-  projectId: "mit-store-bd580",
-  storageBucket: "mit-store-bd580.firebasestorage.app",
-  messagingSenderId: "382577223227",
-  appId: "1:382577223227:web:71a4945a81cfbb9e06de1e"
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+messagingSenderId:"382577223227",
+appId:"1:382577223227:web:71a4945a81cfbb9e06de1e"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const storage=getStorage(app);
 
-const productsDiv = document.getElementById("products");
+const productsDiv=document.getElementById("products");
 
-window.addProduct = async function(){
-  const name = document.getElementById("name").value;
-  const price = document.getElementById("price").value;
-  const image = document.getElementById("image").value;
-  const category = document.getElementById("category").value;
 
-  if(!name || !price || !image || !category){
-    alert("املى كل البيانات");
-    return;
-  }
-
-  await addDoc(collection(db,"products"),{
-    name,
-    price,
-    image,
-    category
-  });
-
-  alert("تم اضافة المنتج");
-  loadProducts();
+// 🔐 حماية الأدمن
+onAuthStateChanged(auth,async(user)=>{
+if(!user){
+const email=prompt("ادخل ايميل الادمن");
+const pass=prompt("ادخل كلمة المرور");
+await signInWithEmailAndPassword(auth,email,pass);
+return;
 }
 
-async function loadProducts(){
-  productsDiv.innerHTML="";
-  const querySnapshot = await getDocs(collection(db,"products"));
-
-  querySnapshot.forEach((docSnap)=>{
-    const data = docSnap.data();
-
-    productsDiv.innerHTML += `
-      <div class="product">
-        <img src="${data.image}">
-        <h3>${data.name}</h3>
-        <p>${data.price}</p>
-        <p>${data.category}</p>
-        <button class="delete" onclick="deleteProduct('${docSnap.id}')">حذف</button>
-      </div>
-    `;
-  });
+// تحقق انه ادمن
+const adminDoc = await fetchAdmin(user.uid);
+if(!adminDoc){
+alert("غير مصرح لك بالدخول");
+signOut(auth);
 }
-
-window.deleteProduct = async function(id){
-  await deleteDoc(doc(db,"products",id));
-  alert("تم الحذف");
-  loadProducts();
-}
-
+else{
 loadProducts();
+}
+});
+
+async function fetchAdmin(uid){
+const snap=await fetch(`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/admins/${uid}`);
+return snap.status===200;
+}
+
+
+// ➕ إضافة منتج
+window.addProduct=async function(){
+
+const name=document.getElementById("name").value;
+const price=document.getElementById("price").value;
+const category=document.getElementById("category").value;
+const file=document.getElementById("imageFile").files[0];
+
+if(!name||!price||!category||!file){
+alert("املى كل البيانات");
+return;
+}
+
+// رفع الصورة
+const storageRef=ref(storage,"products/"+Date.now()+file.name);
+await uploadBytes(storageRef,file);
+const imageURL=await getDownloadURL(storageRef);
+
+// حفظ المنتج
+await addDoc(collection(db,"products"),{
+name,
+price,
+image:imageURL,
+category
+});
+
+alert("تم اضافة المنتج 🔥");
+loadProducts();
+}
+
+
+// 📦 عرض المنتجات
+async function loadProducts(){
+productsDiv.innerHTML="";
+const snapshot=await getDocs(collection(db,"products"));
+
+snapshot.forEach((docSnap)=>{
+const data=docSnap.data();
+
+productsDiv.innerHTML+=`
+<div class="product">
+<img src="${data.image}">
+<h3>${data.name}</h3>
+<p>${data.price} EGP</p>
+<p>${data.category}</p>
+<button class="delete" onclick="deleteProduct('${docSnap.id}')">حذف</button>
+</div>
+`;
+});
+}
+
+
+// ❌ حذف منتج
+window.deleteProduct=async function(id){
+await deleteDoc(doc(db,"products",id));
+alert("تم الحذف");
+loadProducts();
+}
+
+
+// 🚪 تسجيل خروج
+window.logout=()=>{
+signOut(auth);
+location.reload();
+}
+
 </script>
 
 </body>
