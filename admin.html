@@ -160,10 +160,9 @@ document.getElementById("addBtn").onclick = async () => {
     document.getElementById("image").value="";
     loadProducts();
 
-  } catch (error) {
-    console.error(error);
-    alert("حصل خطأ");
-  }
+  } catch (e) {
+  alert(e.code);
+}
 };
 
 window.deleteProduct = async (id)=>{
