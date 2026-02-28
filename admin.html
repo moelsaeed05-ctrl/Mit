@@ -1,1 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT ADMIN</title>
 
+<style>
+body{
+margin:0;
+background:black;
+font-family:Arial;
+color:white;
+text-align:center;
+}
+
+h1{
+color:#ffd700;
+text-shadow:0 0 10px #ffd700,0 0 30px #ffd700;
+margin-top:20px;
+}
+
+.loginBox, .adminPanel{
+max-width:450px;
+margin:40px auto;
+background:#111;
+padding:25px;
+border-radius:15px;
+box-shadow:0 0 20px #00ffcc;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+border:none;
+background:#222;
+color:white;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+width:100%;
+font-weight:bold;
+}
+
+.neonBtn{
+background:#ffd700;
+color:black;
+box-shadow:0 0 10px #ffd700,0 0 30px #ffd700;
+}
+
+.deleteBtn{
+background:#ff3333;
+color:white;
+}
+
+.editBtn{
+background:#00ffcc;
+color:black;
+}
+
+.product{
+background:#111;
+padding:15px;
+margin:15px 0;
+border-radius:12px;
+box-shadow:0 0 10px #00ffcc;
+}
+
+.product img{
+width:100%;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.stats{
+margin:15px 0;
+font-size:18px;
+color:#00ffcc;
+}
+
+.hidden{display:none;}
+</style>
+</head>
+<body>
+
+<h1>MIT STORE ADMIN</h1>
+
+<div class="loginBox" id="loginBox">
+<h3>تسجيل دخول الأدمن</h3>
+<input type="email" id="email" placeholder="البريد الإلكتروني">
+<input type="password" id="password" placeholder="كلمة المرور">
+<button class="neonBtn" onclick="login()">دخول</button>
+</div>
+
+<div class="adminPanel hidden" id="adminPanel">
+
+<div class="stats" id="stats"></div>
+
+<h3>إضافة منتج</h3>
+<input type="text" id="name" placeholder="اسم المنتج">
+<input type="text" id="price" placeholder="السعر">
+<select id="category">
+<option>HOODIES</option>
+<option>PANTS</option>
+<option>ACCESSORIES</option>
+</select>
+<input type="file" id="image">
+<button class="neonBtn" onclick="addProduct()">إضافة</button>
+
+<h3>المنتجات</h3>
+<div id="products"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+authDomain:"mit-store-bd580.firebaseapp.com",
+projectId:"mit-store-bd580",
+storageBucket:"mit-store-bd580.firebasestorage.app",
+messagingSenderId:"382577223227",
+appId:"1:382577223227:web:71a4945a81cfbb9e06de1e"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const storage=getStorage(app);
+
+const loginBox=document.getElementById("loginBox");
+const adminPanel=document.getElementById("adminPanel");
+const productsDiv=document.getElementById("products");
+const stats=document.getElementById("stats");
+
+window.login=async function(){
+const email=document.getElementById("email").value;
+const pass=document.getElementById("password").value;
+
+try{
+await signInWithEmailAndPassword(auth,email,pass);
+}catch(e){alert("بيانات غلط");}
+}
+
+onAuthStateChanged(auth,user=>{
+if(user && user.email==="timofisha@gmail.com"){
+loginBox.classList.add("hidden");
+adminPanel.classList.remove("hidden");
+loadProducts();
+}else{
+adminPanel.classList.add("hidden");
+}
+});
+
+async function loadProducts(){
+productsDiv.innerHTML="";
+const snap=await getDocs(collection(db,"products"));
+
+let total=0, hoodies=0, pants=0, accessories=0;
+
+snap.forEach(d=>{
+const p=d.data();
+total++;
+
+if(p.category==="HOODIES") hoodies++;
+if(p.category==="PANTS") pants++;
+if(p.category==="ACCESSORIES") accessories++;
+
+productsDiv.innerHTML+=`
+<div class="product">
+<img src="${p.image}">
+<h3>${p.name}</h3>
+<div style="color:#ffd700">${p.price}</div>
+<div>${p.category}</div>
+<button class="editBtn" onclick="editProduct('${d.id}','${p.name}','${p.price}')">تعديل</button>
+<button class="deleteBtn" onclick="deleteProduct('${d.id}')">حذف</button>
+</div>
+`;
+});
+
+stats.innerHTML=`
+إجمالي المنتجات: ${total} <br>
+HOODIES: ${hoodies} |
+PANTS: ${pants} |
+ACCESSORIES: ${accessories}
+`;
+}
+
+window.addProduct=async function(){
+const name=document.getElementById("name").value;
+const price=document.getElementById("price").value;
+const category=document.getElementById("category").value;
+const file=document.getElementById("image").files[0];
+
+if(!name||!price||!file){alert("كمل البيانات");return;}
+
+const storageRef=ref(storage,"products/"+Date.now()+file.name);
+await uploadBytes(storageRef,file);
+const imageURL=await getDownloadURL(storageRef);
+
+await addDoc(collection(db,"products"),{
+name,price,category,image:imageURL
+});
+
+loadProducts();
+}
+
+window.deleteProduct=async function(id){
+await deleteDoc(doc(db,"products",id));
+loadProducts();
+}
+
+window.editProduct=async function(id,oldName,oldPrice){
+const newName=prompt("اسم جديد",oldName);
+const newPrice=prompt("سعر جديد",oldPrice);
+if(newName&&newPrice){
+await updateDoc(doc(db,"products",id),{
+name:newName,price:newPrice
+});
+loadProducts();
+}
+}
+
+</script>
+
+</body>
+</html>
