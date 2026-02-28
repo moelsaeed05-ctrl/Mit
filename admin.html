@@ -126,8 +126,6 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
@@ -135,14 +133,12 @@ const firebaseConfig = {
   projectId: "mit-store-15e1d",
   storageBucket: "mit-store-15e1d.firebasestorage.app",
   messagingSenderId: "168416523904",
-  appId: "1:168416523904:web:711219a46f1c87b82e9865",
-  measurementId: "G-KV92W14ENY"
+  appId: "1:168416523904:web:711219a46f1c87b82e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-const storage=getStorage(app);
 
 const loginBox=document.getElementById("loginBox");
 const adminPanel=document.getElementById("adminPanel");
@@ -159,7 +155,7 @@ await signInWithEmailAndPassword(auth,email,pass);
 }
 
 onAuthStateChanged(auth,user=>{
-if(user && user.email==="timofisha@gmail.com"){
+if(user){
 loginBox.classList.add("hidden");
 adminPanel.classList.remove("hidden");
 loadProducts();
@@ -202,23 +198,50 @@ ACCESSORIES: ${accessories}
 `;
 }
 
-window.addProduct=async function(){
-const name=document.getElementById("name").value;
-const price=document.getElementById("price").value;
-const category=document.getElementById("category").value;
-const file=document.getElementById("image").files[0];
+window.addProduct = async function() {
 
-if(!name||!price||!file){alert("كمل البيانات");return;}
+const name = document.getElementById("name").value;
+const price = document.getElementById("price").value;
+const category = document.getElementById("category").value;
+const file = document.getElementById("image").files[0];
 
-const storageRef=ref(storage,"products/"+Date.now()+file.name);
-await uploadBytes(storageRef,file);
-const imageURL=await getDownloadURL(storageRef);
+if (!name || !price || !file) {
+    alert("كمل البيانات");
+    return;
+}
+
+const formData = new FormData();
+formData.append("file", file);
+formData.append("upload_preset", "unsigned_upload");
+
+try {
+
+const response = await fetch(
+    "https://api.cloudinary.com/v1_1/dh0uqzxpe/image/upload",
+    {
+        method: "POST",
+        body: formData
+    }
+);
+
+const data = await response.json();
+const imageURL = data.secure_url;
 
 await addDoc(collection(db,"products"),{
-name,price,category,image:imageURL
+    name,
+    price,
+    category,
+    image: imageURL
 });
 
+alert("تمت الإضافة بنجاح 🔥");
 loadProducts();
+
+} catch (error) {
+    alert("حصل خطأ في رفع الصورة");
+    console.error(error);
+}
+
 }
 
 window.deleteProduct=async function(id){
