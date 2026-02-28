@@ -1,29 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>ADMIN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT ADMIN</title>
+
+<style>
+body{margin:0;background:black;font-family:Arial;color:white;text-align:center}
+h1{color:#ffd700;margin-top:20px}
+.box{max-width:500px;margin:30px auto;background:#111;padding:25px;border-radius:15px}
+input,select{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:none;background:#222;color:white}
+button{padding:10px;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
+.gold{background:#ffd700;color:black}
+.red{background:#ff3333;color:white}
+.cyan{background:#00ffcc;color:black}
+.product{background:#1a1a1a;padding:15px;margin:15px 0;border-radius:10px}
+.product img{width:100%;border-radius:8px}
+.hidden{display:none}
+.sizes label{margin:5px;display:inline-block}
+</style>
 </head>
-<body style="background:black;color:white;text-align:center;font-family:Arial">
+<body>
 
-<h2>Admin Panel</h2>
+<h1>MIT STORE ADMIN</h1>
 
-<div id="loginBox">
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
-<button onclick="login()">Login</button>
+<div class="box" id="loginBox">
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button class="gold" onclick="login()">Login</button>
 </div>
 
-<div id="adminPanel" style="display:none">
-<h3>تم تسجيل الدخول ✅</h3>
-<button onclick="logout()">Logout</button>
+<div class="box hidden" id="adminPanel">
+
+<h3>إضافة منتج</h3>
+
+<input type="text" id="name" placeholder="اسم المنتج">
+<input type="text" id="price" placeholder="السعر">
+
+<select id="category" onchange="showSizes()">
+<option value="">اختار النوع</option>
+<option value="HOODIES">HOODIES</option>
+<option value="PANTS">PANTS</option>
+<option value="ACCESSORIES">ACCESSORIES</option>
+</select>
+
+<div id="sizesBox" class="sizes"></div>
+
+<input type="file" id="image">
+<button class="gold" onclick="addProduct()">إضافة</button>
+
+<hr>
+
+<h3>المنتجات</h3>
+<div id="products"></div>
+
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
@@ -36,31 +75,125 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-window.login = async function(){
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+const loginBox=document.getElementById("loginBox");
+const adminPanel=document.getElementById("adminPanel");
+const productsDiv=document.getElementById("products");
 
-  try {
-    await signInWithEmailAndPassword(auth,email,pass);
-  } catch (e) {
-    alert(e.code);
-  }
-}
-
-window.logout = async function(){
-  await signOut(auth);
+window.login=async function(){
+const email=email.value;
+const pass=password.value;
+try{
+await signInWithEmailAndPassword(auth,email,pass);
+}catch(e){alert(e.code);}
 }
 
 onAuthStateChanged(auth,user=>{
-  if(user){
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("adminPanel").style.display="block";
-  } else {
-    document.getElementById("loginBox").style.display="block";
-    document.getElementById("adminPanel").style.display="none";
-  }
+if(user){
+loginBox.classList.add("hidden");
+adminPanel.classList.remove("hidden");
+loadProducts();
+}
 });
+
+function showSizes(){
+const category=document.getElementById("category").value;
+const box=document.getElementById("sizesBox");
+box.innerHTML="";
+
+let sizes=[];
+
+if(category==="HOODIES"){
+sizes=["S","M","L","XL"];
+}
+if(category==="PANTS"){
+sizes=["38","40","42","44"];
+}
+
+sizes.forEach(size=>{
+box.innerHTML+=`
+<label>
+<input type="checkbox" value="${size}"> ${size}
+</label>
+`;
+});
+}
+
+window.addProduct=async function(){
+
+const name=document.getElementById("name").value;
+const price=document.getElementById("price").value;
+const category=document.getElementById("category").value;
+const file=document.getElementById("image").files[0];
+
+if(!name||!price||!category){alert("كمل البيانات");return;}
+
+let selectedSizes=[];
+document.querySelectorAll("#sizesBox input:checked").forEach(el=>{
+selectedSizes.push(el.value);
+});
+
+let imageURL="";
+
+if(file){
+const formData=new FormData();
+formData.append("file",file);
+formData.append("upload_preset","unsigned_upload");
+
+const res=await fetch("https://api.cloudinary.com/v1_1/dh0uqzxpe/image/upload",{method:"POST",body:formData});
+const data=await res.json();
+imageURL=data.secure_url;
+}
+
+await addDoc(collection(db,"products"),{
+name,
+price,
+category,
+sizes:selectedSizes,
+image:imageURL||""
+});
+
+alert("تمت الإضافة 🔥");
+loadProducts();
+}
+
+async function loadProducts(){
+productsDiv.innerHTML="";
+const snap=await getDocs(collection(db,"products"));
+
+snap.forEach(d=>{
+const p=d.data();
+productsDiv.innerHTML+=`
+<div class="product">
+<img src="${p.image}">
+<h4>${p.name}</h4>
+<div>${p.price}</div>
+<div>${p.category}</div>
+<div>المقاسات: ${(p.sizes||[]).join(", ")}</div>
+<button class="cyan" onclick="editProduct('${d.id}')">تعديل</button>
+<button class="red" onclick="deleteProduct('${d.id}')">حذف</button>
+</div>
+`;
+});
+}
+
+window.deleteProduct=async function(id){
+await deleteDoc(doc(db,"products",id));
+loadProducts();
+}
+
+window.editProduct=async function(id){
+const newName=prompt("اسم جديد");
+const newPrice=prompt("سعر جديد");
+if(newName&&newPrice){
+await updateDoc(doc(db,"products",id),{
+name:newName,
+price:newPrice
+});
+loadProducts();
+}
+}
 
 </script>
 
