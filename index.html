@@ -371,7 +371,15 @@ detailBox.innerHTML=`
 <div style="margin-top:10px;color:#ffd700">${p}</div>
 `;
 }
+window.showRegister = function(){
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="block";
+}
 
+window.showLogin = function(){
+document.getElementById("loginForm").style.display="block";
+document.getElementById("registerForm").style.display="none";
+  }
 </script>
 
 </body>
