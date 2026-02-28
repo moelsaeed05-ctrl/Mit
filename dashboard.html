@@ -123,7 +123,7 @@ const pass=prompt("ادخل كلمة المرور");
 await signInWithEmailAndPassword(auth,email,pass);
 return;
 }
-// تحقق انه ادمن بطريقة صحيحة
+
 const adminSnap = await getDoc(doc(db,"admins",user.uid));
 
 if(!adminSnap.exists()){
@@ -133,7 +133,7 @@ return;
 }
 
 loadProducts();
-
+}); // ← القوس ده كان ناقص
 // ➕ إضافة منتج
 window.addProduct=async function(){
 
