@@ -261,69 +261,43 @@ z-index:10;
 
 </div>
 </div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore,doc,setDoc,getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ================= FIREBASE ================= */
-
 const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_AUTH_DOMAIN",
-projectId:"YOUR_PROJECT_ID",
-appId:"YOUR_APP_ID"
+apiKey:"AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+authDomain:"mit-store-15e1d.firebaseapp.com",
+projectId:"mit-store-15e1d",
+storageBucket:"mit-store-15e1d.firebasestorage.app",
+messagingSenderId:"168416523904",
+appId:"1:168416523904:web:6bd0ea50fc3e1c542e9865"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-
-/* ================= DOM ================= */
-
 const loginBtn=document.getElementById("loginBtn");
-const loginModal=document.getElementById("loginModal");
-const loginForm=document.getElementById("loginForm");
-const registerForm=document.getElementById("registerForm");
-const neonMsg=document.getElementById("neonMsg");
-const page=document.getElementById("page");
-const products=document.getElementById("products");
-const categoryTitle=document.getElementById("categoryTitle");
-const detail=document.getElementById("detail");
-const detailBox=document.getElementById("detailBox");
 
-/* ================= USER MENU ================= */
-
-const userMenu=document.createElement("div");
-userMenu.className="userMenu";
-userMenu.innerHTML=`<button onclick="logout()">تسجيل خروج</button>`;
-document.body.appendChild(userMenu);
-
-loginBtn.addEventListener("click",()=>{
-if(auth.currentUser){
-userMenu.style.display=
-userMenu.style.display==="flex"?"none":"flex";
-}else{
-openLogin();
+function clearInputs(){
+emailInput.value="";
+passwordInput.value="";
+nameInput.value="";
+regEmailInput.value="";
+regPasswordInput.value="";
+confirmInput.value="";
 }
-});
-
-/* ================= HELPERS ================= */
 
 function showNeon(text){
 neonMsg.innerText=text;
 neonMsg.style.display="block";
 setTimeout(()=>{neonMsg.style.display="none";},3000);
 }
-
-function clearInputs(){
-document.querySelectorAll("input").forEach(i=>i.value="");
-}
-
-/* ================= AUTH ================= */
 
 window.register=async function(){
 if(regPasswordInput.value!==confirmInput.value){
@@ -335,6 +309,7 @@ name:nameInput.value,
 email:regEmailInput.value
 });
 showNeon("تم إنشاء الحساب");
+clearInputs();
 closeLogin();
 }catch(e){showNeon(e.message);}
 }
@@ -343,14 +318,9 @@ window.login=async function(){
 try{
 await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
 showNeon("تم تسجيل الدخول");
+clearInputs();
 closeLogin();
 }catch(e){showNeon(e.message);}
-}
-
-window.logout=async function(){
-await signOut(auth);
-userMenu.style.display="none";
-showNeon("تم تسجيل الخروج");
 }
 
 onAuthStateChanged(auth,async(user)=>{
@@ -361,11 +331,8 @@ loginBtn.innerText=snap.data().name;
 }
 }else{
 loginBtn.innerText="تسجيل الدخول";
-userMenu.style.display="none";
 }
 });
-
-/* ================= LOGIN MODAL ================= */
 
 window.showRegister=()=>{loginForm.style.display="none";registerForm.style.display="block";}
 window.showLogin=()=>{registerForm.style.display="none";loginForm.style.display="block";}
@@ -373,25 +340,14 @@ window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
 window.goHome=()=>{page.style.display="none";}
 
-/* ================= STARS ================= */
-
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
-
-function resize(){
 canvas.width=innerWidth;
 canvas.height=innerHeight;
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-}
-window.addEventListener("resize",resize);
-resize();
-
 let stars=[];
 for(let i=0;i<250;i++){
 stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
 }
-
 function animateStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 stars.forEach(st=>{
@@ -404,19 +360,17 @@ requestAnimationFrame(animateStars);
 }
 animateStars();
 
-/* ================= SMOKE ================= */
-
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
-
+smokeCanvas.width=innerWidth;
+smokeCanvas.height=innerHeight;
 let smokes=[];
 function createSmoke(){
 return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
 }
-
 function animateSmoke(){
 smokeCtx.clearRect(0,0,innerWidth,innerHeight);
-if(Math.random()<0.2)smokes.push(createSmoke());
+if(Math.random()<0.3)smokes.push(createSmoke());
 smokes.forEach((s,i)=>{
 s.a-=0.002;
 let g=smokeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
@@ -432,31 +386,16 @@ requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
 
-/* ================= PRODUCTS ================= */
-
 const data={
-HOODIES:[
-{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"},
-{name:"Street Hoodie",img:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf",price:"55$"},
-{name:"Oversize Hoodie",img:"https://images.unsplash.com/photo-1591047139829-d91aecb6caea",price:"60$"}
-],
-PANTS:[
-{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"},
-{name:"Cargo Pants",img:"https://images.unsplash.com/photo-1617957743098-9e6d0e6f2d14",price:"48$"},
-{name:"Street Fit Pants",img:"https://images.unsplash.com/photo-1602293589930-45aad59ba3ab",price:"52$"}
-],
-ACCESSORIES:[
-{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"},
-{name:"Silver Chain",img:"https://images.unsplash.com/photo-1602752250015-52934bc45613",price:"25$"},
-{name:"Backpack",img:"https://images.unsplash.com/photo-1581605405669-fcdf81165afa",price:"35$"}
-]
+HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
+PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
+ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
 };
 
 window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
-
 data[cat].forEach(p=>{
 products.innerHTML+=`
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
@@ -478,6 +417,5 @@ detailBox.innerHTML=`
 }
 
 </script>
-
 </body>
-</html>
+                                      </html>
