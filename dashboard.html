@@ -1,39 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <title>MIT STORE - Admin Dashboard</title>
   <style>
-    body {
+    body{
       font-family: Arial;
-      padding:20px;
       background:#111;
-      color:white
+      color:white;
+      padding:20px;
     }
-    input, textarea, select {
-      width:100%;
-      padding:8px;
-      margin:5px 0;
-      border-radius:6px;
-      border:none
-    }
-    button {
-      padding:8px 15px;
-      margin:5px 5px 5px 0;
-      cursor:pointer;
-      border:none;
-      border-radius:6px
-    }
-    .add-btn { background:#28a745; color:white }
-    .delete-btn { background:#dc3545; color:white }
-    .edit-btn { background:#ffc107; color:black }
 
-    .card {
-      background:#222;
-      padding:10px;
-      margin:10px 0;
-      border-radius:8px
+    h2{
+      text-align:center;
+      margin-bottom:20px;
     }
-    img { width:120px; margin-top:5px }
+
+    input, textarea, select{
+      width:100%;
+      padding:10px;
+      margin:6px 0;
+      border-radius:6px;
+      border:none;
+      outline:none;
+    }
+
+    button{
+      padding:10px 15px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      margin-top:8px;
+    }
+
+    .add-btn{
+      background:#28a745;
+      color:white;
+    }
+
+    .delete-btn{
+      background:#dc3545;
+      color:white;
+    }
+
+    .card{
+      background:#222;
+      padding:15px;
+      margin:15px 0;
+      border-radius:10px;
+    }
+
+    img{
+      width:120px;
+      margin-top:10px;
+      border-radius:6px;
+    }
+
   </style>
 </head>
 <body>
@@ -60,19 +82,40 @@
 </select>
 
 <input type="file" id="image">
-<button class="add-btn" onclick="addProduct()">إضافة / تحديث منتج</button>
+
+<button class="add-btn" onclick="addProduct()">إضافة منتج</button>
 
 <h3>المنتجات:</h3>
 <div id="products"></div>
 
-<script>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* 🔥 firebaseConfig بتاعك */
+const firebaseConfig = {
+  apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
+  authDomain: "mit-store-bd580.firebaseapp.com",
+  projectId: "mit-store-bd580",
+  storageBucket: "mit-store-bd580.firebasestorage.app",
+  messagingSenderId: "382577223227",
+  appId: "1:382577223227:web:71a4945a81cfbb9e06de1e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* 🔐 حماية الأدمن */
 if(localStorage.getItem("adminLoggedIn") !== "true"){
   window.location.href = "login.html";
 }
 
-let editId = null;
+/* ➕ إضافة منتج */
+window.addProduct = async function(){
 
-function addProduct(){
   const name = document.getElementById("name").value;
   const price = document.getElementById("price").value;
   const desc = document.getElementById("desc").value;
@@ -80,94 +123,64 @@ function addProduct(){
   const category = document.getElementById("category").value;
   const file = document.getElementById("image").files[0];
 
-  if(!name || !price || !category){
-    alert("املأ البيانات الأساسية");
+  if(!name || !price || !category || !file){
+    alert("املأ كل البيانات");
     return;
   }
 
   const reader = new FileReader();
 
-  reader.onload = function(e){
-    let products = JSON.parse(localStorage.getItem("products")) || [];
+  reader.onload = async function(e){
 
-    if(editId){
-      products = products.map(p=>{
-        if(p.id === editId){
-          return {
-            ...p,
-            name, price, desc, size, category,
-            image: file ? e.target.result : p.image
-          }
-        }
-        return p;
-      });
-      editId = null;
-    } else {
-      products.push({
-        id: Date.now(),
-        name,
-        price,
-        desc,
-        size,
-        category,
-        image: e.target.result
-      });
-    }
+    await addDoc(collection(db,"products"),{
+      name:name,
+      price:price,
+      desc:desc,
+      size:size,
+      category:category,
+      image:e.target.result,
+      createdAt: Date.now()
+    });
 
-    localStorage.setItem("products", JSON.stringify(products));
     clearForm();
     displayProducts();
   };
 
-  if(file){
-    reader.readAsDataURL(file);
-  } else {
-    reader.onload({target:{result:null}});
-  }
+  reader.readAsDataURL(file);
 }
 
-function editProduct(id){
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-  const p = products.find(x=>x.id===id);
-
-  document.getElementById("name").value = p.name;
-  document.getElementById("price").value = p.price;
-  document.getElementById("desc").value = p.desc;
-  document.getElementById("size").value = p.size;
-  document.getElementById("category").value = p.category;
-
-  editId = id;
-}
-
-function deleteProduct(id){
-  let products = JSON.parse(localStorage.getItem("products")) || [];
-  products = products.filter(p => p.id !== id);
-  localStorage.setItem("products", JSON.stringify(products));
+/* 🗑 حذف منتج */
+window.deleteProduct = async function(id){
+  await deleteDoc(doc(db,"products",id));
   displayProducts();
 }
 
-function displayProducts(){
-  const products = JSON.parse(localStorage.getItem("products")) || [];
+/* 📦 عرض المنتجات */
+async function displayProducts(){
+
   const container = document.getElementById("products");
   container.innerHTML = "";
 
-  products.forEach(p => {
+  const querySnapshot = await getDocs(collection(db,"products"));
+
+  querySnapshot.forEach((docSnap)=>{
+    const p = docSnap.data();
+
     container.innerHTML += `
       <div class="card">
         <h4>${p.name}</h4>
         <p>الفئة: ${p.category}</p>
         <p>السعر: ${p.price} جنيه</p>
-        <p>${p.desc || ""}</p>
-        <p>المقاس: ${p.size || ""}</p>
         ${p.image ? `<img src="${p.image}">` : ""}
         <br>
-        <button class="edit-btn" onclick="editProduct(${p.id})">تعديل</button>
-        <button class="delete-btn" onclick="deleteProduct(${p.id})">حذف</button>
+        <button class="delete-btn" onclick="deleteProduct('${docSnap.id}')">حذف</button>
       </div>
     `;
   });
+
 }
 
+/* 🧹 تنظيف الفورم */
 function clearForm(){
   document.getElementById("name").value="";
   document.getElementById("price").value="";
@@ -178,6 +191,7 @@ function clearForm(){
 }
 
 displayProducts();
+
 </script>
 
 </body>
