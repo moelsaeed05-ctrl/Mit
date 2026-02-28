@@ -6,43 +6,38 @@
 <title>MIT STORE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:black;color:white;overflow:hidden;}
-#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.logo{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:28px;letter-spacing:6px;z-index:10;}
-.loginBtn{position:absolute;top:20px;right:20px;background:#ffd700;color:black;padding:6px 14px;border-radius:8px;cursor:pointer;z-index:10;font-weight:bold;font-size:14px;}
-.closeX{position:absolute;top:15px;left:15px;font-size:22px;cursor:pointer;color:#ff4444;}
-.menu{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:35px;z-index:10;width:80%;align-items:center;}
-.item{cursor:pointer;font-size:22px;padding:12px 30px;border-radius:12px;transition:.4s;}
-.item:hover{text-shadow:0 0 10px #ffd700;}
-.fullscreen{position:fixed;inset:0;background:black;display:none;flex-direction:column;align-items:center;z-index:40;padding-top:90px;overflow:auto;}
-.products{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;width:95%;position:relative;z-index:5;}
-.product{background:#111;padding:12px;border-radius:14px;width:140px;cursor:pointer;transition:.4s;}
-.product img{width:100%;border-radius:8px;margin-bottom:8px;}
-.product:hover{transform:scale(1.08);box-shadow:0 0 10px #ffd700;}
-.smokeCanvas{position:absolute;inset:0;z-index:1;pointer-events:none;}
-.detail{position:fixed;inset:0;background:rgba(0,0,0,.95);display:none;justify-content:center;align-items:center;z-index:60;}
-.detailBox{background:#111;padding:25px;border-radius:18px;text-align:center;width:300px;position:relative;}
-.loginModal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;justify-content:center;align-items:center;z-index:80;}
-.loginBox{background:#111;padding:30px;border-radius:18px;width:320px;text-align:center;position:relative;}
-.loginBox input{width:100%;padding:10px;margin:8px 0;border:none;border-radius:6px;background:#222;color:white;}
-button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#ffd700;cursor:pointer;width:100%;}
-.categoryTitle{font-size:26px;margin-bottom:20px;letter-spacing:3px;z-index:10;}
-.neonMessage{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:20px 40px;border-radius:15px;background:#111;font-size:22px;display:none;z-index:200;color:#00ffcc;text-align:center;box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:black;color:white;overflow:hidden}
+#space{position:fixed;inset:0;z-index:0}
+.logo{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:28px;letter-spacing:6px;z-index:10}
+.loginBtn{position:absolute;top:20px;right:20px;background:#ffd700;color:black;padding:6px 14px;border-radius:8px;cursor:pointer;z-index:10;font-weight:bold}
+.menu{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:30px;z-index:10}
+.item{cursor:pointer;font-size:22px;padding:12px 30px;border-radius:12px;transition:.3s}
+.item:hover{text-shadow:0 0 10px #ffd700}
+.fullscreen{position:fixed;inset:0;background:black;display:none;flex-direction:column;align-items:center;z-index:20;padding-top:80px;overflow:auto}
+.products{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;width:95%}
+.product{background:#111;padding:12px;border-radius:14px;width:150px;cursor:pointer;transition:.3s;text-align:center}
+.product img{width:100%;border-radius:8px;margin-bottom:8px}
+.product:hover{transform:scale(1.05);box-shadow:0 0 10px #ffd700}
+.smokeCanvas{position:absolute;inset:0;z-index:1;pointer-events:none}
+.categoryTitle{font-size:26px;margin-bottom:20px;z-index:5}
+.closeX{position:absolute;top:20px;left:20px;font-size:22px;cursor:pointer;color:red}
+.detail{position:fixed;inset:0;background:rgba(0,0,0,.95);display:none;justify-content:center;align-items:center;z-index:30}
+.detailBox{background:#111;padding:25px;border-radius:18px;width:300px;text-align:center}
+.loginModal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;justify-content:center;align-items:center;z-index:40}
+.loginBox{background:#111;padding:30px;border-radius:18px;width:320px;text-align:center}
+.loginBox input{width:100%;padding:10px;margin:8px 0;border:none;border-radius:6px;background:#222;color:white}
+button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#ffd700;cursor:pointer;width:100%}
+.neon{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#111;padding:20px 40px;border-radius:15px;display:none;color:#00ffcc;box-shadow:0 0 20px #00ffcc;z-index:100}
 </style>
 </head>
 
 <body>
 
 <canvas id="space"></canvas>
-<div class="neonMessage" id="neonMsg"></div>
+<div class="neon" id="neon"></div>
 
-<div class="logo">
-<span style="color:#ffd700">𝔐</span>
-<span style="color:#ff1a1a">𝔦</span>
-<span style="color:#ffd700">𝔗</span>
-</div>
-
+<div class="logo">MIT STORE</div>
 <div class="loginBtn" id="loginBtn">تسجيل الدخول</div>
 
 <div class="menu">
@@ -64,10 +59,9 @@ button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#ff
 
 <div class="loginModal" id="loginModal">
 <div class="loginBox">
-<div class="closeX" onclick="closeLogin()">✖</div>
 <h3>تسجيل دخول / إنشاء حساب</h3>
-<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<input type="email" id="email" placeholder="البريد الإلكتروني">
+<input type="password" id="password" placeholder="كلمة المرور">
 <button onclick="login()">دخول</button>
 <button onclick="register()">إنشاء حساب</button>
 </div>
@@ -76,68 +70,72 @@ button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#ff
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut }
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,setDoc,collection,getDocs,query,where }
+import { getFirestore, collection, getDocs, query, where }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = { /* ضع بياناتك هنا */ };
+/* 🔥 ضع بياناتك هنا */
+const firebaseConfig = YOUR_CONFIG_HERE;
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const loginBtn=document.getElementById("loginBtn");
+const loginBtn = document.getElementById("loginBtn");
+const neon = document.getElementById("neon");
 
-function showNeon(text){
-neonMsg.innerText=text;
-neonMsg.style.display="block";
-setTimeout(()=>neonMsg.style.display="none",3000);
+function showMsg(msg){
+neon.innerText = msg;
+neon.style.display="block";
+setTimeout(()=>neon.style.display="none",3000);
 }
+
+/* 🔐 تسجيل دخول */
+window.login = async ()=>{
+try{
+await signInWithEmailAndPassword(auth,email.value,password.value);
+showMsg("تم تسجيل الدخول");
+loginModal.style.display="none";
+}catch{showMsg("بيانات غير صحيحة")}
+};
+
+/* 🔐 إنشاء حساب */
+window.register = async ()=>{
+if(password.value.length<6){showMsg("كلمة المرور ضعيفة");return;}
+try{
+await createUserWithEmailAndPassword(auth,email.value,password.value);
+showMsg("تم إنشاء الحساب");
+loginModal.style.display="none";
+}catch{showMsg("خطأ في التسجيل")}
+};
 
 loginBtn.onclick=()=>{
 if(auth.currentUser){
 signOut(auth);
-showNeon("تم تسجيل الخروج");
-}else openLogin();
-};
-
-window.register=async()=>{
-if(passwordInput.value.length<6){
-showNeon("كلمة المرور ضعيفة");return;
+showMsg("تم تسجيل الخروج");
+}else{
+loginModal.style.display="flex";
 }
-try{
-const user=await createUserWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-await setDoc(doc(db,"users",user.user.uid),{email:emailInput.value});
-showNeon("تم إنشاء الحساب");
-closeLogin();
-}catch{showNeon("خطأ في التسجيل");}
-};
-
-window.login=async()=>{
-try{
-await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-showNeon("تم تسجيل الدخول");
-closeLogin();
-}catch{showNeon("بيانات غير صحيحة");}
 };
 
 onAuthStateChanged(auth,user=>{
 loginBtn.innerText=user?"تسجيل خروج":"تسجيل الدخول";
 });
 
-window.openCategory=async(cat)=>{
+/* 🛍 تحميل المنتجات */
+window.openCategory = async(cat)=>{
 page.style.display="flex";
-products.innerHTML="";
 categoryTitle.innerText=cat;
+products.innerHTML="";
 
-const q=query(collection(db,"products"),where("category","==",cat));
-const snap=await getDocs(q);
+const q = query(collection(db,"products"), where("category","==",cat));
+const snap = await getDocs(q);
 
 snap.forEach(doc=>{
 const p=doc.data();
 products.innerHTML+=`
-<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
+<div class="product" onclick="showDetail('${p.name}','${p.image}','${p.price}')">
 <img src="${p.image}">
 <div>${p.name}</div>
 <div style="color:#ffd700">${p.price}$</div>
@@ -148,25 +146,29 @@ products.innerHTML+=`
 window.showDetail=(n,i,p)=>{
 detail.style.display="flex";
 detailBox.innerHTML=`
-<div class="closeX" onclick="detail.style.display='none'">✖</div>
 <h3>${n}</h3>
-<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
-<div style="margin-top:10px;color:#ffd700">${p}$</div>`;
+<img src="${i}" style="width:100%;margin:15px 0;border-radius:10px">
+<div style="color:#ffd700">${p}$</div>
+<button onclick="detail.style.display='none'">إغلاق</button>`;
 };
 
-window.openLogin=()=>loginModal.style.display="flex";
-window.closeLogin=()=>loginModal.style.display="none";
 window.goHome=()=>page.style.display="none";
 
 /* ⭐ النجوم */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
+function resize(){
 canvas.width=innerWidth;
 canvas.height=innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
 let stars=[];
-for(let i=0;i<250;i++){
+for(let i=0;i<200;i++){
 stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*0.5+0.2});
 }
+
 function animateStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 stars.forEach(st=>{
@@ -182,12 +184,18 @@ animateStars();
 /* 🌫 الدخان */
 const smokeCanvas=document.getElementById("smoke");
 const smokeCtx=smokeCanvas.getContext("2d");
+function resizeSmoke(){
 smokeCanvas.width=innerWidth;
 smokeCanvas.height=innerHeight;
+}
+resizeSmoke();
+window.addEventListener("resize",resizeSmoke);
+
 let smokes=[];
 function createSmoke(){
 return{x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*120+50,a:0.3};
 }
+
 function animateSmoke(){
 smokeCtx.clearRect(0,0,innerWidth,innerHeight);
 if(Math.random()<0.3)smokes.push(createSmoke());
@@ -205,13 +213,6 @@ if(s.a<=0)smokes.splice(i,1);
 requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
-
-window.addEventListener("resize",()=>{
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-smokeCanvas.width=innerWidth;
-smokeCanvas.height=innerHeight;
-});
 
 </script>
 </body>
