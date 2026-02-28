@@ -6,86 +6,18 @@
 <title>MIT ADMIN</title>
 
 <style>
-body{
-margin:0;
-background:black;
-font-family:Arial;
-color:white;
-text-align:center;
-}
-
-h1{
-color:#ffd700;
-text-shadow:0 0 10px #ffd700,0 0 30px #ffd700;
-margin-top:20px;
-}
-
-.loginBox, .adminPanel{
-max-width:450px;
-margin:40px auto;
-background:#111;
-padding:25px;
-border-radius:15px;
-box-shadow:0 0 20px #00ffcc;
-}
-
-input,select{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-border:none;
-background:#222;
-color:white;
-}
-
-button{
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-margin-top:10px;
-width:100%;
-font-weight:bold;
-}
-
-.neonBtn{
-background:#ffd700;
-color:black;
-box-shadow:0 0 10px #ffd700,0 0 30px #ffd700;
-}
-
-.deleteBtn{
-background:#ff3333;
-color:white;
-}
-
-.editBtn{
-background:#00ffcc;
-color:black;
-}
-
-.product{
-background:#111;
-padding:15px;
-margin:15px 0;
-border-radius:12px;
-box-shadow:0 0 10px #00ffcc;
-}
-
-.product img{
-width:100%;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-.stats{
-margin:15px 0;
-font-size:18px;
-color:#00ffcc;
-}
-
-.hidden{display:none;}
+body{margin:0;background:black;font-family:Arial;color:white;text-align:center}
+h1{color:#ffd700;text-shadow:0 0 10px #ffd700;margin-top:20px}
+.loginBox,.adminPanel{max-width:450px;margin:40px auto;background:#111;padding:25px;border-radius:15px;box-shadow:0 0 20px #00ffcc}
+input,select{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:none;background:#222;color:white}
+button{padding:12px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;font-weight:bold}
+.neonBtn{background:#ffd700;color:black}
+.deleteBtn{background:#ff3333;color:white}
+.editBtn{background:#00ffcc;color:black}
+.product{background:#111;padding:15px;margin:15px 0;border-radius:12px;box-shadow:0 0 10px #00ffcc}
+.product img{width:100%;border-radius:10px;margin-bottom:10px}
+.stats{margin:15px 0;font-size:18px;color:#00ffcc}
+.hidden{display:none}
 </style>
 </head>
 <body>
@@ -96,11 +28,10 @@ color:#00ffcc;
 <h3>تسجيل دخول الأدمن</h3>
 <input type="email" id="email" placeholder="البريد الإلكتروني">
 <input type="password" id="password" placeholder="كلمة المرور">
-<button class="neonBtn" onclick="login()">دخول</button>
+<button class="neonBtn" id="loginBtn">دخول</button>
 </div>
 
 <div class="adminPanel hidden" id="adminPanel">
-
 <div class="stats" id="stats"></div>
 
 <h3>إضافة منتج</h3>
@@ -112,11 +43,10 @@ color:#00ffcc;
 <option>ACCESSORIES</option>
 </select>
 <input type="file" id="image">
-<button class="neonBtn" onclick="addProduct()">إضافة</button>
+<button class="neonBtn" id="addBtn">إضافة</button>
 
 <h3>المنتجات</h3>
 <div id="products"></div>
-
 </div>
 
 <script type="module">
@@ -128,7 +58,7 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  apiKey: "YOUR_API_KEY",
   authDomain: "mit-store-15e1d.firebaseapp.com",
   projectId: "mit-store-15e1d",
   storageBucket: "mit-store-15e1d.firebasestorage.app",
@@ -136,129 +66,122 @@ const firebaseConfig = {
   appId: "1:168416523904:web:711219a46f1c87b82e9865"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const loginBox=document.getElementById("loginBox");
-const adminPanel=document.getElementById("adminPanel");
-const productsDiv=document.getElementById("products");
-const stats=document.getElementById("stats");
+const loginBox = document.getElementById("loginBox");
+const adminPanel = document.getElementById("adminPanel");
+const productsDiv = document.getElementById("products");
+const stats = document.getElementById("stats");
 
-window.login=async function(){
-const email=document.getElementById("email").value;
-const pass=document.getElementById("password").value;
-
-try{
-await signInWithEmailAndPassword(auth,email,pass);
-}catch(e){alert("بيانات غلط");}
-}
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+  try {
+    await signInWithEmailAndPassword(auth,email,pass);
+  } catch (e) {
+    alert("بيانات غلط");
+  }
+};
 
 onAuthStateChanged(auth,user=>{
-if(user){
-loginBox.classList.add("hidden");
-adminPanel.classList.remove("hidden");
-loadProducts();
-}else{
-adminPanel.classList.add("hidden");
-}
+  if(user){
+    loginBox.classList.add("hidden");
+    adminPanel.classList.remove("hidden");
+    loadProducts();
+  }
 });
 
 async function loadProducts(){
-productsDiv.innerHTML="";
-const snap=await getDocs(collection(db,"products"));
+  productsDiv.innerHTML="";
+  const snap=await getDocs(collection(db,"products"));
+  let total=0;
 
-let total=0, hoodies=0, pants=0, accessories=0;
+  snap.forEach(d=>{
+    const p=d.data();
+    total++;
 
-snap.forEach(d=>{
-const p=d.data();
-total++;
+    productsDiv.innerHTML+=`
+    <div class="product">
+    <img src="${p.image}">
+    <h3>${p.name}</h3>
+    <div style="color:#ffd700">${p.price}</div>
+    <div>${p.category}</div>
+    <button class="editBtn" onclick="editProduct('${d.id}','${p.name}','${p.price}')">تعديل</button>
+    <button class="deleteBtn" onclick="deleteProduct('${d.id}')">حذف</button>
+    </div>`;
+  });
 
-if(p.category==="HOODIES") hoodies++;
-if(p.category==="PANTS") pants++;
-if(p.category==="ACCESSORIES") accessories++;
-
-productsDiv.innerHTML+=`
-<div class="product">
-<img src="${p.image}">
-<h3>${p.name}</h3>
-<div style="color:#ffd700">${p.price}</div>
-<div>${p.category}</div>
-<button class="editBtn" onclick="editProduct('${d.id}','${p.name}','${p.price}')">تعديل</button>
-<button class="deleteBtn" onclick="deleteProduct('${d.id}')">حذف</button>
-</div>
-`;
-});
-
-stats.innerHTML=`
-إجمالي المنتجات: ${total} <br>
-HOODIES: ${hoodies} |
-PANTS: ${pants} |
-ACCESSORIES: ${accessories}
-`;
+  stats.innerHTML=`إجمالي المنتجات: ${total}`;
 }
 
-window.addProduct = async function() {
+document.getElementById("addBtn").onclick = async () => {
 
-const name = document.getElementById("name").value;
-const price = document.getElementById("price").value;
-const category = document.getElementById("category").value;
-const file = document.getElementById("image").files[0];
+  const name = document.getElementById("name").value.trim();
+  const price = document.getElementById("price").value.trim();
+  const category = document.getElementById("category").value;
+  const file = document.getElementById("image").files[0];
 
-if (!name || !price || !file) {
+  if (!name || !price || !file) {
     alert("كمل البيانات");
     return;
-}
+  }
 
-const formData = new FormData();
-formData.append("file", file);
-formData.append("upload_preset", "unsigned_upload");
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "unsigned_upload");
 
-try {
+  try {
 
-const response = await fetch(
-    "https://api.cloudinary.com/v1_1/dh0uqzxpe/image/upload",
-    {
-        method: "POST",
-        body: formData
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dh0uqzxpe/image/upload",
+      { method: "POST", body: formData }
+    );
+
+    const data = await response.json();
+    console.log(data);
+
+    if(!data.secure_url){
+      alert("فشل رفع الصورة");
+      return;
     }
-);
 
-const data = await response.json();
-const imageURL = data.secure_url;
+    await addDoc(collection(db,"products"),{
+      name,
+      price,
+      category,
+      image: data.secure_url
+    });
 
-await addDoc(collection(db,"products"),{
-    name,
-    price,
-    category,
-    image: imageURL
-});
+    alert("تمت الإضافة بنجاح 🔥");
+    document.getElementById("name").value="";
+    document.getElementById("price").value="";
+    document.getElementById("image").value="";
+    loadProducts();
 
-alert("تمت الإضافة بنجاح 🔥");
-loadProducts();
-
-} catch (error) {
-    alert("حصل خطأ في رفع الصورة");
+  } catch (error) {
     console.error(error);
-}
+    alert("حصل خطأ");
+  }
+};
 
-}
+window.deleteProduct = async (id)=>{
+  await deleteDoc(doc(db,"products",id));
+  loadProducts();
+};
 
-window.deleteProduct=async function(id){
-await deleteDoc(doc(db,"products",id));
-loadProducts();
-}
-
-window.editProduct=async function(id,oldName,oldPrice){
-const newName=prompt("اسم جديد",oldName);
-const newPrice=prompt("سعر جديد",oldPrice);
-if(newName&&newPrice){
-await updateDoc(doc(db,"products",id),{
-name:newName,price:newPrice
-});
-loadProducts();
-}
-}
+window.editProduct = async (id,oldName,oldPrice)=>{
+  const newName=prompt("اسم جديد",oldName);
+  const newPrice=prompt("سعر جديد",oldPrice);
+  if(newName&&newPrice){
+    await updateDoc(doc(db,"products",id),{
+      name:newName,
+      price:newPrice
+    });
+    loadProducts();
+  }
+};
 
 </script>
 
