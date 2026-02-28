@@ -6,15 +6,15 @@
 <title>MIT ADMIN</title>
 
 <style>
-body{margin:0;background:black;font-family:Arial;color:white;text-align:center}
+body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 h1{color:#ffd700;margin-top:20px}
 .box{max-width:500px;margin:30px auto;background:#111;padding:25px;border-radius:15px}
-input,select{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:none;background:#222;color:white}
-button{padding:10px;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
-.gold{background:#ffd700;color:black}
-.red{background:#ff3333;color:white}
-.cyan{background:#00ffcc;color:black}
-.product{background:#1a1a1a;padding:15px;margin:15px 0;border-radius:10px}
+input,select{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;background:#222;color:#fff}
+button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+.gold{background:#ffd700;color:#000}
+.red{background:#ff3333;color:#fff}
+.cyan{background:#00ffcc;color:#000}
+.product{background:#1a1a1a;margin:15px 0;padding:15px;border-radius:10px}
 .product img{width:100%;border-radius:8px}
 .hidden{display:none}
 .sizes label{margin:5px;display:inline-block}
@@ -25,6 +25,7 @@ button{padding:10px;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
 <h1>MIT STORE ADMIN</h1>
 
 <div class="box" id="loginBox">
+<h3>تسجيل دخول الأدمن</h3>
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 <button class="gold" id="loginBtn">Login</button>
@@ -59,7 +60,7 @@ button{padding:10px;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -68,7 +69,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
   authDomain: "mit-store-15e1d.firebaseapp.com",
   projectId: "mit-store-15e1d",
-  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  storageBucket: "mit-store-15e1d.appspot.com",
   messagingSenderId: "168416523904",
   appId: "1:168416523904:web:711219a46f1c87b82e9865"
 };
@@ -83,12 +84,18 @@ const productsDiv = document.getElementById("products");
 const sizesBox = document.getElementById("sizesBox");
 
 document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value.trim();
+
+  if(!email || !pass){
+    alert("اكتب البيانات");
+    return;
+  }
+
   try{
     await signInWithEmailAndPassword(auth,email,pass);
-  }catch(e){
-    alert(e.code);
+  }catch(error){
+    alert(error.code);
   }
 };
 
@@ -107,13 +114,14 @@ document.getElementById("category").addEventListener("change",()=>{
   const category=document.getElementById("category").value;
   sizesBox.innerHTML="";
   let sizes=[];
+
   if(category==="HOODIES") sizes=["S","M","L","XL"];
   if(category==="PANTS") sizes=["38","40","42","44"];
 
   sizes.forEach(size=>{
     sizesBox.innerHTML+=`
     <label>
-      <input type="checkbox" value="${size}"> ${size}
+    <input type="checkbox" value="${size}"> ${size}
     </label>`;
   });
 });
@@ -149,4 +157,65 @@ document.getElementById("addBtn").onclick = async () => {
 
     const data=await res.json();
 
-    if(!data.secure_url
+    if(!data.secure_url){
+      alert("فشل رفع الصورة");
+      return;
+    }
+
+    imageURL=data.secure_url;
+  }
+
+  await addDoc(collection(db,"products"),{
+    name,
+    price,
+    category,
+    sizes:selectedSizes,
+    image:imageURL
+  });
+
+  alert("تمت الإضافة بنجاح 🔥");
+  loadProducts();
+};
+
+async function loadProducts(){
+  productsDiv.innerHTML="";
+  const snap=await getDocs(collection(db,"products"));
+
+  snap.forEach(d=>{
+    const p=d.data();
+
+    productsDiv.innerHTML+=`
+    <div class="product">
+      ${p.image ? `<img src="${p.image}">` : ""}
+      <h3>${p.name}</h3>
+      <div style="color:#ffd700">${p.price}</div>
+      <div>${p.category}</div>
+      <div>المقاسات: ${p.sizes ? p.sizes.join(", ") : "-"}</div>
+      <button class="cyan" onclick="editProduct('${d.id}','${p.name}','${p.price}')">تعديل</button>
+      <button class="red" onclick="deleteProduct('${d.id}')">حذف</button>
+    </div>
+    `;
+  });
+}
+
+window.deleteProduct = async function(id){
+  await deleteDoc(doc(db,"products",id));
+  loadProducts();
+};
+
+window.editProduct = async function(id,oldName,oldPrice){
+  const newName=prompt("اسم جديد",oldName);
+  const newPrice=prompt("سعر جديد",oldPrice);
+  if(newName&&newPrice){
+    await updateDoc(doc(db,"products",id),{
+      name:newName,
+      price:newPrice
+    });
+    loadProducts();
+  }
+};
+
+</script>
+
+</body>
+</html>
