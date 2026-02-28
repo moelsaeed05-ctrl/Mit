@@ -1,78 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>MIT STORE - Admin Dashboard</title>
-  <style>
-    body{
-      font-family: Arial;
-      background:#111;
-      color:white;
-      padding:20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT STORE Dashboard</title>
 
-    h2{
-      text-align:center;
-      margin-bottom:20px;
-    }
+<style>
+body{
+  font-family: Arial;
+  background:#111;
+  color:white;
+  text-align:center;
+}
 
-    input, textarea, select{
-      width:100%;
-      padding:10px;
-      margin:6px 0;
-      border-radius:6px;
-      border:none;
-      outline:none;
-    }
+h1{
+  margin:20px;
+}
 
-    button{
-      padding:10px 15px;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      margin-top:8px;
-    }
+input,select{
+  padding:10px;
+  margin:5px;
+  width:200px;
+}
 
-    .add-btn{
-      background:#28a745;
-      color:white;
-    }
+button{
+  padding:10px 15px;
+  margin:5px;
+  background:#ffd700;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+}
 
-    .delete-btn{
-      background:#dc3545;
-      color:white;
-    }
+.product{
+  background:#222;
+  margin:10px auto;
+  padding:15px;
+  width:250px;
+  border-radius:10px;
+}
 
-    .card{
-      background:#222;
-      padding:15px;
-      margin:15px 0;
-      border-radius:10px;
-    }
+.product img{
+  width:100%;
+  border-radius:10px;
+}
 
-    img{
-      width:120px;
-      margin-top:10px;
-      border-radius:6px;
-    }
-
-  </style>
+.delete{
+  background:red;
+  color:white;
+}
+</style>
 </head>
 <body>
 
-<h2>لوحة تحكم المنتجات</h2>
+<h1>MIT STORE Dashboard</h1>
 
 <input type="text" id="name" placeholder="اسم المنتج">
-<input type="number" id="price" placeholder="السعر">
-<textarea id="desc" placeholder="الوصف"></textarea>
-
-<select id="size">
-  <option value="">اختر المقاس</option>
-  <option>S</option>
-  <option>M</option>
-  <option>L</option>
-  <option>XL</option>
-</select>
+<input type="text" id="price" placeholder="السعر">
+<input type="text" id="image" placeholder="رابط الصورة">
 
 <select id="category">
   <option value="">اختر الفئة</option>
@@ -81,21 +66,17 @@
   <option value="ACCESSORIES">ACCESSORIES</option>
 </select>
 
-<input type="file" id="image">
+<br>
+<button onclick="addProduct()">اضافة منتج</button>
 
-<button class="add-btn" onclick="addProduct()">إضافة منتج</button>
-
-<h3>المنتجات:</h3>
+<h2>المنتجات</h2>
 <div id="products"></div>
 
-
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* 🔥 firebaseConfig بتاعك */
 const firebaseConfig = {
   apiKey: "AIzaSyA1X_1BlviMDKKUGnA8yfG6NCrfS65h524",
   authDomain: "mit-store-bd580.firebaseapp.com",
@@ -108,90 +89,56 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* 🔐 حماية الأدمن */
-if(localStorage.getItem("adminLoggedIn") !== "true"){
-  window.location.href = "login.html";
-}
+const productsDiv = document.getElementById("products");
 
-/* ➕ إضافة منتج */
 window.addProduct = async function(){
-
   const name = document.getElementById("name").value;
   const price = document.getElementById("price").value;
-  const desc = document.getElementById("desc").value;
-  const size = document.getElementById("size").value;
+  const image = document.getElementById("image").value;
   const category = document.getElementById("category").value;
-  const file = document.getElementById("image").files[0];
 
-  if(!name || !price || !category || !file){
-    alert("املأ كل البيانات");
+  if(!name || !price || !image || !category){
+    alert("املى كل البيانات");
     return;
   }
 
-  const reader = new FileReader();
+  await addDoc(collection(db,"products"),{
+    name,
+    price,
+    image,
+    category
+  });
 
-  reader.onload = async function(e){
-
-    await addDoc(collection(db,"products"),{
-      name:name,
-      price:price,
-      desc:desc,
-      size:size,
-      category:category,
-      image:e.target.result,
-      createdAt: Date.now()
-    });
-
-    clearForm();
-    displayProducts();
-  };
-
-  reader.readAsDataURL(file);
+  alert("تم اضافة المنتج");
+  loadProducts();
 }
 
-/* 🗑 حذف منتج */
-window.deleteProduct = async function(id){
-  await deleteDoc(doc(db,"products",id));
-  displayProducts();
-}
-
-/* 📦 عرض المنتجات */
-async function displayProducts(){
-
-  const container = document.getElementById("products");
-  container.innerHTML = "";
-
+async function loadProducts(){
+  productsDiv.innerHTML="";
   const querySnapshot = await getDocs(collection(db,"products"));
 
   querySnapshot.forEach((docSnap)=>{
-    const p = docSnap.data();
+    const data = docSnap.data();
 
-    container.innerHTML += `
-      <div class="card">
-        <h4>${p.name}</h4>
-        <p>الفئة: ${p.category}</p>
-        <p>السعر: ${p.price} جنيه</p>
-        ${p.image ? `<img src="${p.image}">` : ""}
-        <br>
-        <button class="delete-btn" onclick="deleteProduct('${docSnap.id}')">حذف</button>
+    productsDiv.innerHTML += `
+      <div class="product">
+        <img src="${data.image}">
+        <h3>${data.name}</h3>
+        <p>${data.price}</p>
+        <p>${data.category}</p>
+        <button class="delete" onclick="deleteProduct('${docSnap.id}')">حذف</button>
       </div>
     `;
   });
-
 }
 
-/* 🧹 تنظيف الفورم */
-function clearForm(){
-  document.getElementById("name").value="";
-  document.getElementById("price").value="";
-  document.getElementById("desc").value="";
-  document.getElementById("size").value="";
-  document.getElementById("category").value="";
-  document.getElementById("image").value="";
+window.deleteProduct = async function(id){
+  await deleteDoc(doc(db,"products",id));
+  alert("تم الحذف");
+  loadProducts();
 }
 
-displayProducts();
-
+loadProducts();
 </script>
 
 </body>
