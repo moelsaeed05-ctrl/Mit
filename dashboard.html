@@ -123,23 +123,16 @@ const pass=prompt("ادخل كلمة المرور");
 await signInWithEmailAndPassword(auth,email,pass);
 return;
 }
+// تحقق انه ادمن بطريقة صحيحة
+const adminSnap = await getDoc(doc(db,"admins",user.uid));
 
-// تحقق انه ادمن
-const adminDoc = await fetchAdmin(user.uid);
-if(!adminDoc){
+if(!adminSnap.exists()){
 alert("غير مصرح لك بالدخول");
-signOut(auth);
+await signOut(auth);
+return;
 }
-else{
+
 loadProducts();
-}
-});
-
-async function fetchAdmin(uid){
-const snap=await fetch(`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/admins/${uid}`);
-return snap.status===200;
-}
-
 
 // ➕ إضافة منتج
 window.addProduct=async function(){
