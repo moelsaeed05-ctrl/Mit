@@ -263,7 +263,35 @@ z-index:10;
 </div>
 
 <script type="module">
+import { collection, getDocs, query, where }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+window.openCategory = async function(cat){
+
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+
+const q = query(collection(db,"products"), where("category","==",cat));
+const querySnapshot = await getDocs(q);
+
+if(querySnapshot.empty){
+products.innerHTML="<p>لا توجد منتجات حالياً</p>";
+return;
+}
+
+querySnapshot.forEach((doc)=>{
+const p = doc.data();
+
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
+<img src="${p.image}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
+
+}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -385,16 +413,7 @@ if(s.a<=0)smokes.splice(i,1);
 requestAnimationFrame(animateSmoke);
 }
 animateSmoke();
-const data={
-HOODIES:[{name:"Black Hoodie",img:"https://images.unsplash.com/photo-1618354691373-d851c5c3a990",price:"50$"}],
-PANTS:[{name:"Black Pants",img:"https://images.unsplash.com/photo-1584865288642-42078afe6942",price:"40$"}],
-ACCESSORIES:[{name:"Cap",img:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f",price:"20$"}]
-};
 
-// 🔥 نجيب منتجات الأدمن من LocalStorage
-const adminProducts = JSON.parse(localStorage.getItem("products")) || [];
-
-adminProducts.forEach(p=>{
 if(!data[p.category]){
 data[p.category] = [];
 }
@@ -404,7 +423,7 @@ img: p.image,
 price: p.price + " جنيه"
 });
 });
-window.openCategory=function(cat){
+
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
