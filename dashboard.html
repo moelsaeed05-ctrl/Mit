@@ -3,15 +3,35 @@
 <head>
   <title>Admin Dashboard</title>
   <style>
-    body { font-family: Arial; padding:20px; background:#f5f5f5 }
-    input, textarea, select { width:100%; padding:8px; margin:5px 0 }
-    button { padding:8px 15px; margin:5px 0; cursor:pointer }
+    body {
+      font-family: Arial;
+      padding:20px;
+      background:#111;
+      color:white
+    }
+    input, textarea, select {
+      width:100%;
+      padding:8px;
+      margin:5px 0;
+      border-radius:6px;
+      border:none
+    }
+    button {
+      padding:8px 15px;
+      margin:5px 5px 5px 0;
+      cursor:pointer;
+      border:none;
+      border-radius:6px
+    }
+    .add-btn { background:#28a745; color:white }
+    .delete-btn { background:#dc3545; color:white }
+    .edit-btn { background:#ffc107; color:black }
+
     .card {
-      background:white;
+      background:#222;
       padding:10px;
       margin:10px 0;
-      border-radius:8px;
-      box-shadow:0 0 5px rgba(0,0,0,0.1)
+      border-radius:8px
     }
     img { width:120px; margin-top:5px }
   </style>
@@ -32,14 +52,15 @@
   <option>XL</option>
 </select>
 
-<input type="file" id="image">
 <select id="category">
   <option value="">اختر الفئة</option>
   <option value="HOODIES">HOODIES</option>
   <option value="PANTS">PANTS</option>
   <option value="ACCESSORIES">ACCESSORIES</option>
 </select>
-<button onclick="addProduct()">إضافة منتج</button>
+
+<input type="file" id="image">
+<button class="add-btn" onclick="addProduct()">إضافة / تحديث منتج</button>
 
 <h3>المنتجات:</h3>
 <div id="products"></div>
@@ -49,28 +70,73 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
   window.location.href = "login.html";
 }
 
+let editId = null;
+
 function addProduct(){
   const name = document.getElementById("name").value;
   const price = document.getElementById("price").value;
   const desc = document.getElementById("desc").value;
   const size = document.getElementById("size").value;
+  const category = document.getElementById("category").value;
   const file = document.getElementById("image").files[0];
 
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const product = {
-      id: Date.now(),
-      name, price, desc, size,
-      image: e.target.result
-    };
+  if(!name || !price || !category){
+    alert("املأ البيانات الأساسية");
+    return;
+  }
 
+  const reader = new FileReader();
+
+  reader.onload = function(e){
     let products = JSON.parse(localStorage.getItem("products")) || [];
-    products.push(product);
+
+    if(editId){
+      products = products.map(p=>{
+        if(p.id === editId){
+          return {
+            ...p,
+            name, price, desc, size, category,
+            image: file ? e.target.result : p.image
+          }
+        }
+        return p;
+      });
+      editId = null;
+    } else {
+      products.push({
+        id: Date.now(),
+        name,
+        price,
+        desc,
+        size,
+        category,
+        image: e.target.result
+      });
+    }
+
     localStorage.setItem("products", JSON.stringify(products));
+    clearForm();
     displayProducts();
   };
 
-  reader.readAsDataURL(file);
+  if(file){
+    reader.readAsDataURL(file);
+  } else {
+    reader.onload({target:{result:null}});
+  }
+}
+
+function editProduct(id){
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+  const p = products.find(x=>x.id===id);
+
+  document.getElementById("name").value = p.name;
+  document.getElementById("price").value = p.price;
+  document.getElementById("desc").value = p.desc;
+  document.getElementById("size").value = p.size;
+  document.getElementById("category").value = p.category;
+
+  editId = id;
 }
 
 function deleteProduct(id){
@@ -89,15 +155,26 @@ function displayProducts(){
     container.innerHTML += `
       <div class="card">
         <h4>${p.name}</h4>
+        <p>الفئة: ${p.category}</p>
         <p>السعر: ${p.price} جنيه</p>
-        <p>${p.desc}</p>
-        <p>المقاس: ${p.size}</p>
-        <img src="${p.image}">
+        <p>${p.desc || ""}</p>
+        <p>المقاس: ${p.size || ""}</p>
+        ${p.image ? `<img src="${p.image}">` : ""}
         <br>
-        <button onclick="deleteProduct(${p.id})">حذف</button>
+        <button class="edit-btn" onclick="editProduct(${p.id})">تعديل</button>
+        <button class="delete-btn" onclick="deleteProduct(${p.id})">حذف</button>
       </div>
     `;
   });
+}
+
+function clearForm(){
+  document.getElementById("name").value="";
+  document.getElementById("price").value="";
+  document.getElementById("desc").value="";
+  document.getElementById("size").value="";
+  document.getElementById("category").value="";
+  document.getElementById("image").value="";
 }
 
 displayProducts();
