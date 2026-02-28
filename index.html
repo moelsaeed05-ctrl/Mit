@@ -404,11 +404,16 @@ img: p.image,
 price: p.price + " جنيه"
 });
 });
-
 window.openCategory=function(cat){
 page.style.display="flex";
 products.innerHTML="";
 categoryTitle.innerText=cat;
+
+if(!data[cat] || data[cat].length===0){
+products.innerHTML="<p>لا توجد منتجات حالياً</p>";
+return;
+}
+
 data[cat].forEach(p=>{
 products.innerHTML+=`
 <div class="product" onclick='showDetail("${p.name}","${p.img}","${p.price}")'>
