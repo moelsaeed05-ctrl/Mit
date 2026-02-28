@@ -282,7 +282,19 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const loginBtn=document.getElementById("loginBtn");
 
+const page = document.getElementById("page");
+const products = document.getElementById("products");
+const categoryTitle = document.getElementById("categoryTitle");
+const detail = document.getElementById("detail");
+const detailBox = document.getElementById("detailBox");
+const loginModal = document.getElementById("loginModal");
 
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const regEmailInput = document.getElementById("regEmailInput");
+const regPasswordInput = document.getElementById("regPasswordInput");
+const confirmInput = document.getElementById("confirmInput");
+const nameInput = document.getElementById("nameInput");
 // 🔥 جلب المنتجات من فايربيس
 window.openCategory = async function(cat){
 
