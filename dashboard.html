@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial; padding:20px; background:#f5f5f5 }
+    input, textarea, select { width:100%; padding:8px; margin:5px 0 }
+    button { padding:8px 15px; margin:5px 0; cursor:pointer }
+    .card {
+      background:white;
+      padding:10px;
+      margin:10px 0;
+      border-radius:8px;
+      box-shadow:0 0 5px rgba(0,0,0,0.1)
+    }
+    img { width:120px; margin-top:5px }
+  </style>
 </head>
 <body>
 
-<h2>Admin Dashboard</h2>
+<h2>لوحة تحكم المنتجات</h2>
 
-<input type="text" id="productName" placeholder="Product Name"><br><br>
-<input type="file" id="productImage"><br><br>
+<input type="text" id="name" placeholder="اسم المنتج">
+<input type="number" id="price" placeholder="السعر">
+<textarea id="desc" placeholder="الوصف"></textarea>
 
-<button onclick="addProduct()">Add Product</button>
+<select id="size">
+  <option value="">اختر المقاس</option>
+  <option>S</option>
+  <option>M</option>
+  <option>L</option>
+  <option>XL</option>
+</select>
 
-<h3>Products:</h3>
+<input type="file" id="image">
+
+<button onclick="addProduct()">إضافة منتج</button>
+
+<h3>المنتجات:</h3>
 <div id="products"></div>
 
 <script>
@@ -21,24 +45,34 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
 }
 
 function addProduct(){
-  const name = document.getElementById("productName").value;
-  const file = document.getElementById("productImage").files[0];
+  const name = document.getElementById("name").value;
+  const price = document.getElementById("price").value;
+  const desc = document.getElementById("desc").value;
+  const size = document.getElementById("size").value;
+  const file = document.getElementById("image").files[0];
 
   const reader = new FileReader();
   reader.onload = function(e){
     const product = {
-      name: name,
+      id: Date.now(),
+      name, price, desc, size,
       image: e.target.result
     };
 
     let products = JSON.parse(localStorage.getItem("products")) || [];
     products.push(product);
     localStorage.setItem("products", JSON.stringify(products));
-
     displayProducts();
   };
 
   reader.readAsDataURL(file);
+}
+
+function deleteProduct(id){
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  products = products.filter(p => p.id !== id);
+  localStorage.setItem("products", JSON.stringify(products));
+  displayProducts();
 }
 
 function displayProducts(){
@@ -48,71 +82,14 @@ function displayProducts(){
 
   products.forEach(p => {
     container.innerHTML += `
-      <div>
+      <div class="card">
         <h4>${p.name}</h4>
-        <img src="${p.image}" width="150">
-      </div>
-    `;
-  });
-}
-
-displayProducts();
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html>
-<head>
-  <title>Dashboard</title>
-</head>
-<body>
-
-<h2>Admin Dashboard</h2>
-
-<input type="text" id="productName" placeholder="Product Name"><br><br>
-<input type="file" id="productImage"><br><br>
-
-<button onclick="addProduct()">Add Product</button>
-
-<h3>Products:</h3>
-<div id="products"></div>
-
-<script>
-if(localStorage.getItem("adminLoggedIn") !== "true"){
-  window.location.href = "login.html";
-}
-
-function addProduct(){
-  const name = document.getElementById("productName").value;
-  const file = document.getElementById("productImage").files[0];
-
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const product = {
-      name: name,
-      image: e.target.result
-    };
-
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    products.push(product);
-    localStorage.setItem("products", JSON.stringify(products));
-
-    displayProducts();
-  };
-
-  reader.readAsDataURL(file);
-}
-
-function displayProducts(){
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-  const container = document.getElementById("products");
-  container.innerHTML = "";
-
-  products.forEach(p => {
-    container.innerHTML += `
-      <div>
-        <h4>${p.name}</h4>
-        <img src="${p.image}" width="150">
+        <p>السعر: ${p.price} جنيه</p>
+        <p>${p.desc}</p>
+        <p>المقاس: ${p.size}</p>
+        <img src="${p.image}">
+        <br>
+        <button onclick="deleteProduct(${p.id})">حذف</button>
       </div>
     `;
   });
