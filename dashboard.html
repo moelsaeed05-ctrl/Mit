@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+
+<input type="text" id="productName" placeholder="Product Name"><br><br>
+<input type="file" id="productImage"><br><br>
+
+<button onclick="addProduct()">Add Product</button>
+
+<h3>Products:</h3>
+<div id="products"></div>
+
+<script>
+if(localStorage.getItem("adminLoggedIn") !== "true"){
+  window.location.href = "login.html";
+}
+
+function addProduct(){
+  const name = document.getElementById("productName").value;
+  const file = document.getElementById("productImage").files[0];
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const product = {
+      name: name,
+      image: e.target.result
+    };
+
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    products.push(product);
+    localStorage.setItem("products", JSON.stringify(products));
+
+    displayProducts();
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function displayProducts(){
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div>
+        <h4>${p.name}</h4>
+        <img src="${p.image}" width="150">
+      </div>
+    `;
+  });
+}
+
+displayProducts();
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+
+<input type="text" id="productName" placeholder="Product Name"><br><br>
+<input type="file" id="productImage"><br><br>
+
+<button onclick="addProduct()">Add Product</button>
+
+<h3>Products:</h3>
+<div id="products"></div>
+
+<script>
+if(localStorage.getItem("adminLoggedIn") !== "true"){
+  window.location.href = "login.html";
+}
+
+function addProduct(){
+  const name = document.getElementById("productName").value;
+  const file = document.getElementById("productImage").files[0];
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const product = {
+      name: name,
+      image: e.target.result
+    };
+
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    products.push(product);
+    localStorage.setItem("products", JSON.stringify(products));
+
+    displayProducts();
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function displayProducts(){
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div>
+        <h4>${p.name}</h4>
+        <img src="${p.image}" width="150">
+      </div>
+    `;
+  });
+}
+
+displayProducts();
+</script>
+
+</body>
+</html>
