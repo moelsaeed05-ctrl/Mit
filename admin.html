@@ -1,221 +1,172 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT ADMIN</title>
-
+<title>MIT Admin</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
-h1{color:#ffd700;margin-top:20px}
-.box{max-width:500px;margin:30px auto;background:#111;padding:25px;border-radius:15px}
-input,select{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;background:#222;color:#fff}
-button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
-.gold{background:#ffd700;color:#000}
-.red{background:#ff3333;color:#fff}
-.cyan{background:#00ffcc;color:#000}
-.product{background:#1a1a1a;margin:15px 0;padding:15px;border-radius:10px}
-.product img{width:100%;border-radius:8px}
-.hidden{display:none}
-.sizes label{margin:5px;display:inline-block}
+body{
+margin:0;
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+display:flex;
+}
+
+.sidebar{
+width:250px;
+background:#111;
+padding:20px;
+height:100vh;
+box-shadow:0 0 15px #000;
+}
+
+.sidebar h2{
+color:#ffd700;
+}
+
+.sidebar div{
+margin:20px 0;
+cursor:pointer;
+}
+
+.content{
+flex:1;
+padding:30px;
+}
+
+.card{
+background:#1a1a1a;
+padding:20px;
+margin:15px 0;
+border-radius:12px;
+}
+
+.statBox{
+display:flex;
+gap:20px;
+}
+
+.stat{
+background:#1a1a1a;
+padding:20px;
+border-radius:12px;
+flex:1;
+text-align:center;
+}
+
+button{
+background:#ffd700;
+border:none;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+}
 </style>
 </head>
 <body>
 
-<h1>MIT STORE ADMIN</h1>
-
-<div class="box" id="loginBox">
-<h3>تسجيل دخول الأدمن</h3>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button class="gold" id="loginBtn">Login</button>
+<div class="sidebar">
+<h2>MIT ADMIN</h2>
+<div onclick="showOrders()">الطلبات</div>
+<div onclick="showStats()">الإحصائيات</div>
+<div onclick="logout()">تسجيل خروج</div>
 </div>
 
-<div class="box hidden" id="adminPanel">
-
-<h3>إضافة منتج</h3>
-
-<input type="text" id="name" placeholder="اسم المنتج">
-<input type="text" id="price" placeholder="السعر">
-
-<select id="category">
-<option value="">اختار النوع</option>
-<option value="HOODIES">HOODIES</option>
-<option value="PANTS">PANTS</option>
-<option value="ACCESSORIES">ACCESSORIES</option>
-</select>
-
-<div id="sizesBox" class="sizes"></div>
-
-<input type="file" id="image">
-<button class="gold" id="addBtn">إضافة</button>
-
-<hr>
-
-<h3>المنتجات</h3>
-<div id="products"></div>
-
+<div class="content">
+<h1>لوحة التحكم</h1>
+<div id="main"></div>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
+import { getAuth,onAuthStateChanged,signOut }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
+import { getFirestore,collection,getDocs,doc,getDoc,updateDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-  authDomain: "mit-store-15e1d.firebaseapp.com",
-  projectId: "mit-store-15e1d",
-  storageBucket: "mit-store-15e1d.appspot.com",
-  messagingSenderId: "168416523904",
-  appId: "1:168416523904:web:711219a46f1c87b82e9865"
-};
+const firebaseConfig = { /* حط نفس بياناتك هنا */ };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const loginBox = document.getElementById("loginBox");
-const adminPanel = document.getElementById("adminPanel");
-const productsDiv = document.getElementById("products");
-const sizesBox = document.getElementById("sizesBox");
+const main = document.getElementById("main");
 
-document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("email").value.trim();
-  const pass = document.getElementById("password").value.trim();
-
-  if(!email || !pass){
-    alert("اكتب البيانات");
-    return;
-  }
-
-  try{
-    await signInWithEmailAndPassword(auth,email,pass);
-  }catch(error){
-    alert(error.code);
-  }
-};
-
-onAuthStateChanged(auth,user=>{
-  if(user){
-    loginBox.classList.add("hidden");
-    adminPanel.classList.remove("hidden");
-    loadProducts();
-  }else{
-    loginBox.classList.remove("hidden");
-    adminPanel.classList.add("hidden");
-  }
-});
-
-document.getElementById("category").addEventListener("change",()=>{
-  const category=document.getElementById("category").value;
-  sizesBox.innerHTML="";
-  let sizes=[];
-
-  if(category==="HOODIES") sizes=["S","M","L","XL"];
-  if(category==="PANTS") sizes=["38","40","42","44"];
-
-  sizes.forEach(size=>{
-    sizesBox.innerHTML+=`
-    <label>
-    <input type="checkbox" value="${size}"> ${size}
-    </label>`;
-  });
-});
-
-document.getElementById("addBtn").onclick = async () => {
-
-  const name=document.getElementById("name").value.trim();
-  const price=document.getElementById("price").value.trim();
-  const category=document.getElementById("category").value;
-  const file=document.getElementById("image").files[0];
-
-  if(!name||!price||!category){
-    alert("كمل البيانات");
-    return;
-  }
-
-  let selectedSizes=[];
-  document.querySelectorAll("#sizesBox input:checked").forEach(el=>{
-    selectedSizes.push(el.value);
-  });
-
-  let imageURL="";
-
-  if(file){
-    const formData=new FormData();
-    formData.append("file",file);
-    formData.append("upload_preset","unsigned_upload");
-
-    const res=await fetch("https://api.cloudinary.com/v1_1/dh0uqzxpe/image/upload",{
-      method:"POST",
-      body:formData
-    });
-
-    const data=await res.json();
-
-    if(!data.secure_url){
-      alert("فشل رفع الصورة");
-      return;
-    }
-
-    imageURL=data.secure_url;
-  }
-
-  await addDoc(collection(db,"products"),{
-    name,
-    price,
-    category,
-    sizes:selectedSizes,
-    image:imageURL
-  });
-
-  alert("تمت الإضافة بنجاح 🔥");
-  loadProducts();
-};
-
-async function loadProducts(){
-  productsDiv.innerHTML="";
-  const snap=await getDocs(collection(db,"products"));
-
-  snap.forEach(d=>{
-    const p=d.data();
-
-    productsDiv.innerHTML+=`
-    <div class="product">
-      ${p.image ? `<img src="${p.image}">` : ""}
-      <h3>${p.name}</h3>
-      <div style="color:#ffd700">${p.price}</div>
-      <div>${p.category}</div>
-      <div>المقاسات: ${p.sizes ? p.sizes.join(", ") : "-"}</div>
-      <button class="cyan" onclick="editProduct('${d.id}','${p.name}','${p.price}')">تعديل</button>
-      <button class="red" onclick="deleteProduct('${d.id}')">حذف</button>
-    </div>
-    `;
-  });
+// 🔐 حماية الأدمن
+onAuthStateChanged(auth, async(user)=>{
+if(!user){
+location.href="index.html";
+return;
 }
 
-window.deleteProduct = async function(id){
-  await deleteDoc(doc(db,"products",id));
-  loadProducts();
-};
+const snap = await getDoc(doc(db,"users",user.uid));
 
-window.editProduct = async function(id,oldName,oldPrice){
-  const newName=prompt("اسم جديد",oldName);
-  const newPrice=prompt("سعر جديد",oldPrice);
-  if(newName&&newPrice){
-    await updateDoc(doc(db,"products",id),{
-      name:newName,
-      price:newPrice
-    });
-    loadProducts();
-  }
-};
+if(!snap.exists() || snap.data().role!=="admin"){
+location.href="index.html";
+}
+});
+
+// 📦 عرض الطلبات
+window.showOrders = async function(){
+
+const snapshot = await getDocs(collection(db,"orders"));
+main.innerHTML="<h2>كل الطلبات</h2>";
+
+snapshot.forEach(orderDoc=>{
+const o=orderDoc.data();
+
+main.innerHTML+=`
+<div class="card">
+<h3>${o.userName}</h3>
+<p>المجموع: ${o.total}</p>
+<p>الحالة: ${o.status}</p>
+<button onclick="shipOrder('${orderDoc.id}')">تم الشحن</button>
+</div>
+`;
+});
+}
+
+// 🚚 تحديث الحالة
+window.shipOrder = async function(id){
+await updateDoc(doc(db,"orders",id),{
+status:"shipped"
+});
+showOrders();
+}
+
+// 📊 إحصائيات
+window.showStats = async function(){
+
+const snapshot = await getDocs(collection(db,"orders"));
+let totalSales = 0;
+let totalOrders = snapshot.size;
+
+snapshot.forEach(doc=>{
+totalSales += Number(doc.data().total);
+});
+
+main.innerHTML=`
+<h2>الإحصائيات</h2>
+<div class="statBox">
+<div class="stat">
+<h3>${totalOrders}</h3>
+<p>عدد الطلبات</p>
+</div>
+<div class="stat">
+<h3>${totalSales} جنيه</h3>
+<p>إجمالي المبيعات</p>
+</div>
+</div>
+`;
+}
+
+// 🚪 تسجيل خروج
+window.logout = async function(){
+await signOut(auth);
+location.href="index.html";
+}
 
 </script>
-
 </body>
 </html>
