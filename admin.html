@@ -1,66 +1,123 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة التحكم</title>
+<title>MIT Admin Pro</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
+  font-family:Tahoma;
+  background:#0b1120;
+  color:#fff;
 }
 
+/* Sidebar */
 .sidebar{
-  width:220px;
+  width:250px;
   height:100vh;
-  background:#111827;
+  background:linear-gradient(180deg,#111827,#1f2937);
   position:fixed;
-  padding:20px;
+  padding:25px;
 }
-
 .sidebar h2{
-  color:#facc15;
+  color:#22d3ee;
+}
+.sidebar a{
+  display:block;
+  margin:15px 0;
+  text-decoration:none;
+  color:#ccc;
+  transition:.3s;
+}
+.sidebar a:hover{
+  color:#fff;
 }
 
+/* Content */
 .content{
-  margin-right:240px;
-  padding:20px;
+  margin-right:260px;
+  padding:30px;
 }
 
+/* Cards */
+.cards{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
 .card{
-  background:#1f2937;
+  flex:1;
+  min-width:200px;
+  background:#1e293b;
   padding:20px;
-  border-radius:12px;
-  margin:10px;
-  display:inline-block;
-  width:200px;
+  border-radius:15px;
+  box-shadow:0 0 20px rgba(0,0,0,.3);
+  transition:.3s;
+}
+.card:hover{
+  transform:translateY(-5px);
+}
+
+/* Tables */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+  background:#1e293b;
+  border-radius:15px;
+  overflow:hidden;
+}
+th,td{
+  padding:12px;
   text-align:center;
 }
-
-input, select{
-  display:block;
-  margin:10px 0;
-  padding:10px;
-  width:250px;
-  border-radius:8px;
-  border:none;
+th{
+  background:#111827;
+}
+tr:nth-child(even){
+  background:#0f172a;
 }
 
 button{
-  padding:10px 15px;
+  padding:6px 12px;
   border:none;
   border-radius:8px;
-  background:#facc15;
   cursor:pointer;
+  background:#22d3ee;
+  color:#000;
 }
 
-.product-card, .order-card{
-  background:#1f2937;
-  padding:15px;
-  border-radius:10px;
-  margin:10px 0;
+.add-btn{
+  background:#10b981;
+  margin:15px 0;
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal-content{
+  background:#1e293b;
+  padding:30px;
+  border-radius:15px;
+  width:300px;
+}
+.modal input, .modal select{
+  width:100%;
+  padding:8px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
 }
 </style>
 </head>
@@ -68,43 +125,75 @@ button{
 
 <div class="sidebar">
   <h2>MIT ADMIN</h2>
+  <a href="#">الرئيسية</a>
+  <a href="#">المنتجات</a>
+  <a href="#">الطلبات</a>
 </div>
 
 <div class="content">
 
 <h1>لوحة التحكم</h1>
 
-<h2>الإحصائيات</h2>
-<div id="stats"></div>
+<div class="cards">
+  <div class="card" id="productsCount">0<br>منتج</div>
+  <div class="card" id="ordersCount">0<br>طلب</div>
+  <div class="card" id="newOrdersCount">0<br>طلب جديد</div>
+</div>
 
-<h2>إضافة منتج</h2>
-<input id="pName" placeholder="اسم المنتج">
-<input id="pPrice" type="number" placeholder="السعر">
-<select id="pCategory">
-  <option value="تيشيرتات">تيشيرتات</option>
-  <option value="هودي">هودي</option>
-  <option value="بنطلون">بنطلون</option>
-</select>
-<input id="pSizes" placeholder="المقاسات مثال S,M,L">
-<input id="pColors" placeholder="الألوان مثال أسود,أبيض">
-<input id="pImage" placeholder="رابط الصورة">
-<button id="addBtn">إضافة</button>
+<button class="add-btn" onclick="openModal()">+ إضافة منتج</button>
 
 <h2>المنتجات</h2>
-<div id="productsList"></div>
+<table>
+<thead>
+<tr>
+<th>الصورة</th>
+<th>الاسم</th>
+<th>السعر</th>
+<th>القسم</th>
+<th>حذف</th>
+</tr>
+</thead>
+<tbody id="productsTable"></tbody>
+</table>
 
 <h2>الطلبات</h2>
-<div id="ordersList"></div>
+<table>
+<thead>
+<tr>
+<th>العميل</th>
+<th>المنتج</th>
+<th>المقاس</th>
+<th>اللون</th>
+<th>الحالة</th>
+<th>تغيير</th>
+</tr>
+</thead>
+<tbody id="ordersTable"></tbody>
+</table>
 
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3>إضافة منتج</h3>
+<input id="name" placeholder="اسم المنتج">
+<input id="price" type="number" placeholder="السعر">
+<select id="category">
+<option>تيشيرتات</option>
+<option>هودي</option>
+<option>بنطلون</option>
+</select>
+<input id="image" placeholder="رابط الصورة">
+<button onclick="addProduct()">حفظ</button>
+</div>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getFirestore, collection, getDocs, addDoc,
-  deleteDoc, doc, updateDoc, query, where 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
@@ -118,105 +207,75 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const pName = document.getElementById("pName");
-const pPrice = document.getElementById("pPrice");
-const pCategory = document.getElementById("pCategory");
-const pSizes = document.getElementById("pSizes");
-const pColors = document.getElementById("pColors");
-const pImage = document.getElementById("pImage");
+window.openModal = ()=> modal.style.display="flex";
+
+window.addProduct = async ()=>{
+  await addDoc(collection(db,"products"),{
+    name:name.value,
+    price:Number(price.value),
+    category:category.value,
+    image:image.value,
+    createdAt:new Date()
+  });
+  modal.style.display="none";
+  loadProducts();
+  loadStats();
+};
+
+window.deleteProduct = async (id)=>{
+  await deleteDoc(doc(db,"products",id));
+  loadProducts();
+  loadStats();
+};
+
+window.changeStatus = async (id)=>{
+  await updateDoc(doc(db,"orders",id),{status:"تم التنفيذ"});
+  loadOrders();
+  loadStats();
+};
 
 async function loadStats(){
-  const productsSnap = await getDocs(collection(db,"products"));
-  const ordersSnap = await getDocs(collection(db,"orders"));
-  const newOrders = await getDocs(
-    query(collection(db,"orders"), where("status","==","جديد"))
-  );
-
-  document.getElementById("stats").innerHTML = `
-    <div class="card">عدد المنتجات<br>${productsSnap.size}</div>
-    <div class="card">عدد الطلبات<br>${ordersSnap.size}</div>
-    <div class="card">طلبات جديدة<br>${newOrders.size}</div>
-  `;
+  const p = await getDocs(collection(db,"products"));
+  const o = await getDocs(collection(db,"orders"));
+  const n = await getDocs(query(collection(db,"orders"), where("status","==","جديد")));
+  productsCount.innerHTML = p.size+"<br>منتج";
+  ordersCount.innerHTML = o.size+"<br>طلب";
+  newOrdersCount.innerHTML = n.size+"<br>طلب جديد";
 }
-
-async function addProduct(){
-  await addDoc(collection(db,"products"),{
-    name: pName.value,
-    price: Number(pPrice.value),
-    category: pCategory.value,
-    sizes: pSizes.value.split(","),
-    colors: pColors.value.split(","),
-    image: pImage.value,
-    createdAt: new Date()
-  });
-
-  alert("تمت الإضافة ✅");
-
-  pName.value="";
-  pPrice.value="";
-  pSizes.value="";
-  pColors.value="";
-  pImage.value="";
-
-  await loadProducts();
-  await loadStats();
-}
-
-document.getElementById("addBtn")
-  .addEventListener("click", addProduct);
 
 async function loadProducts(){
   const snap = await getDocs(collection(db,"products"));
-  const container = document.getElementById("productsList");
-  container.innerHTML="";
-
+  productsTable.innerHTML="";
   snap.forEach(d=>{
-    const data = d.data();
-    container.innerHTML+=`
-      <div class="product-card">
-        <img src="${data.image}" width="70"><br>
-        <b>${data.name}</b><br>
-        ${data.price} جنيه<br>
-        القسم: ${data.category}<br>
-        <button onclick="deleteProduct('${d.id}')">حذف</button>
-      </div>
+    const data=d.data();
+    productsTable.innerHTML+=`
+      <tr>
+        <td><img src="${data.image}" width="50"></td>
+        <td>${data.name}</td>
+        <td>${data.price}</td>
+        <td>${data.category}</td>
+        <td><button onclick="deleteProduct('${d.id}')">X</button></td>
+      </tr>
     `;
   });
-}
-
-window.deleteProduct = async function(id){
-  await deleteDoc(doc(db,"products",id));
-  await loadProducts();
-  await loadStats();
 }
 
 async function loadOrders(){
   const snap = await getDocs(collection(db,"orders"));
-  const container = document.getElementById("ordersList");
-  container.innerHTML="";
-
+  ordersTable.innerHTML="";
   snap.forEach(d=>{
-    const data = d.data();
-    container.innerHTML+=`
-      <div class="order-card">
-        <b>${data.customerName}</b><br>
-        ${data.productName}<br>
-        ${data.size} / ${data.color}<br>
-        الحالة: ${data.status}<br>
-        <button onclick="changeStatus('${d.id}')">
-          تم التنفيذ
-        </button>
-      </div>
+    const data=d.data();
+    ordersTable.innerHTML+=`
+      <tr>
+        <td>${data.customerName}</td>
+        <td>${data.productName}</td>
+        <td>${data.size}</td>
+        <td>${data.color}</td>
+        <td>${data.status}</td>
+        <td><button onclick="changeStatus('${d.id}')">تم</button></td>
+      </tr>
     `;
   });
-}
-
-window.changeStatus = async function(id){
-  await updateDoc(doc(db,"orders",id),{
-    status:"تم التنفيذ"
-  });
-  await loadOrders();
-  await loadStats();
 }
 
 loadStats();
