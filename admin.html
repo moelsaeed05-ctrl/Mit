@@ -1,172 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>MIT Admin</title>
+<title>لوحة التحكم</title>
+
 <style>
 body{
-margin:0;
-background:#0f0f0f;
-color:white;
-font-family:Arial;
-display:flex;
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
 }
 
 .sidebar{
-width:250px;
-background:#111;
-padding:20px;
-height:100vh;
-box-shadow:0 0 15px #000;
+  width:220px;
+  height:100vh;
+  background:#111827;
+  position:fixed;
+  padding:20px;
 }
 
 .sidebar h2{
-color:#ffd700;
+  color:#facc15;
 }
 
-.sidebar div{
-margin:20px 0;
-cursor:pointer;
+.sidebar a{
+  display:block;
+  margin:15px 0;
+  color:white;
+  text-decoration:none;
 }
 
 .content{
-flex:1;
-padding:30px;
+  margin-right:240px;
+  padding:20px;
 }
 
 .card{
-background:#1a1a1a;
-padding:20px;
-margin:15px 0;
-border-radius:12px;
+  background:#1f2937;
+  padding:20px;
+  border-radius:12px;
+  margin:10px;
+  display:inline-block;
+  width:200px;
+  text-align:center;
 }
 
-.statBox{
-display:flex;
-gap:20px;
-}
-
-.stat{
-background:#1a1a1a;
-padding:20px;
-border-radius:12px;
-flex:1;
-text-align:center;
+input{
+  display:block;
+  margin:10px 0;
+  padding:10px;
+  width:250px;
+  border-radius:8px;
+  border:none;
 }
 
 button{
-background:#ffd700;
-border:none;
-padding:8px 12px;
-border-radius:8px;
-cursor:pointer;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#facc15;
+  cursor:pointer;
+}
+
+.product-card, .order-card{
+  background:#1f2937;
+  padding:15px;
+  border-radius:10px;
+  margin:10px 0;
 }
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-<h2>MIT ADMIN</h2>
-<div onclick="showOrders()">الطلبات</div>
-<div onclick="showStats()">الإحصائيات</div>
-<div onclick="logout()">تسجيل خروج</div>
+  <h2>MIT ADMIN</h2>
 </div>
 
 <div class="content">
+
 <h1>لوحة التحكم</h1>
-<div id="main"></div>
+
+<h2>الإحصائيات</h2>
+<div id="stats"></div>
+
+<h2>إضافة منتج</h2>
+<input id="pName" placeholder="اسم المنتج">
+<input id="pPrice" type="number" placeholder="السعر">
+<input id="pSizes" placeholder="المقاسات مثال S,M,L">
+<input id="pColors" placeholder="الألوان مثال أسود,أبيض">
+<input id="pImage" placeholder="رابط الصورة">
+<button onclick="addProduct()">إضافة</button>
+
+<h2>المنتجات</h2>
+<div id="productsList"></div>
+
+<h2>الطلبات</h2>
+<div id="ordersList"></div>
+
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,onAuthStateChanged,signOut }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,collection,getDocs,doc,getDoc,updateDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = { /* حط نفس بياناتك هنا */ };
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:711219a46f1c87b82e9865",
+  measurementId: "G-KV92W14ENY"
+};
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const main = document.getElementById("main");
+async function loadStats(){
+  const productsSnap = await getDocs(collection(db,"products"));
+  const ordersSnap = await getDocs(collection(db,"orders"));
+  const newOrders = await getDocs(query(collection(db,"orders"), where("status","==","جديد")));
 
-// 🔐 حماية الأدمن
-onAuthStateChanged(auth, async(user)=>{
-if(!user){
-location.href="index.html";
-return;
+  document.getElementById("stats").innerHTML = `
+    <div class="card">عدد المنتجات<br>${productsSnap.size}</div>
+    <div class="card">عدد الطلبات<br>${ordersSnap.size}</div>
+    <div class="card">طلبات جديدة<br>${newOrders.size}</div>
+  `;
 }
 
-const snap = await getDoc(doc(db,"users",user.uid));
-
-if(!snap.exists() || snap.data().role!=="admin"){
-location.href="index.html";
-}
-});
-
-// 📦 عرض الطلبات
-window.showOrders = async function(){
-
-const snapshot = await getDocs(collection(db,"orders"));
-main.innerHTML="<h2>كل الطلبات</h2>";
-
-snapshot.forEach(orderDoc=>{
-const o=orderDoc.data();
-
-main.innerHTML+=`
-<div class="card">
-<h3>${o.userName}</h3>
-<p>المجموع: ${o.total}</p>
-<p>الحالة: ${o.status}</p>
-<button onclick="shipOrder('${orderDoc.id}')">تم الشحن</button>
-</div>
-`;
-});
+async function addProduct(){
+  await addDoc(collection(db,"products"),{
+    name:pName.value,
+    price:Number(pPrice.value),
+    sizes:pSizes.value.split(","),
+    colors:pColors.value.split(","),
+    image:pImage.value,
+    createdAt:new Date()
+  });
+  alert("تمت الإضافة");
+  location.reload();
 }
 
-// 🚚 تحديث الحالة
-window.shipOrder = async function(id){
-await updateDoc(doc(db,"orders",id),{
-status:"shipped"
-});
-showOrders();
+async function loadProducts(){
+  const snap = await getDocs(collection(db,"products"));
+  const container = document.getElementById("productsList");
+  container.innerHTML="";
+
+  snap.forEach(d=>{
+    const data = d.data();
+    container.innerHTML+=`
+      <div class="product-card">
+        <img src="${data.image}" width="70"><br>
+        ${data.name} - ${data.price} جنيه
+        <br>
+        <button onclick="deleteProduct('${d.id}')">حذف</button>
+      </div>
+    `;
+  });
 }
 
-// 📊 إحصائيات
-window.showStats = async function(){
-
-const snapshot = await getDocs(collection(db,"orders"));
-let totalSales = 0;
-let totalOrders = snapshot.size;
-
-snapshot.forEach(doc=>{
-totalSales += Number(doc.data().total);
-});
-
-main.innerHTML=`
-<h2>الإحصائيات</h2>
-<div class="statBox">
-<div class="stat">
-<h3>${totalOrders}</h3>
-<p>عدد الطلبات</p>
-</div>
-<div class="stat">
-<h3>${totalSales} جنيه</h3>
-<p>إجمالي المبيعات</p>
-</div>
-</div>
-`;
+window.deleteProduct = async function(id){
+  await deleteDoc(doc(db,"products",id));
+  location.reload();
 }
 
-// 🚪 تسجيل خروج
-window.logout = async function(){
-await signOut(auth);
-location.href="index.html";
+async function loadOrders(){
+  const snap = await getDocs(collection(db,"orders"));
+  const container = document.getElementById("ordersList");
+  container.innerHTML="";
+
+  snap.forEach(d=>{
+    const data = d.data();
+    container.innerHTML+=`
+      <div class="order-card">
+        ${data.customerName} - ${data.productName}
+        <br>
+        ${data.size} / ${data.color}
+        <br>
+        الحالة: ${data.status}
+        <br>
+        <button onclick="changeStatus('${d.id}')">تم التنفيذ</button>
+      </div>
+    `;
+  });
 }
+
+window.changeStatus = async function(id){
+  await updateDoc(doc(db,"orders",id),{
+    status:"تم التنفيذ"
+  });
+  location.reload();
+}
+
+loadStats();
+loadProducts();
+loadOrders();
 
 </script>
+
 </body>
 </html>
