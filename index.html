@@ -340,24 +340,31 @@ closeLogin();
 }catch(e){alert(e.message);}
 }
 
-window.login=async function(){
+window.login = async function(){
 try{
-await signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
-alert("تم تسجيل الدخول");
-closeLogin();
-}catch(e){alert(e.message);}
+
+const userCredential = await signInWithEmailAndPassword(
+auth,
+emailInput.value,
+passwordInput.value
+);
+
+const user = userCredential.user;
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(snap.exists() && snap.data().role === "admin"){
+window.location.href = "admin.html";
+return;
 }
 
-onAuthStateChanged(auth,async(user)=>{
-if(user){
-const snap=await getDoc(doc(db,"users",user.uid));
-if(snap.exists()){
-loginBtn.innerText=snap.data().name;
+alert("تم تسجيل الدخول");
+closeLogin();
+
+}catch(e){
+alert(e.message);
 }
-}else{
-loginBtn.innerText="تسجيل الدخول";
 }
-});
 
 window.openLogin=()=>loginModal.style.display="flex";
 window.closeLogin=()=>loginModal.style.display="none";
