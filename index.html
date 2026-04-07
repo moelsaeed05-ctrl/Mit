@@ -3,244 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wallet iOS</title>
+<title>Wallet Dark</title>
 
 <style>
-body {
+body{
   margin:0;
-  font-family: -apple-system, BlinkMacSystemFont;
-  background: linear-gradient(135deg,#0f172a,#020617);
+  font-family:-apple-system;
+  background:#020617;
   color:white;
 }
 
-.screen {
+.app{
   max-width:420px;
   margin:auto;
-  padding:15px;
+  padding-bottom:80px;
 }
 
-.card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  border-radius:20px;
-  padding:15px;
-  margin-bottom:15px;
-  box-shadow: 0 0 15px rgba(0,255,150,0.08);
-}
-
-.balance {
-  font-size:30px;
-  color:#22c55e;
-}
-
-input,select {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:12px;
-  background:#111827;
-  color:white;
-}
-
-button {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.deposit { background:#22c55e; }
-.withdraw { background:#ef4444; }
-
-.social button {
-  background:#1f2937;
-}
-
-table {
-  width:100%;
-  margin-top:10px;
-  font-size:13px;
-}
-
-td,th {
-  padding:6px;
+/* HEADER */
+.header{
+  padding:20px;
   text-align:center;
 }
 
-.action-btn {
-  padding:5px 8px;
-  font-size:12px;
-  margin:2px;
+.balance{
+  font-size:28px;
+  font-weight:bold;
 }
 
-.hidden { display:none; }
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border-radius:20px;
+  padding:15px;
+  margin:10px;
+}
+
+/* TRANSACTIONS */
+.item{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
+
+/* BUTTON FLOAT */
+.add-btn{
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:60px;
+  height:60px;
+  background:#22c55e;
+  border-radius:50%;
+  font-size:30px;
+  text-align:center;
+  line-height:60px;
+  cursor:pointer;
+}
+
+/* NAV */
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:420px;
+  background:#020617;
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+  border-top:1px solid #111;
+}
+
+.nav div{
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* HIDE */
+.hidden{display:none;}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:white;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="screen">
+<div class="app">
 
-  <!-- LOGIN -->
-  <div id="login" class="card">
-    <h2>تسجيل الدخول</h2>
-    <div class="social">
-      <button onclick="login()">🔵 Google</button>
-      <button onclick="login()">⚫ Apple</button>
-      <button onclick="login()">🔷 Facebook</button>
-    </div>
+<!-- WALLET -->
+<div id="wallet">
+
+<div class="header">
+  <div id="month">أبريل 2026</div>
+  <div class="balance" id="balance">EGP 0</div>
+  <div class="row">
+    <span id="income">دخل: 0</span>
+    <span id="expense">مصروف: 0</span>
   </div>
+</div>
 
-  <!-- APP -->
-  <div id="app" class="hidden">
-
-    <div class="card">
-      <div class="balance" id="balance">0 جنيه</div>
-      <input id="budget" type="number" placeholder="حدد حد الصرف">
-    </div>
-
-    <div class="card">
-      <input id="amount" type="number" placeholder="المبلغ">
-      <select id="source">
-        <option>مرتب</option>
-        <option>شغل</option>
-        <option>هدية</option>
-        <option>استثمار</option>
-      </select>
-
-      <button class="deposit" onclick="add()">إضافة</button>
-      <button class="withdraw" onclick="withdraw()">سحب</button>
-    </div>
-
-    <div class="card">
-      <select id="filterType" onchange="render()">
-        <option value="all">الكل</option>
-        <option value="دخل">دخل</option>
-        <option value="مصروف">مصروف</option>
-      </select>
-
-      <input type="month" id="filterDate" onchange="render()">
-    </div>
-
-    <div class="card">
-      <h3>📊 الإحصائيات</h3>
-      <div id="stats"></div>
-    </div>
-
-    <div class="card">
-      <h3>📜 العمليات</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>نوع</th><th>مبلغ</th><th>مصدر</th><th>تاريخ</th><th>تحكم</th>
-          </tr>
-        </thead>
-        <tbody id="list"></tbody>
-      </table>
-    </div>
-
-  </div>
+<div class="card">
+  <h3>المعاملات الأخيرة</h3>
+  <div id="list"></div>
+</div>
 
 </div>
 
-<script>
-let balance = +localStorage.balance || 0;
-let data = JSON.parse(localStorage.data || "[]");
-let budget = +localStorage.budget || 0;
+<!-- ANALYTICS -->
+<div id="analytics" class="hidden">
+  <div class="header">
+    <h2>📊 التحليلات</h2>
+  </div>
 
-function login(){
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
+  <div class="card">
+    <div id="stats"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="hidden">
+  <div class="header">
+    <h2>⚙️ الإعدادات</h2>
+  </div>
+
+  <div class="card">
+    <input id="budget" placeholder="حد الصرف">
+    <button onclick="saveBudget()">حفظ</button>
+  </div>
+</div>
+
+<!-- ADD -->
+<div id="addScreen" class="hidden">
+  <div class="card">
+    <input id="amount" placeholder="المبلغ">
+    <select id="type">
+      <option>دخل</option>
+      <option>مصروف</option>
+    </select>
+    <select id="source">
+      <option>مرتب</option>
+      <option>شغل</option>
+      <option>هدية</option>
+    </select>
+    <button onclick="add()">حفظ</button>
+  </div>
+</div>
+
+</div>
+
+<div class="add-btn" onclick="openAdd()">+</div>
+
+<div class="nav">
+  <div onclick="nav('wallet')">💼<br>المحفظة</div>
+  <div onclick="nav('analytics')">📊<br>تحليلات</div>
+  <div onclick="nav('settings')">⚙️<br>إعدادات</div>
+</div>
+
+<script>
+let balance=+localStorage.balance||0;
+let data=JSON.parse(localStorage.data||"[]");
+
+function nav(page){
+  wallet.classList.add("hidden");
+  analytics.classList.add("hidden");
+  settings.classList.add("hidden");
+  addScreen.classList.add("hidden");
+  document.getElementById(page).classList.remove("hidden");
 }
 
-function save(){
-  localStorage.balance = balance;
-  localStorage.data = JSON.stringify(data);
-  localStorage.budget = budgetInput.value;
-  render();
+function openAdd(){
+  nav("addScreen");
 }
 
 function add(){
-  let amount = +amountInput.value;
-  if(!amount) return;
+  let amount=+amountInput.value;
+  let type=typeInput.value;
 
-  balance += amount;
-  data.push({type:"دخل",amount,source:sourceInput.value,date:new Date()});
+  if(!amount)return;
+
+  if(type=="دخل") balance+=amount;
+  else balance-=amount;
+
+  data.push({
+    amount,type,
+    source:sourceInput.value,
+    date:new Date()
+  });
+
   save();
 }
 
-function withdraw(){
-  let amount = +amountInput.value;
-  if(!amount || amount>balance) return;
-
-  balance -= amount;
-  data.push({type:"مصروف",amount,source:sourceInput.value,date:new Date()});
-  save();
-}
-
-function deleteItem(i){
-  data.splice(i,1);
-  save();
-}
-
-function editItem(i){
-  let newAmount = prompt("عدل المبلغ", data[i].amount);
-  if(!newAmount) return;
-  data[i].amount = +newAmount;
-  save();
+function save(){
+  localStorage.balance=balance;
+  localStorage.data=JSON.stringify(data);
+  nav("wallet");
+  render();
 }
 
 function render(){
-  balanceEl.innerText = balance + " جنيه";
-
-  let type = filterType.value;
-  let month = filterDate.value;
-
-  list.innerHTML = "";
+  balanceEl.innerText="EGP "+balance;
 
   let income=0,expense=0;
+  list.innerHTML="";
 
-  data.forEach((t,i)=>{
-    let d = new Date(t.date);
-
-    if(type!="all" && t.type!=type) return;
-    if(month && d.toISOString().slice(0,7)!=month) return;
-
+  data.slice().reverse().forEach(t=>{
     if(t.type=="دخل") income+=t.amount;
     else expense+=t.amount;
 
-    list.innerHTML += `
-    <tr>
-      <td>${t.type}</td>
-      <td>${t.amount}</td>
-      <td>${t.source}</td>
-      <td>${d.toLocaleDateString()}</td>
-      <td>
-        <button class="action-btn" onclick="editItem(${i})">✏️</button>
-        <button class="action-btn" onclick="deleteItem(${i})">🗑️</button>
-      </td>
-    </tr>`;
+    list.innerHTML+=`
+    <div class="item">
+      <span>${t.type}</span>
+      <span>${t.amount}</span>
+    </div>`;
   });
 
-  stats.innerText = 
-  "دخل: "+income+" | مصروف: "+expense+
-  (budgetInput.value ? " | الحد: "+budgetInput.value : "");
+  incomeEl.innerText="دخل: "+income;
+  expenseEl.innerText="مصروف: "+expense;
+  stats.innerText="دخل: "+income+" | مصروف: "+expense;
 }
 
-let amountInput = document.getElementById("amount");
-let sourceInput = document.getElementById("source");
-let balanceEl = document.getElementById("balance");
-let list = document.getElementById("list");
-let stats = document.getElementById("stats");
-let filterType = document.getElementById("filterType");
-let filterDate = document.getElementById("filterDate");
-let budgetInput = document.getElementById("budget");
+let amountInput=document.getElementById("amount");
+let typeInput=document.getElementById("type");
+let sourceInput=document.getElementById("source");
 
-budgetInput.value = budget;
+let balanceEl=document.getElementById("balance");
+let list=document.getElementById("list");
+let incomeEl=document.getElementById("income");
+let expenseEl=document.getElementById("expense");
 
 render();
 </script>
