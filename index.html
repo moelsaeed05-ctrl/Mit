@@ -2,241 +2,247 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>3D Builder PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallet iOS</title>
 
 <style>
-body{
+body {
   margin:0;
-  overflow:hidden;
-  touch-action:none;
-  font-family:sans-serif;
-}
-
-/* واجهة اختيار الأرض */
-#groundSetup{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.8);
+  font-family: -apple-system, BlinkMacSystemFont;
+  background: linear-gradient(135deg,#0f172a,#020617);
   color:white;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:200;
 }
 
-#groundSetup input{
-  width:80px;
-  padding:5px;
-  margin:5px;
+.screen {
+  max-width:420px;
+  margin:auto;
+  padding:15px;
 }
 
-#toolbar{
-  position:fixed;
-  bottom:10px;
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow: 0 0 15px rgba(0,255,150,0.08);
+}
+
+.balance {
+  font-size:30px;
+  color:#22c55e;
+}
+
+input,select {
   width:100%;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  z-index:100;
-}
-
-button{
-  padding:10px;
+  padding:12px;
+  margin-top:10px;
   border:none;
-  border-radius:10px;
-  background:#111;
+  border-radius:12px;
+  background:#111827;
   color:white;
-  font-size:14px;
 }
 
-/* قائمة تعديل العنصر */
-#editMenu{
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#222;
-  padding:10px;
-  border-radius:10px;
-  display:none;
-  z-index:150;
+button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
-#editMenu input{
-  width:50px;
+.deposit { background:#22c55e; }
+.withdraw { background:#ef4444; }
+
+.social button {
+  background:#1f2937;
+}
+
+table {
+  width:100%;
+  margin-top:10px;
+  font-size:13px;
+}
+
+td,th {
+  padding:6px;
+  text-align:center;
+}
+
+.action-btn {
+  padding:5px 8px;
+  font-size:12px;
   margin:2px;
 }
+
+.hidden { display:none; }
 </style>
 </head>
 
 <body>
 
-<div id="groundSetup">
-  <h2>حدد أبعاد الأرض</h2>
-  <label>طول الأرض: <input id="groundLength" type="number" value="20"></label>
-  <label>عرض الأرض: <input id="groundWidth" type="number" value="20"></label>
-  <button onclick="setupGround()">ابدأ البناء</button>
-</div>
+<div class="screen">
 
-<div id="toolbar" style="display:none">
-  <button onclick="mode='wallLength'">جدار طول</button>
-  <button onclick="mode='wallWidth'">جدار عرض</button>
-  <button onclick="mode='column'">عمود</button>
-</div>
-
-<div id="editMenu">
-  <div>
-    <label>طول: <input id="editLength" type="number"></label>
-    <label>عرض: <input id="editWidth" type="number"></label>
-    <label>ارتفاع: <input id="editHeight" type="number"></label>
+  <!-- LOGIN -->
+  <div id="login" class="card">
+    <h2>تسجيل الدخول</h2>
+    <div class="social">
+      <button onclick="login()">🔵 Google</button>
+      <button onclick="login()">⚫ Apple</button>
+      <button onclick="login()">🔷 Facebook</button>
+    </div>
   </div>
-  <button onclick="applyEdit()">تطبيق</button>
-  <button onclick="changeColor()">لون</button>
-  <button onclick="deleteObj()">حذف</button>
-  <button onclick="closeEdit()">إغلاق</button>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+
+    <div class="card">
+      <div class="balance" id="balance">0 جنيه</div>
+      <input id="budget" type="number" placeholder="حدد حد الصرف">
+    </div>
+
+    <div class="card">
+      <input id="amount" type="number" placeholder="المبلغ">
+      <select id="source">
+        <option>مرتب</option>
+        <option>شغل</option>
+        <option>هدية</option>
+        <option>استثمار</option>
+      </select>
+
+      <button class="deposit" onclick="add()">إضافة</button>
+      <button class="withdraw" onclick="withdraw()">سحب</button>
+    </div>
+
+    <div class="card">
+      <select id="filterType" onchange="render()">
+        <option value="all">الكل</option>
+        <option value="دخل">دخل</option>
+        <option value="مصروف">مصروف</option>
+      </select>
+
+      <input type="month" id="filterDate" onchange="render()">
+    </div>
+
+    <div class="card">
+      <h3>📊 الإحصائيات</h3>
+      <div id="stats"></div>
+    </div>
+
+    <div class="card">
+      <h3>📜 العمليات</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>نوع</th><th>مبلغ</th><th>مصدر</th><th>تاريخ</th><th>تحكم</th>
+          </tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+
+  </div>
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+let balance = +localStorage.balance || 0;
+let data = JSON.parse(localStorage.data || "[]");
+let budget = +localStorage.budget || 0;
 
-// ===== Scene & Camera =====
-let scene,camera,renderer,plane;
-let planeSizeX,planeSizeZ;
-scene = new THREE.Scene();
-scene.background = new THREE.Color(0xeeeeee);
-
-camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-camera.position.set(0,15,15);
-camera.lookAt(0,0,0);
-
-renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth,innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(10,20,10);
-scene.add(light);
-
-const raycaster = new THREE.Raycaster();
-let mouse = new THREE.Vector2();
-let mode="wallLength";
-let selected=null;
-
-// ====== إعداد الأرض ======
-function setupGround(){
-  planeSizeX = parseFloat(document.getElementById("groundLength").value);
-  planeSizeZ = parseFloat(document.getElementById("groundWidth").value);
-
-  plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(planeSizeX,planeSizeZ),
-    new THREE.MeshStandardMaterial({color:0xcccccc})
-  );
-  plane.rotation.x = -Math.PI/2;
-  scene.add(plane);
-
-  document.getElementById("groundSetup").style.display="none";
-  document.getElementById("toolbar").style.display="flex";
+function login(){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
 }
 
-// ====== إنشاء عنصر ======
-function createObject(point){
-  // منع الخروج خارج الأرض
-  if(point.x < -planeSizeX/2 || point.x > planeSizeX/2 || point.z < -planeSizeZ/2 || point.z > planeSizeZ/2) return;
-
-  let geo, color;
-  if(mode==="column"){ geo = new THREE.BoxGeometry(0.5,3,0.5); color=0x0000ff;}
-  else if(mode==="wallLength"){ geo = new THREE.BoxGeometry(3,3,0.2); color=0x00ff00;}
-  else if(mode==="wallWidth"){ geo = new THREE.BoxGeometry(0.2,3,3); color=0x00ff00;}
-
-  const mat = new THREE.MeshStandardMaterial({color: color});
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.copy(point);
-  mesh.position.y = 1.5;
-  scene.add(mesh);
+function save(){
+  localStorage.balance = balance;
+  localStorage.data = JSON.stringify(data);
+  localStorage.budget = budgetInput.value;
+  render();
 }
 
-// ====== Touch Handling ======
-let startTime=0,lastX=0,lastY=0,lastDist=0;
+function add(){
+  let amount = +amountInput.value;
+  if(!amount) return;
 
-window.addEventListener("touchstart",(e)=>{
-  startTime = Date.now();
-  const t = e.touches[0];
-  lastX=t.clientX;
-  lastY=t.clientY;
-
-  mouse.x = (t.clientX/innerWidth)*2-1;
-  mouse.y = -(t.clientY/innerHeight)*2+1;
-
-  raycaster.setFromCamera(mouse,camera);
-  const intersects = raycaster.intersectObjects(scene.children);
-  if(intersects.length>0) selected = intersects[0].object;
-  else selected=null;
-});
-
-window.addEventListener("touchmove",(e)=>{
-  if(e.touches.length===1){
-    // تحريك الكاميرا
-    const t = e.touches[0];
-    let dx = t.clientX - lastX;
-    let dy = t.clientY - lastY;
-    camera.position.x -= dx*0.05;
-    camera.position.z -= dy*0.05;
-    camera.lookAt(0,0,0);
-    lastX=t.clientX;
-    lastY=t.clientY;
-  }
-  if(e.touches.length===2){
-    // Pinch Zoom
-    let dx = e.touches[0].clientX - e.touches[1].clientX;
-    let dy = e.touches[0].clientY - e.touches[1].clientY;
-    let dist = Math.sqrt(dx*dx+dy*dy);
-    if(lastDist) camera.position.y -= (dist-lastDist)*0.05;
-    lastDist=dist;
-  }
-});
-
-window.addEventListener("touchend",(e)=>{
-  let duration = Date.now()-startTime;
-  if(duration>600 && selected){
-    // ضغط مطوّل
-    document.getElementById("editMenu").style.display="block";
-    document.getElementById("editLength").value = selected.scale.x *1;
-    document.getElementById("editWidth").value = selected.scale.z *1;
-    document.getElementById("editHeight").value = selected.scale.y *1;
-  } else if(duration<200){
-    // إضافة عنصر
-    const t = e.changedTouches[0];
-    mouse.x = (t.clientX/innerWidth)*2-1;
-    mouse.y = -(t.clientY/innerHeight)*2+1;
-    raycaster.setFromCamera(mouse,camera);
-    const hit = raycaster.intersectObject(plane);
-    if(hit.length>0) createObject(hit[0].point);
-  }
-  lastDist=0;
-});
-
-// ====== تعديل العنصر ======
-function applyEdit(){
-  if(selected){
-    selected.scale.x = parseFloat(document.getElementById("editLength").value);
-    selected.scale.z = parseFloat(document.getElementById("editWidth").value);
-    selected.scale.y = parseFloat(document.getElementById("editHeight").value);
-    document.getElementById("editMenu").style.display="none";
-  }
+  balance += amount;
+  data.push({type:"دخل",amount,source:sourceInput.value,date:new Date()});
+  save();
 }
-function changeColor(){ if(selected) selected.material.color.set(Math.random()*0xffffff); }
-function deleteObj(){ if(selected){ scene.remove(selected); selected=null; document.getElementById("editMenu").style.display="none"; } }
-function closeEdit(){ document.getElementById("editMenu").style.display="none"; }
 
-// ====== Animate ======
-function animate(){ requestAnimationFrame(animate); renderer.render(scene,camera); }
-animate();
+function withdraw(){
+  let amount = +amountInput.value;
+  if(!amount || amount>balance) return;
 
+  balance -= amount;
+  data.push({type:"مصروف",amount,source:sourceInput.value,date:new Date()});
+  save();
+}
+
+function deleteItem(i){
+  data.splice(i,1);
+  save();
+}
+
+function editItem(i){
+  let newAmount = prompt("عدل المبلغ", data[i].amount);
+  if(!newAmount) return;
+  data[i].amount = +newAmount;
+  save();
+}
+
+function render(){
+  balanceEl.innerText = balance + " جنيه";
+
+  let type = filterType.value;
+  let month = filterDate.value;
+
+  list.innerHTML = "";
+
+  let income=0,expense=0;
+
+  data.forEach((t,i)=>{
+    let d = new Date(t.date);
+
+    if(type!="all" && t.type!=type) return;
+    if(month && d.toISOString().slice(0,7)!=month) return;
+
+    if(t.type=="دخل") income+=t.amount;
+    else expense+=t.amount;
+
+    list.innerHTML += `
+    <tr>
+      <td>${t.type}</td>
+      <td>${t.amount}</td>
+      <td>${t.source}</td>
+      <td>${d.toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn" onclick="editItem(${i})">✏️</button>
+        <button class="action-btn" onclick="deleteItem(${i})">🗑️</button>
+      </td>
+    </tr>`;
+  });
+
+  stats.innerText = 
+  "دخل: "+income+" | مصروف: "+expense+
+  (budgetInput.value ? " | الحد: "+budgetInput.value : "");
+}
+
+let amountInput = document.getElementById("amount");
+let sourceInput = document.getElementById("source");
+let balanceEl = document.getElementById("balance");
+let list = document.getElementById("list");
+let stats = document.getElementById("stats");
+let filterType = document.getElementById("filterType");
+let filterDate = document.getElementById("filterDate");
+let budgetInput = document.getElementById("budget");
+
+budgetInput.value = budget;
+
+render();
 </script>
 
 </body>
