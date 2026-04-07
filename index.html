@@ -3,262 +3,472 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wallet Dark</title>
+<title>MIT STORE</title>
 
 <style>
-body{
-  margin:0;
-  font-family:-apple-system;
-  background:#020617;
-  color:white;
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:black;color:white;overflow:hidden;}
+#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+.logo{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:28px;
+letter-spacing:6px;
+z-index:10;
 }
 
-.app{
-  max-width:420px;
-  margin:auto;
-  padding-bottom:80px;
+.loginBtn{
+position:absolute;
+top:20px;
+right:20px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
+font-size:14px;
 }
 
-/* HEADER */
-.header{
-  padding:20px;
-  text-align:center;
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
 }
 
-.balance{
-  font-size:28px;
-  font-weight:bold;
+.neonMessage{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:22px;
+display:none;
+z-index:200;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+animation:fadeOut 3s forwards;
+}
+@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
+
+.menu{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:35px;
+z-index:10;
+width:80%;
+align-items:center;
 }
 
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-}
-
-/* CARD */
-.card{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);
-  border-radius:20px;
-  padding:15px;
-  margin:10px;
-}
-
-/* TRANSACTIONS */
 .item{
-  display:flex;
-  justify-content:space-between;
-  margin:10px 0;
+cursor:pointer;
+font-size:22px;
+padding:12px 30px;
+border-radius:12px;
+transition:.4s;
+}
+.item:hover{text-shadow:0 0 10px #ffd700;}
+
+.fullscreen{
+position:fixed;
+inset:0;
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:90px;
+overflow:auto;
 }
 
-/* BUTTON FLOAT */
-.add-btn{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  width:60px;
-  height:60px;
-  background:#22c55e;
-  border-radius:50%;
-  font-size:30px;
-  text-align:center;
-  line-height:60px;
-  cursor:pointer;
+.products{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:95%;
+position:relative;
+z-index:5;
 }
 
-/* NAV */
-.nav{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  max-width:420px;
-  background:#020617;
-  display:flex;
-  justify-content:space-around;
-  padding:10px;
-  border-top:1px solid #111;
+.product{
+background:#111;
+padding:12px;
+border-radius:14px;
+width:140px;
+cursor:pointer;
+transition:.4s;
 }
 
-.nav div{
-  text-align:center;
-  font-size:12px;
-  cursor:pointer;
+.product img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
 }
 
-/* HIDE */
-.hidden{display:none;}
+.product:hover{
+transform:scale(1.08);
+box-shadow:0 0 10px #ffd700;
+}
 
-input,select{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:white;
+.smokeCanvas{
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
+}
+
+.detail{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.95);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:60;
+}
+
+.detailBox{
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:300px;
+position:relative;
+}
+
+.loginModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
+}
+
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
+}
+
+.loginBox input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
+}
+
+.smallLink{
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
+display:block;
 }
 
 button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  background:#22c55e;
-  color:white;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
 }
 
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
+}
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<canvas id="space"></canvas>
+<div class="neonMessage" id="neonMsg"></div>
 
-<!-- WALLET -->
-<div id="wallet">
-
-<div class="header">
-  <div id="month">أبريل 2026</div>
-  <div class="balance" id="balance">EGP 0</div>
-  <div class="row">
-    <span id="income">دخل: 0</span>
-    <span id="expense">مصروف: 0</span>
-  </div>
+<div class="logo">
+<span style="color:#ffd700">𝔐</span>
+<span style="color:#ff1a1a">𝔦</span>
+<span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="card">
-  <h3>المعاملات الأخيرة</h3>
-  <div id="list"></div>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+
+<div class="menu">
+<div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
+<div class="item" onclick="openCategory('PANTS')">PANTS</div>
+<div class="item" onclick="openCategory('ACCESSORIES')">ACCESSORIES</div>
 </div>
 
+<div class="fullscreen" id="page">
+<div class="closeX" onclick="goHome()">✖</div>
+<canvas class="smokeCanvas" id="smoke"></canvas>
+<div class="categoryTitle" id="categoryTitle"></div>
+<div class="products" id="products"></div>
 </div>
 
-<!-- ANALYTICS -->
-<div id="analytics" class="hidden">
-  <div class="header">
-    <h2>📊 التحليلات</h2>
-  </div>
-
-  <div class="card">
-    <div id="stats"></div>
-  </div>
+<div class="detail" id="detail">
+<div class="detailBox" id="detailBox"></div>
 </div>
 
-<!-- SETTINGS -->
-<div id="settings" class="hidden">
-  <div class="header">
-    <h2>⚙️ الإعدادات</h2>
-  </div>
+<div class="loginModal" id="loginModal">
+<div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
 
-  <div class="card">
-    <input id="budget" placeholder="حد الصرف">
-    <button onclick="saveBudget()">حفظ</button>
-  </div>
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل دخول</button>
+<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
 </div>
 
-<!-- ADD -->
-<div id="addScreen" class="hidden">
-  <div class="card">
-    <input id="amount" placeholder="المبلغ">
-    <select id="type">
-      <option>دخل</option>
-      <option>مصروف</option>
-    </select>
-    <select id="source">
-      <option>مرتب</option>
-      <option>شغل</option>
-      <option>هدية</option>
-    </select>
-    <button onclick="add()">حفظ</button>
-  </div>
+<div id="registerForm" style="display:none">
+<h3>إنشاء حساب</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
+<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+<button onclick="register()">إنشاء حساب</button>
+<span class="smallLink" onclick="showLogin()">رجوع</span>
 </div>
 
-</div>
 
-<div class="add-btn" onclick="openAdd()">+</div>
+<script type="module">
 
-<div class="nav">
-  <div onclick="nav('wallet')">💼<br>المحفظة</div>
-  <div onclick="nav('analytics')">📊<br>تحليلات</div>
-  <div onclick="nav('settings')">⚙️<br>إعدادات</div>
-</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc,collection,getDocs,query,where }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script>
-let balance=+localStorage.balance||0;
-let data=JSON.parse(localStorage.data||"[]");
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:711219a46f1c87b82e9865",
+  measurementId: "G-KV92W14ENY"
+};
 
-function nav(page){
-  wallet.classList.add("hidden");
-  analytics.classList.add("hidden");
-  settings.classList.add("hidden");
-  addScreen.classList.add("hidden");
-  document.getElementById(page).classList.remove("hidden");
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
+
+const page = document.getElementById("page");
+const products = document.getElementById("products");
+const categoryTitle = document.getElementById("categoryTitle");
+const detail = document.getElementById("detail");
+const detailBox = document.getElementById("detailBox");
+const loginModal = document.getElementById("loginModal");
+
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const regEmailInput = document.getElementById("regEmailInput");
+const regPasswordInput = document.getElementById("regPasswordInput");
+const confirmInput = document.getElementById("confirmInput");
+const nameInput = document.getElementById("nameInput");
+// 🔥 جلب المنتجات من فايربيس
+window.openCategory = async function(cat){
+
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+
+const q = query(collection(db,"products"), where("category","==",cat));
+const querySnapshot = await getDocs(q);
+
+if(querySnapshot.empty){
+products.innerHTML="<p>لا توجد منتجات حالياً</p>";
+return;
 }
 
-function openAdd(){
-  nav("addScreen");
+querySnapshot.forEach((doc)=>{
+const p = doc.data();
+
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
+<img src="${p.image}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
+
 }
 
-function add(){
-  let amount=+amountInput.value;
-  let type=typeInput.value;
 
-  if(!amount)return;
-
-  if(type=="دخل") balance+=amount;
-  else balance-=amount;
-
-  data.push({
-    amount,type,
-    source:sourceInput.value,
-    date:new Date()
-  });
-
-  save();
+// 🔐 تسجيل دخول / تسجيل جديد
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+alert("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+alert("تم إنشاء الحساب");
+closeLogin();
+}catch(e){alert(e.message);}
 }
 
-function save(){
-  localStorage.balance=balance;
-  localStorage.data=JSON.stringify(data);
-  nav("wallet");
-  render();
+window.login = async function(){
+try{
+
+const userCredential = await signInWithEmailAndPassword(
+auth,
+emailInput.value,
+passwordInput.value
+);
+
+const user = userCredential.user;
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(snap.exists() && snap.data().role === "admin"){
+window.location.href = "admin.html";
+return;
 }
 
-function render(){
-  balanceEl.innerText="EGP "+balance;
+alert("تم تسجيل الدخول");
+closeLogin();
 
-  let income=0,expense=0;
-  list.innerHTML="";
-
-  data.slice().reverse().forEach(t=>{
-    if(t.type=="دخل") income+=t.amount;
-    else expense+=t.amount;
-
-    list.innerHTML+=`
-    <div class="item">
-      <span>${t.type}</span>
-      <span>${t.amount}</span>
-    </div>`;
-  });
-
-  incomeEl.innerText="دخل: "+income;
-  expenseEl.innerText="مصروف: "+expense;
-  stats.innerText="دخل: "+income+" | مصروف: "+expense;
+}catch(e){
+alert(e.message);
+}
 }
 
-let amountInput=document.getElementById("amount");
-let typeInput=document.getElementById("type");
-let sourceInput=document.getElementById("source");
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
 
-let balanceEl=document.getElementById("balance");
-let list=document.getElementById("list");
-let incomeEl=document.getElementById("income");
-let expenseEl=document.getElementById("expense");
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
+}
+window.showRegister = function(){
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="block";
+}
 
-render();
+window.showLogin = function(){
+document.getElementById("loginForm").style.display="block";
+document.getElementById("registerForm").style.display="none";
+  }
+  // ⭐⭐ STAR BACKGROUND
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+
+for(let i=0;i<300;i++){
+stars.push({
+x: Math.random()*canvas.width,
+y: Math.random()*canvas.height,
+r: Math.random()*2,
+d: Math.random()*1
+});
+}
+
+function drawStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="white";
+ctx.beginPath();
+for(let i=0;i<stars.length;i++){
+let s=stars[i];
+ctx.moveTo(s.x,s.y);
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2,true);
+}
+ctx.fill();
+updateStars();
+}
+
+function updateStars(){
+for(let i=0;i<stars.length;i++){
+stars[i].y+=stars[i].d;
+if(stars[i].y>canvas.height){
+stars[i].y=0;
+stars[i].x=Math.random()*canvas.width;
+}
+}
+}
+
+setInterval(drawStars,33);
+  // 💨 SMOKE EFFECT
+const smokeCanvas = document.getElementById("smoke");
+const smokeCtx = smokeCanvas.getContext("2d");
+
+smokeCanvas.width = window.innerWidth;
+smokeCanvas.height = window.innerHeight;
+
+let particles = [];
+
+for(let i=0;i<50;i++){
+particles.push({
+x: Math.random()*smokeCanvas.width,
+y: Math.random()*smokeCanvas.height,
+r: Math.random()*20+10,
+a: Math.random()*0.3
+});
+}
+
+function drawSmoke(){
+smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
+
+particles.forEach(p=>{
+smokeCtx.beginPath();
+smokeCtx.fillStyle="rgba(255,255,255,"+p.a+")";
+smokeCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+smokeCtx.fill();
+
+p.y-=0.5;
+if(p.y<0){
+p.y=smokeCanvas.height;
+p.x=Math.random()*smokeCanvas.width;
+}
+});
+
+requestAnimationFrame(drawSmoke);
+}
+
+drawSmoke();
 </script>
 
 </body>
-</html>
+  </html>
