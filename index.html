@@ -1,720 +1,474 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpaceWear - ملابس فضائية جريئة</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT STORE</title>
 
-        body {
-            font-family: 'Arial', sans-serif;
-            overflow-x: hidden;
-            background: #000;
-            color: #fff;
-            min-height: 100vh;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:black;color:white;overflow:hidden;}
+#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-        /* خلفية الفضاء المتحركة */
-        .stars-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-            z-index: -2;
-        }
+.logo{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:28px;
+letter-spacing:6px;
+z-index:10;
+}
 
-        .stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent);
-            background-repeat: repeat;
-            background-size: 200px 100px;
-            animation: animateStars 50s linear infinite;
-        }
+.loginBtn{
+position:absolute;
+top:20px;
+right:20px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
+font-size:14px;
+}
 
-        .stars::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 50%, #000 100%);
-            pointer-events: none;
-        }
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
+}
 
-        @keyframes animateStars {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-200px); }
-        }
+.neonMessage{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:22px;
+display:none;
+z-index:200;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+animation:fadeOut 3s forwards;
+}
+@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
-        /* الهيدر */
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+.menu{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:35px;
+z-index:10;
+width:80%;
+align-items:center;
+}
 
-        .nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
+.item{
+cursor:pointer;
+font-size:22px;
+padding:12px 30px;
+border-radius:12px;
+transition:.4s;
+}
+.item:hover{text-shadow:0 0 10px #ffd700;}
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+.fullscreen{
+position:fixed;
+inset:0;
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:90px;
+overflow:auto;
+}
 
-        .search-box {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 2rem;
-            position: relative;
-        }
+.products{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:95%;
+position:relative;
+z-index:5;
+}
 
-        .search-box input {
-            width: 100%;
-            padding: 12px 50px 12px 20px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-size: 1rem;
-            backdrop-filter: blur(10px);
-        }
+.product{
+background:#111;
+padding:12px;
+border-radius:14px;
+width:140px;
+cursor:pointer;
+transition:.4s;
+}
 
-        .search-box input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
+.product img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
+}
 
-        .search-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #4ecdc4;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
+.product:hover{
+transform:scale(1.08);
+box-shadow:0 0 10px #ffd700;
+}
 
-        .nav-icons {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
+.smokeCanvas{
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
+}
 
-        .nav-icons i {
-            font-size: 1.5rem;
-            color: #fff;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
+.detail{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.95);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:60;
+}
 
-        .nav-icons i:hover {
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.1);
-        }
+.detailBox{
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:300px;
+position:relative;
+}
 
-        .cart-count {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #ff6b6b;
-            color: #fff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.loginModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
+}
 
-        /* القائمة الرئيسية */
-        .categories {
-            max-width: 1200px;
-            margin: 100px auto 0;
-            padding: 0 2rem;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
+}
 
-        .category-btn {
-            padding: 15px 30px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
+.loginBox input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
+}
 
-        .category-btn:hover {
-            background: rgba(78,205,196,0.3);
-            border-color: #4ecdc4;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(78,205,196,0.3);
-        }
+.smallLink{
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
+display:block;
+}
 
-        /* المنتجات */
-        .products-section {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
+button{
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
+}
 
-        .section-title {
-            grid-column: 1 / -1;
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .product-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .product-card:hover::before {
-            left: 100%;
-        }
-
-        .product-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: #4ecdc4;
-            box-shadow: 0 20px 40px rgba(78,205,196,0.2);
-        }
-
-        .product-img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 1rem;
-        }
-
-        .product-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            color: #4ecdc4;
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ff6b6b;
-            margin-bottom: 1rem;
-        }
-
-        .add-to-cart {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .add-to-cart:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(255,107,107,0.4);
-        }
-
-        /* سلة المشتريات */
-        .cart-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-        }
-
-        .cart-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .cart-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .cart-total {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 1rem 0;
-            color: #4ecdc4;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* تسجيل الدخول */
-        .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-        }
-
-        .auth-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 400px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 2rem;
-        }
-
-        .auth-form input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-
-        /* الاستجابة للشاشات الصغيرة */
-        @media (max-width: 768px) {
-            .nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .search-box {
-                margin: 0;
-                order: 3;
-            }
-            
-            .categories {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        /* تأثيرات إضافية */
-        .glow {
-            box-shadow: 0 0 20px rgba(78,205,196,0.5);
-        }
-    </style>
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
+}
+</style>
 </head>
+
 <body>
-    <!-- خلفية الفضاء -->
-    <div class="stars-bg">
-        <div class="stars"></div>
-    </div>
 
-    <!-- الهيدر -->
-    <header class="header">
-        <nav class="nav">
-            <div class="logo">Space<span style="color: #4ecdc4;">Wear</span></div>
-            <div class="search-box">
-                <input type="text" placeholder="ابحث عن الملابس الفضائية..." id="searchInput">
-                <i class="fas fa-search search-btn" onclick="searchProducts()"></i>
-            </div>
-            <div class="nav-icons">
-                <i class="fas fa-user" onclick="toggleAuth()" title="تسجيل الدخول"></i>
-                <i class="fas fa-shopping-cart" onclick="toggleCart()" title="سلة المشتريات">
-                    <span class="cart-count" id="cartCount">0</span>
-                </i>
-            </div>
-        </nav>
-    </header>
+<canvas id="space"></canvas>
+<div class="neonMessage" id="neonMsg"></div>
 
-    <!-- الأقسام -->
-    <div class="categories">
-        <a href="#hoodies" class="category-btn" onclick="filterProducts('hoodies')">هودي</a>
-        <a href="#accessories" class="category-btn" onclick="filterProducts('accessories')">أكسسورات</a>
-        <a href="#pants" class="category-btn" onclick="filterProducts('pants')">بناطيل</a>
-        <a href="#all" class="category-btn active" onclick="filterProducts('all')">الكل</a>
-    </div>
+<div class="logo">
+<span style="color:#ffd700">𝔐</span>
+<span style="color:#ff1a1a">𝔦</span>
+<span style="color:#ffd700">𝔗</span>
+</div>
 
-    <!-- قسم المنتجات -->
-    <section class="products-section" id="productsSection">
-        <h2 class="section-title" id="sectionTitle">كل المنتجات</h2>
-    </section>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
 
-    <!-- سلة المشتريات -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <h3><i class="fas fa-shopping-cart"></i> سلة المشتريات</h3>
-            <div id="cartItems"></div>
-            <div class="cart-total" id="cartTotal">الإجمالي: 0 جنيه</div>
-            <button class="checkout-btn" onclick="checkout()">إتمام الشراء</button>
-            <button class="add-to-cart" onclick="toggleCart()" style="margin-top: 1rem;">إغلاق</button>
-        </div>
-    </div>
+<div class="menu">
+<div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
+<div class="item" onclick="openCategory('PANTS')">PANTS</div>
+<div class="item" onclick="openCategory('ACCESSORIES')">ACCESSORIES</div>
+</div>
 
-    <!-- تسجيل الدخول -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-content">
-            <h3>تسجيل الدخول / التسجيل</h3>
-            <form class="auth-form" onsubmit="handleAuth(event)">
-                <input type="email" placeholder="البريد الإلكتروني" id="email">
-                <input type="password" placeholder="كلمة المرور" id="password">
-                <button type="submit" class="add-to-cart">دخول</button>
-            </form>
-            <p style="text-align: center; margin-top: 1rem;">ليس لديك حساب؟ <a href="#" onclick="toggleRegister()">إنشاء حساب</a></p>
-        </div>
-    </div>
+<div class="fullscreen" id="page">
+<div class="closeX" onclick="goHome()">✖</div>
+<canvas class="smokeCanvas" id="smoke"></canvas>
+<div class="categoryTitle" id="categoryTitle"></div>
+<div class="products" id="products"></div>
+</div>
 
-    <script>
-        // بيانات المنتجات
-        const products = [
-            { id: 1, name: 'هودي نجمي فضائي', price: 450, category: 'hoodies', img: 'https://images.unsplash.com/photo-1578933588905-f68d7a5a5f08?w=400' },
-            { id: 2, name: 'هودي مجرة', price: 520, category: 'hoodies', img: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400' },
-            { id: 3, name: 'ساعة فضائية LED', price: 280, category: 'accessories', img: 'https://images.unsplash.com/photo-1524592094714-0f25c5025c32?w=400' },
-            { id: 4, name: 'نظارات شمسية كوزميك', price: 350, category: 'accessories', img: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400' },
-            { id: 5, name: 'بنطلون كارجو فضائي', price: 420, category: 'pants', img: 'https://images.unsplash.com/photo-1602293589930-66a0028f5cde?w=400' },
-            { id: 6, name: 'بنطلون جلدي نجمي', price: 480, category: 'pants', img: 'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=400' },
-            { id: 7, name: 'هودي نيون', price: 380, category: 'hoodies', img: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400' },
-                    { id: 8, name: 'بنطلون رياضي فضائي', price: 360, category: 'pants', img: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400' }
-        ];
+<div class="detail" id="detail">
+<div class="detailBox" id="detailBox"></div>
+</div>
 
-        let cart = [];
-        let currentFilter = 'all';
+<div class="loginModal" id="loginModal">
+<div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
 
-        // عرض المنتجات
-        function displayProducts(productsToShow) {
-            const productsSection = document.getElementById('productsSection');
-            const sectionTitle = document.getElementById('sectionTitle');
-            
-            if (productsToShow.length === 0) {
-                productsSection.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
-                        <i class="fas fa-search" style="font-size: 4rem; color: #4ecdc4; margin-bottom: 1rem;"></i>
-                        <h2 style="font-size: 2rem; margin-bottom: 1rem;">لا توجد منتجات</h2>
-                        <p>جرب البحث بكلمات أخرى أو غيّر الفلتر</p>
-                    </div>
-                `;
-                return;
-            }
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل دخول</button>
+<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
+</div>
 
-            productsSection.innerHTML = `<h2 class="section-title" id="sectionTitle">${getSectionTitle()}</h2>`;
-            
-            productsToShow.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <img src="${product.img}" alt="${product.name}" class="product-img">
-                    <h3 class="product-title">${product.name}</h3>
-                    <div class="product-price">${product.price} جنيه</div>
-                    <button class="add-to-cart" onclick="addToCart(${product.id})">
-                        <i class="fas fa-cart-plus"></i> إضافة للسلة
-                    </button>
-                `;
-                productsSection.appendChild(productCard);
-            });
-        }
+<div id="registerForm" style="display:none">
+<h3>إنشاء حساب</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
+<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+<button onclick="register()">إنشاء حساب</button>
+<span class="smallLink" onclick="showLogin()">رجوع</span>
+</div>
 
-        // فلترة المنتجات
-        function filterProducts(category) {
-            currentFilter = category;
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            let filteredProducts = products;
-            if (category !== 'all') {
-                filteredProducts = products.filter(p => p.category === category);
-            }
-            
-            displayProducts(filteredProducts);
-        }
 
-        // البحث
-        function searchProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(product => 
-                product.name.toLowerCase().includes(query) || 
-                product.category.toLowerCase().includes(query)
-            );
-            displayProducts(filtered);
-        }
+<script type="module">
 
-        // إضافة للسلة
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            
-            updateCartCount();
-            showNotification('تم إضافة المنتج للسلة بنجاح! 🎉');
-        }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc,collection,getDocs,query,where }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // تحديث عداد السلة
-        function updateCartCount() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCount').textContent = count;
-        }
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:711219a46f1c87b82e9865",
+  measurementId: "G-KV92W14ENY"
+};
 
-        // فتح/إغلاق سلة المشتريات
-        function toggleCart() {
-            const modal = document.getElementById('cartModal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-            if (modal.style.display === 'block') displayCart();
-        }
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
 
-        // عرض محتويات السلة
-        function displayCart() {
-            const cartItems = document.getElementById('cartItems');
-            const cartTotal = document.getElementById('cartTotal');
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<p style="text-align: center; color: #4ecdc4;">السلة فارغة 😔</p>';
-                cartTotal.textContent = 'الإجمالي: 0 جنيه';
-                return;
-            }
-            
-            cartItems.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <img src="${item.img}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
-                    <div style="flex: 1;">
-                        <h4>${item.name}</h4>
-                        <p>${item.price} جنيه × ${item.quantity}</p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <button onclick="updateCartQuantity(${item.id}, -1)" style="background: #ff6b6b; border: none; color: white; padding: 5px 10px; border-radius: 5px;">-</button>
-                        <span>${item.quantity}</span>
-                        <button onclick="updateCartQuantity(${item.id}, 1)" style="background: #4ecdc4; border: none; color: white; padding: 5px 10px; border-radius: 5px;">+</button>
-                        <button onclick="removeFromCart(${item.id})" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `الإجمالي: ${total} جنيه`;
-        }
+const page = document.getElementById("page");
+const products = document.getElementById("products");
+const categoryTitle = document.getElementById("categoryTitle");
+const detail = document.getElementById("detail");
+const detailBox = document.getElementById("detailBox");
+const loginModal = document.getElementById("loginModal");
 
-        // تحديث كمية المنتج في السلة
-        function updateCartQuantity(productId, change) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    removeFromCart(productId);
-                } else {
-                    displayCart();
-                    updateCartCount();
-                }
-            }
-        }
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const regEmailInput = document.getElementById("regEmailInput");
+const regPasswordInput = document.getElementById("regPasswordInput");
+const confirmInput = document.getElementById("confirmInput");
+const nameInput = document.getElementById("nameInput");
+// 🔥 جلب المنتجات من فايربيس
+window.openCategory = async function(cat){
 
-        // حذف من السلة
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            displayCart();
-            updateCartCount();
-        }
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
 
-        // إتمام الشراء
-        function checkout() {
-            if (cart.length === 0) {
-                alert('السلة فارغة!');
-                return;
-            }
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            alert(`شكراً لك! تم إتمام الطلب بنجاح 💫\nالإجمالي: ${total} جنيه`);
-            cart = [];
-            updateCartCount();
-            toggleCart();
-        }
+const q = query(collection(db,"products"), where("category","==",cat));
+const querySnapshot = await getDocs(q);
 
-        // تسجيل الدخول
-        function toggleAuth() {
-            const modal = document.getElementById('authModal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-        }
+if(querySnapshot.empty){
+products.innerHTML="<p>لا توجد منتجات حالياً</p>";
+return;
+}
 
-        function handleAuth(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (email && password) {
-                showNotification('تم تسجيل الدخول بنجاح! 👋');
-                toggleAuth();
-                document.querySelector('.nav-icons .fa-user').title = 'مرحباً بك!';
-            } else {
-                alert('يرجى إدخال البيانات');
-            }
-        }
+querySnapshot.forEach((doc)=>{
+const p = doc.data();
 
-        function toggleRegister() {
-            showNotification('سيتم إضافة صفحة التسجيل قريباً! ✨');
-        }
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
+<img src="${p.image}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
+});
 
-        // عنوان القسم
-        function getSectionTitle() {
-            const titles = {
-                'hoodies': 'هودي فضائية 🚀',
-                'accessories': 'أكسسورات كونية ⭐',
-                'pants': 'بناطيل مجرية 🌌',
-                'all': 'كل المنتجات الفضائية'
-            };
-            return titles[currentFilter] || 'كل المنتجات';
-        }
+}
 
-        // إشعارات
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 120px;
-                right: 20px;
-                background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-                color: white;
-                padding: 15px 25px;
-                border-radius: 10px;
-                box-shadow: 0 10px 30px rgba(78,205,196,0.4);
-                z-index: 3000;
-                font-weight: bold;
-                animation: slideIn 0.3s ease;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => document.body.removeChild(notification), 300);
-            }, 3000);
-        }
 
-        // CSS للإشعارات
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
+// 🔐 تسجيل دخول / تسجيل جديد
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+alert("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+alert("تم إنشاء الحساب");
+closeLogin();
+}catch(e){alert(e.message);}
+}
 
-        // البحث عند الكتابة
-        document.getElementById('searchInput').addEventListener('input', searchProducts);
+window.login = async function(){
+try{
 
-        // إغلاق النوافذ عند الضغط خارجها
-        window.onclick = function(event) {
-            const cartModal = document.getElementById('cartModal');
-            const authModal = document.getElementById('authModal');
-            
-            if (event.target === cartModal) toggleCart();
-            if (event.target === authModal) toggleAuth();
-        }
+const userCredential = await signInWithEmailAndPassword(
+auth,
+emailInput.value,
+passwordInput.value
+);
 
-        // تحميل المنتجات عند بدء الصفحة
-        displayProducts(products);
-    </script>
+const user = userCredential.user;
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(snap.exists() && snap.data().role === "admin"){
+window.location.href = "admin.html";
+return;
+}
+
+alert("تم تسجيل الدخول");
+closeLogin();
+
+}catch(e){
+alert(e.message);
+}
+}
+
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
+}
+window.showRegister = function(){
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="block";
+}
+
+window.showLogin = function(){
+document.getElementById("loginForm").style.display="block";
+document.getElementById("registerForm").style.display="none";
+  }
+  // ⭐⭐ STAR BACKGROUND
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+
+for(let i=0;i<300;i++){
+stars.push({
+x: Math.random()*canvas.width,
+y: Math.random()*canvas.height,
+r: Math.random()*2,
+d: Math.random()*1
+});
+}
+
+function drawStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="white";
+ctx.beginPath();
+for(let i=0;i<stars.length;i++){
+let s=stars[i];
+ctx.moveTo(s.x,s.y);
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2,true);
+}
+ctx.fill();
+updateStars();
+}
+
+function updateStars(){
+for(let i=0;i<stars.length;i++){
+stars[i].y+=stars[i].d;
+if(stars[i].y>canvas.height){
+stars[i].y=0;
+stars[i].x=Math.random()*canvas.width;
+}
+}
+}
+
+setInterval(drawStars,33);
+  // 💨 SMOKE EFFECT
+const smokeCanvas = document.getElementById("smoke");
+const smokeCtx = smokeCanvas.getContext("2d");
+
+smokeCanvas.width = window.innerWidth;
+smokeCanvas.height = window.innerHeight;
+
+let particles = [];
+
+for(let i=0;i<50;i++){
+particles.push({
+x: Math.random()*smokeCanvas.width,
+y: Math.random()*smokeCanvas.height,
+r: Math.random()*20+10,
+a: Math.random()*0.3
+});
+}
+
+function drawSmoke(){
+smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
+
+particles.forEach(p=>{
+smokeCtx.beginPath();
+smokeCtx.fillStyle="rgba(255,255,255,"+p.a+")";
+smokeCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+smokeCtx.fill();
+
+p.y-=0.5;
+if(p.y<0){
+p.y=smokeCanvas.height;
+p.x=Math.random()*smokeCanvas.width;
+}
+});
+
+requestAnimationFrame(drawSmoke);
+}
+
+drawSmoke();
+</script>
+
 </body>
-</html>
+    </html>
