@@ -3,485 +3,441 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uni Finder Egypt</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
-
+<title>فيديو عرب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Cairo',sans-serif;
-}
+  :root {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --accent: #e63946;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: #2e2e2e;
+  }
 
-body{
-background:#050505;
-color:white;
-overflow-x:hidden;
-min-height:100vh;
-}
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
 
-body::before{
-content:'';
-position:fixed;
-width:500px;
-height:500px;
-background:#0044ff33;
-filter:blur(150px);
-top:-100px;
-left:-100px;
-z-index:-1;
-}
+  header {
+    background: #111;
+    border-bottom: 2px solid var(--accent);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 
-body::after{
-content:'';
-position:fixed;
-width:500px;
-height:500px;
-background:#8b00ff33;
-filter:blur(150px);
-bottom:-100px;
-right:-100px;
-z-index:-1;
-}
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px;
-border-bottom:1px solid rgba(255,255,255,0.1);
-backdrop-filter:blur(10px);
-}
+  .logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    flex: 1;
+  }
+  .logo span { color: var(--accent); }
 
-.logo h1{
-font-size:32px;
-font-weight:900;
-}
+  .header-icons {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .header-icons svg {
+    width: 22px; height: 22px;
+    stroke: var(--text);
+    fill: none;
+    cursor: pointer;
+    transition: stroke 0.2s;
+  }
+  .header-icons svg:hover { stroke: var(--accent); }
 
-.logo p{
-color:#aaa;
-font-size:14px;
-}
+  .search-bar {
+    background: var(--surface);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-bar input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: rtl;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
 
-.toggle{
-background:rgba(255,255,255,0.1);
-border:none;
-padding:12px 20px;
-border-radius:15px;
-color:white;
-cursor:pointer;
-transition:.3s;
-}
+  .tags {
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .tag:hover, .tag.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
 
-.toggle:hover{
-background:rgba(255,255,255,0.2);
-}
+  .sort-bar {
+    padding: 10px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sort-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Cairo', sans-serif;
+    transition: all 0.2s;
+  }
+  .sort-btn.active, .sort-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
 
-.container{
-max-width:1400px;
-margin:auto;
-padding:30px;
-display:grid;
-grid-template-columns:350px 1fr;
-gap:25px;
-}
+  .grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
 
-.sidebar{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-padding:25px;
-border-radius:30px;
-backdrop-filter:blur(20px);
-height:fit-content;
-position:sticky;
-top:20px;
-}
+  .card {
+    background: var(--surface);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
 
-.sidebar h2{
-margin-bottom:20px;
-font-size:25px;
-}
+  .thumb {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+  .card:hover .thumb img { transform: scale(1.05); }
 
-.input-group{
-margin-bottom:20px;
-}
+  .badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .badge.hd { background: #1a6b3c; }
+  .badge.new { background: #e63946; }
 
-.input-group label{
-display:block;
-margin-bottom:8px;
-color:#ccc;
-}
+  .duration {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 
-.input-group input,
-.input-group select{
-width:100%;
-padding:15px;
-background:rgba(255,255,255,0.08);
-border:none;
-outline:none;
-border-radius:15px;
-color:white;
-font-size:16px;
-}
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .card:hover .play-overlay { background: rgba(0,0,0,0.35); }
+  .play-icon {
+    width: 48px; height: 48px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .card:hover .play-icon { opacity: 1; transform: scale(1); }
+  .play-icon svg { width: 20px; height: 20px; fill: #fff; margin-right: -3px; }
 
-.input-group select option{
-background:#111;
-}
+  .card-body {
+    padding: 10px 12px 12px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .card-meta .likes {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #4caf50;
+    font-weight: 600;
+  }
+  .card-meta .views {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-tags-mini {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 7px;
+  }
+  .tag-mini {
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    color: var(--muted);
+  }
 
-.search-btn{
-width:100%;
-padding:16px;
-border:none;
-border-radius:18px;
-background:linear-gradient(45deg,#0055ff,#8b00ff);
-color:white;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-transition:.3s;
-}
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px 16px;
+  }
+  .page-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .page-btn.active, .page-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
 
-.search-btn:hover{
-transform:scale(1.03);
-}
+  footer {
+    background: #111;
+    border-top: 1px solid var(--border);
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
 
-.results{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:25px;
-}
-
-.card{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:30px;
-overflow:hidden;
-backdrop-filter:blur(15px);
-transition:.4s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-border-color:#0055ff;
-}
-
-.card img{
-width:100%;
-height:220px;
-object-fit:cover;
-}
-
-.card-content{
-padding:20px;
-}
-
-.card-content h3{
-font-size:24px;
-margin-bottom:10px;
-}
-
-.badges{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:15px;
-}
-
-.badge{
-padding:8px 14px;
-border-radius:30px;
-font-size:14px;
-background:#ffffff14;
-}
-
-.info{
-margin:10px 0;
-color:#ccc;
-line-height:1.7;
-}
-
-.price{
-margin-top:10px;
-font-size:18px;
-font-weight:bold;
-color:#00ffae;
-}
-
-.location{
-margin-top:8px;
-color:#aaa;
-}
-
-.empty{
-text-align:center;
-padding:80px 20px;
-font-size:25px;
-color:#888;
-}
-
-@media(max-width:900px){
-
-.container{
-grid-template-columns:1fr;
-}
-
-.sidebar{
-position:relative;
-top:0;
-}
-
-}
-
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+    .card-title { font-size: 12px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-
-<div class="logo">
-<h1>Uni Finder Egypt</h1>
-<p>اعرف الجامعة المناسبة لمجموعك</p>
-</div>
-
-<button class="toggle" onclick="toggleTheme()">🌙 الوضع</button>
-
+  <div class="header-inner">
+    <div class="header-icons">
+      <svg viewBox="0 0 24 24" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="logo">فيديو<span>عرب</span></div>
+    <div class="header-icons">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </div>
+  </div>
 </header>
 
-<div class="container">
-
-<div class="sidebar">
-
-<h2>ابحث عن جامعتك</h2>
-
-<div class="input-group">
-<label>المجموع</label>
-<input type="number" id="score" placeholder="مثال: 82">
+<div class="search-bar">
+  <input type="text" placeholder="🔍  ابحث عن فيديوهات...">
 </div>
 
-<div class="input-group">
-<label>الشعبة</label>
-<select id="branch">
-<option>علمي علوم</option>
-<option>علمي رياضة</option>
-<option>أدبي</option>
-</select>
+<div class="tags">
+  <a class="tag active" href="#">الكل</a>
+  <a class="tag" href="#">عربي</a>
+  <a class="tag" href="#">مصري</a>
+  <a class="tag" href="#">خليجي</a>
+  <a class="tag" href="#">مغربي</a>
+  <a class="tag" href="#">لبناني</a>
+  <a class="tag" href="#">سوري</a>
+  <a class="tag" href="#">عراقي</a>
+  <a class="tag" href="#">أجنبي</a>
+  <a class="tag" href="#">نودز</a>
+  <a class="tag" href="#">ميلف</a>
 </div>
 
-<div class="input-group">
-<label>نوع الجامعة</label>
-<select id="type">
-<option>الكل</option>
-<option>حكومية</option>
-<option>خاصة</option>
-<option>أهلية</option>
-</select>
+<div class="sort-bar">
+  <span style="color:var(--muted);font-size:13px;white-space:nowrap">ترتيب:</span>
+  <button class="sort-btn active">الأحدث</button>
+  <button class="sort-btn">الأكثر مشاهدة</button>
+  <button class="sort-btn">الأعلى تقييماً</button>
+  <button class="sort-btn">الأطول</button>
 </div>
 
-<div class="input-group">
-<label>المدينة</label>
-<select id="city">
-<option>الكل</option>
-<option>القاهرة</option>
-<option>طنطا</option>
-<option>العريش</option>
-<option>6 أكتوبر</option>
-</select>
+<div class="grid" id="videoGrid"></div>
+
+<div class="pagination">
+  <button class="page-btn">»</button>
+  <button class="page-btn">3</button>
+  <button class="page-btn">2</button>
+  <button class="page-btn active">1</button>
+  <button class="page-btn">«</button>
 </div>
 
-<button class="search-btn" onclick="searchUniversities()">
-عرض الجامعات
-</button>
-
-</div>
-
-<div class="results" id="results"></div>
-
-</div>
+<footer>
+  جميع الحقوق محفوظة © 2026 فيديو عرب
+</footer>
 
 <script>
-
-const universities = [
-
-{
-name:"جامعة القاهرة",
-city:"القاهرة",
-type:"حكومية",
-faculty:"هندسة",
-minScore:88,
-fees:"1500 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop",
-details:"واحدة من أقوى الجامعات الحكومية في مصر وتتميز بقوة المناهج وفرص العمل.",
-location:"الجيزة - القاهرة"
-},
-
-{
-name:"جامعة عين شمس",
-city:"القاهرة",
-type:"حكومية",
-faculty:"حاسبات ومعلومات",
-minScore:84,
-fees:"2000 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
-details:"متميزة في التكنولوجيا والذكاء الاصطناعي.",
-location:"القاهرة"
-},
-
-{
-name:"جامعة المستقبل",
-city:"القاهرة",
-type:"خاصة",
-faculty:"طب أسنان",
-minScore:78,
-fees:"145000 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
-details:"جامعة خاصة حديثة بإمكانيات قوية.",
-location:"القاهرة الجديدة"
-},
-
-{
-name:"جامعة الملك سلمان",
-city:"العريش",
-type:"أهلية",
-faculty:"هندسة",
-minScore:74,
-fees:"65000 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?q=80&w=1200&auto=format&fit=crop",
-details:"جامعة أهلية حديثة بمستوى قوي.",
-location:"العريش - شمال سيناء"
-},
-
-{
-name:"جامعة طنطا",
-city:"طنطا",
-type:"حكومية",
-faculty:"علوم",
-minScore:75,
-fees:"1200 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1519452575417-564c1401ecc0?q=80&w=1200&auto=format&fit=crop",
-details:"جامعة حكومية قوية في الدلتا.",
-location:"طنطا - الغربية"
-},
-
-{
-name:"جامعة مصر للعلوم والتكنولوجيا",
-city:"6 أكتوبر",
-type:"خاصة",
-faculty:"إعلام",
-minScore:65,
-fees:"85000 جنيه سنوياً",
-image:"https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?q=80&w=1200&auto=format&fit=crop",
-details:"جامعة خاصة مشهورة وتضم كليات كثيرة.",
-location:"مدينة 6 أكتوبر"
-}
-
+const videos = [
+  { title: " شرموطه تمص وتتناك واحلي اهااات", duration: "18:45", views: "245K", likes: "92%", tags: ["ساخن بلدي", "مصري"], badge: "HD", img: "https://picsum.photos/seed/v1/480/270" },
+  { title: "نيك في الحمام شرموطة جسمها اخر جمدان مع خطيبها", duration: "32:10", views: "188K", likes: "97%", tags: ["فلاحي", "عربي"], badge: "جديد", img: "https://picsum.photos/seed/v2/480/270" },
+  { title: "شرموطة مصرية بتتفشخ نيك خلفي وتقوله افشخ كسي", duration: "55:22", views: "1.2M", likes: "95%", tags: ["بزاز", "خليجي"], badge: "HD", img: "https://picsum.photos/seed/v3/480/270" },
+  { title: "الشرموطه ماسكه الزب زي المحرومه ومدلعاه مص", duration: "26:08", views: "73K", likes: "98%", tags: ["طياز", "مغربي"], badge: "", img: "https://picsum.photos/seed/v4/480/270" },
+  { title: "مزه مصريه قالعه علي السرير وبتهيج صاحبها", duration: "11:30", views: "3.4M", likes: "88%", tags: ["مدوره"], badge: "HD", img: "https://picsum.photos/seed/v5/480/270" },
+  { title: "مغربيه لبوه بتتناك مه حبيبها", duration: "44:17", views: "540K", likes: "91%", tags: ["ميلف", "سوري"], badge: "جديد", img: "https://picsum.photos/seed/v6/480/270" },
+  { title: "مزه مصريه قالعه علي السرير وتدعك في بزازها", duration: "22:05", views: "98K", likes: "94%", tags: ["فن", "عربي"], badge: "", img: "https://picsum.photos/seed/v7/480/270" },
+  { title: "شرموطه بتتاجر بالساعه وبتقوله حطه", duration: "38:50", views: "210K", likes: "99%", tags: ["مدرسه"], badge: "HD", img: "https://picsum.photos/seed/v8/480/270" },
 ];
 
-const results = document.getElementById('results');
+const grid = document.getElementById('videoGrid');
 
-function renderUniversities(data){
+videos.forEach(v => {
+  const badgeHTML = v.badge
+    ? `<span class="badge ${v.badge === 'HD' ? 'hd' : 'new'}">${v.badge}</span>`
+    : '';
+  const tagsHTML = v.tags.map(t => `<span class="tag-mini">${t}</span>`).join('');
 
-results.innerHTML='';
-
-if(data.length===0){
-
-results.innerHTML=`
-<div class="empty">
-لا توجد جامعات مناسبة لهذا المجموع
-</div>
-`;
-
-return;
-}
-
-data.forEach(u=>{
-
-results.innerHTML += `
-
-<div class="card">
-
-<img src="${u.image}">
-
-<div class="card-content">
-
-<h3>${u.name}</h3>
-
-<div class="badges">
-<div class="badge">${u.type}</div>
-<div class="badge">${u.faculty}</div>
-<div class="badge">${u.city}</div>
-</div>
-
-<div class="info">
-${u.details}
-</div>
-
-<div class="info">
-الحد الأدنى المتوقع: ${u.minScore}%
-</div>
-
-<div class="price">
-${u.fees}
-</div>
-
-<div class="location">
-📍 ${u.location}
-</div>
-
-</div>
-
-</div>
-
-`;
-
+  grid.innerHTML += `
+    <div class="card">
+      <div class="thumb">
+        <img src="${v.img}" alt="${v.title}" loading="lazy">
+        ${badgeHTML}
+        <div class="duration">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${v.duration}
+        </div>
+        <div class="play-overlay">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${v.title}</div>
+        <div class="card-meta">
+          <span class="likes">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#4caf50" stroke="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg>
+            ${v.likes}
+          </span>
+          <span class="views">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            ${v.views}
+          </span>
+        </div>
+        <div class="card-tags-mini">${tagsHTML}</div>
+      </div>
+    </div>
+  `;
 });
 
-}
-
-renderUniversities(universities);
-
-function searchUniversities(){
-
-const score = Number(document.getElementById('score').value || 0);
-const type = document.getElementById('type').value;
-const city = document.getElementById('city').value;
-
-const filtered = universities.filter(u=>{
-
-const scoreMatch = score >= u.minScore;
-const typeMatch = type === 'الكل' || u.type === type;
-const cityMatch = city === 'الكل' || u.city === city;
-
-return scoreMatch && typeMatch && cityMatch;
-
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
 });
 
-renderUniversities(filtered);
-
-}
-
-function toggleTheme(){
-
-document.body.classList.toggle('light');
-
-if(document.body.classList.contains('light')){
-
-document.body.style.background='#f2f2f2';
-document.body.style.color='black';
-
-}else{
-
-document.body.style.background='#050505';
-document.body.style.color='white';
-
-}
-
-}
-
+document.querySelectorAll('.tag').forEach(tag => {
+  tag.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+    tag.classList.add('active');
+  });
+});
 </script>
-
 </body>
 </html>
