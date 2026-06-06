@@ -382,11 +382,12 @@ const videos = [
   { title: "مزه مصريه قالعه علي السرير وتدعك في بزازها", duration: "22:05", views: "98K", likes: "94%", tags: ["فن", "عربي"], badge: "", img: "https://picsum.photos/seed/v7/480/270" },
   { title: "شرموطه بتتاجر بالساعه وبتقوله حطه", duration: "38:50", views: "210K", likes: "99%", tags: ["مدرسه"], badge: "HD", img: "https://picsum.photos/seed/v8/480/270" },
 ];
-</a>
 
 const grid = document.getElementById('videoGrid');
 
-videos.forEach(v => {
+videos.forEach(v => 
+ </a>
+               {
   const badgeHTML = v.badge
     ? `<span class="badge ${v.badge === 'HD' ? 'hd' : 'new'}">${v.badge}</span>`
     : '';
