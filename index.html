@@ -1,444 +1,474 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>فيديو عرب</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<title>MIT STORE</title>
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:black;color:white;overflow:hidden;}
+#space{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-  :root {
-    --bg: #0d0d0d;
-    --surface: #1a1a1a;
-    --surface2: #242424;
-    --accent: #e63946;
-    --accent2: #ff6b35;
-    --text: #f0f0f0;
-    --muted: #888;
-    --border: #2e2e2e;
-  }
+.logo{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:28px;
+letter-spacing:6px;
+z-index:10;
+}
 
-  body {
-    font-family: 'Cairo', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    direction: rtl;
-  }
+.loginBtn{
+position:absolute;
+top:20px;
+right:20px;
+background:#ffd700;
+color:black;
+padding:6px 14px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+font-weight:bold;
+font-size:14px;
+}
 
-  header {
-    background: #111;
-    border-bottom: 2px solid var(--accent);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+.closeX{
+position:absolute;
+top:15px;
+left:15px;
+font-size:22px;
+cursor:pointer;
+color:#ff4444;
+}
 
-  .header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+.neonMessage{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:20px 40px;
+border-radius:15px;
+background:#111;
+font-size:22px;
+display:none;
+z-index:200;
+color:#00ffcc;
+text-align:center;
+box-shadow:0 0 10px #00ffcc,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+animation:fadeOut 3s forwards;
+}
+@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 
-  .logo {
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    flex: 1;
-  }
-  .logo span { color: var(--accent); }
+.menu{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+gap:35px;
+z-index:10;
+width:80%;
+align-items:center;
+}
 
-  .header-icons {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-  }
-  .header-icons svg {
-    width: 22px; height: 22px;
-    stroke: var(--text);
-    fill: none;
-    cursor: pointer;
-    transition: stroke 0.2s;
-  }
-  .header-icons svg:hover { stroke: var(--accent); }
+.item{
+cursor:pointer;
+font-size:22px;
+padding:12px 30px;
+border-radius:12px;
+transition:.4s;
+}
+.item:hover{text-shadow:0 0 10px #ffd700;}
 
-  .search-bar {
-    background: var(--surface);
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .search-bar input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 14px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    direction: rtl;
-  }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: var(--muted); }
+.fullscreen{
+position:fixed;
+inset:0;
+background:black;
+display:none;
+flex-direction:column;
+align-items:center;
+z-index:40;
+padding-top:90px;
+overflow:auto;
+}
 
-  .tags {
-    padding: 12px 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-  .tag {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text);
-    text-decoration: none;
-  }
-  .tag:hover, .tag.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+.products{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+width:95%;
+position:relative;
+z-index:5;
+}
 
-  .sort-bar {
-    padding: 10px 16px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .sort-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: 'Cairo', sans-serif;
-    transition: all 0.2s;
-  }
-  .sort-btn.active, .sort-btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+.product{
+background:#111;
+padding:12px;
+border-radius:14px;
+width:140px;
+cursor:pointer;
+transition:.4s;
+}
 
-  .grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
+.product img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
+}
 
-  .card {
-    background: var(--surface);
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    transition: transform 0.2s, border-color 0.2s;
-    cursor: pointer;
-  }
-  .card:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent);
-  }
+.product:hover{
+transform:scale(1.08);
+box-shadow:0 0 10px #ffd700;
+}
 
-  .thumb {
-    position: relative;
-    aspect-ratio: 16/9;
-    background: var(--surface2);
-    overflow: hidden;
-  }
-  .thumb img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s;
-  }
-  .card:hover .thumb img { transform: scale(1.05); }
+.smokeCanvas{
+position:absolute;
+inset:0;
+z-index:1;
+pointer-events:none;
+}
 
-  .badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-  }
-  .badge.hd { background: #1a6b3c; }
-  .badge.new { background: #e63946; }
+.detail{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.95);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:60;
+}
 
-  .duration {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+.detailBox{
+background:#111;
+padding:25px;
+border-radius:18px;
+text-align:center;
+width:300px;
+position:relative;
+}
 
-  .play-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .card:hover .play-overlay { background: rgba(0,0,0,0.35); }
-  .play-icon {
-    width: 48px; height: 48px;
-    background: var(--accent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.2s, transform 0.2s;
-  }
-  .card:hover .play-icon { opacity: 1; transform: scale(1); }
-  .play-icon svg { width: 20px; height: 20px; fill: #fff; margin-right: -3px; }
+.loginModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:80;
+}
 
-  .card-body {
-    padding: 10px 12px 12px;
-  }
-  .card-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 8px;
-    color: var(--text);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .card-meta .likes {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #4caf50;
-    font-weight: 600;
-  }
-  .card-meta .views {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .card-tags-mini {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-top: 7px;
-  }
-  .tag-mini {
-    background: var(--surface2);
-    border-radius: 4px;
-    padding: 2px 7px;
-    font-size: 11px;
-    color: var(--muted);
-  }
+.loginBox{
+background:#111;
+padding:30px;
+border-radius:18px;
+width:320px;
+text-align:center;
+position:relative;
+}
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 24px 16px;
-  }
-  .page-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 14px;
-    color: var(--text);
-    cursor: pointer;
-    font-family: 'Cairo', sans-serif;
-    font-size: 13px;
-    transition: all 0.2s;
-  }
-  .page-btn.active, .page-btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+.loginBox input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+background:#222;
+color:white;
+}
 
-  footer {
-    background: #111;
-    border-top: 1px solid var(--border);
-    padding: 20px 16px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--muted);
-  }
+.smallLink{
+font-size:13px;
+color:#ffd700;
+cursor:pointer;
+margin-top:8px;
+display:block;
+}
 
-  @media (max-width: 600px) {
-    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-    .card-title { font-size: 12px; }
-  }
+button{
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ffd700;
+cursor:pointer;
+width:100%;
+}
+
+.categoryTitle{
+font-size:26px;
+margin-bottom:20px;
+letter-spacing:3px;
+z-index:10;
+}
 </style>
 </head>
+
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="header-icons">
-      <svg viewBox="0 0 24 24" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </div>
-    <div class="logo">فيديو<span>عرب</span></div>
-    <div class="header-icons">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    </div>
-  </div>
-</header>
+<canvas id="space"></canvas>
+<div class="neonMessage" id="neonMsg"></div>
 
-<div class="search-bar">
-  <input type="text" placeholder="🔍  ابحث عن فيديوهات...">
+<div class="logo">
+<span style="color:#ffd700">𝔐</span>
+<span style="color:#ff1a1a">𝔦</span>
+<span style="color:#ffd700">𝔗</span>
 </div>
 
-<div class="tags">
-  <a class="tag active" href="#">الكل</a>
-  <a class="tag" href="#">عربي</a>
-  <a class="tag" href="#">مصري</a>
-  <a class="tag" href="#">خليجي</a>
-  <a class="tag" href="#">مغربي</a>
-  <a class="tag" href="#">لبناني</a>
-  <a class="tag" href="#">سوري</a>
-  <a class="tag" href="#">عراقي</a>
-  <a class="tag" href="#">أجنبي</a>
-  <a class="tag" href="#">نودز</a>
-  <a class="tag" href="#">ميلف</a>
+<div class="loginBtn" id="loginBtn" onclick="openLogin()">تسجيل الدخول</div>
+
+<div class="menu">
+<div class="item" onclick="openCategory('HOODIES')">HOODIES</div>
+<div class="item" onclick="openCategory('PANTS')">PANTS</div>
+<div class="item" onclick="openCategory('ACCESSORIES')">ACCESSORIES</div>
 </div>
 
-<div class="sort-bar">
-  <span style="color:var(--muted);font-size:13px;white-space:nowrap">ترتيب:</span>
-  <button class="sort-btn active">الأحدث</button>
-  <button class="sort-btn">الأكثر مشاهدة</button>
-  <button class="sort-btn">الأعلى تقييماً</button>
-  <button class="sort-btn">الأطول</button>
+<div class="fullscreen" id="page">
+<div class="closeX" onclick="goHome()">✖</div>
+<canvas class="smokeCanvas" id="smoke"></canvas>
+<div class="categoryTitle" id="categoryTitle"></div>
+<div class="products" id="products"></div>
 </div>
 
-<div class="grid" id="videoGrid"></div>
-<a href="https://pornbox.com/application/watch-page/4192401?aff=YD9E1RZ49M">
-<div class="pagination">
-  <button class="page-btn">»</button>
-  <button class="page-btn">3</button>
-  <button class="page-btn">2</button>
-  <button class="page-btn active">1</button>
-  <button class="page-btn">«</button>
+<div class="detail" id="detail">
+<div class="detailBox" id="detailBox"></div>
 </div>
 
-<footer>
-  جميع الحقوق محفوظة © 2026 فيديو عرب
-</footer>
+<div class="loginModal" id="loginModal">
+<div class="loginBox">
+<div class="closeX" onclick="closeLogin()">✖</div>
 
-<script>
-[
-  { title: "نيك في الحمام شرموطة جسمها اخر جمدان مع خطيبها", duration: "32:10", views: "188K", likes: "97%", tags: ["فلاحي", "عربي"], badge: "جديد", img: "https://share.google/8UadTIF4iAawlkXGK" },
-  { title: "شرموطة مصرية بتتفشخ نيك خلفي وتقوله افشخ كسي", duration: "55:22", views: "1.2M", likes: "95%", tags: ["بزاز", "خليجي"], badge: "HD", img: "https://picsum.photos/seed/v3/480/270" },
-  { title: "الشرموطه ماسكه الزب زي المحرومه ومدلعاه مص", duration: "26:08", views: "73K", likes: "98%", tags: ["طياز", "مغربي"], badge: "", img: "https://picsum.photos/seed/v4/480/270" },
-  { title: "مزه مصريه قالعه علي السرير وبتهيج صاحبها", duration: "11:30", views: "3.4M", likes: "88%", tags: ["مدوره"], badge: "HD", img: "https://picsum.photos/seed/v5/480/270" },
-  { title: "مغربيه لبوه بتتناك مه حبيبها", duration: "44:17", views: "540K", likes: "91%", tags: ["ميلف", "سوري"], badge: "جديد", img: "https://picsum.photos/seed/v6/480/270" },
-  { title: "مزه مصريه قالعه علي السرير وتدعك في بزازها", duration: "22:05", views: "98K", likes: "94%", tags: ["فن", "عربي"], badge: "", img: "https://picsum.photos/seed/v7/480/270" },
-  { title: "شرموطه بتتاجر بالساعه وبتقوله حطه", duration: "38:50", views: "210K", likes: "99%", tags: ["مدرسه"], badge: "HD", img: "https://picsum.photos/seed/v8/480/270" },
-];
+<div id="loginForm">
+<h3>تسجيل دخول</h3>
+<input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="passwordInput" placeholder="كلمة المرور">
+<button onclick="login()">تسجيل دخول</button>
+<span class="smallLink" onclick="showRegister()">إنشاء حساب</span>
+</div>
 
-const grid = document.getElementById('videoGrid');
+<div id="registerForm" style="display:none">
+<h3>إنشاء حساب</h3>
+<input type="text" id="nameInput" placeholder="الاسم بالكامل">
+<input type="email" id="regEmailInput" placeholder="البريد الإلكتروني">
+<input type="password" id="regPasswordInput" placeholder="كلمة المرور">
+<input type="password" id="confirmInput" placeholder="تأكيد كلمة المرور">
+<button onclick="register()">إنشاء حساب</button>
+<span class="smallLink" onclick="showLogin()">رجوع</span>
+</div>
 
-videos.forEach(v => 
- </a>
-               {
-  const badgeHTML = v.badge
-    ? `<span class="badge ${v.badge === 'HD' ? 'hd' : 'new'}">${v.badge}</span>`
-    : '';
-  const tagsHTML = v.tags.map(t => `<span class="tag-mini">${t}</span>`).join('');
 
-  grid.innerHTML += `
-    <div class="card">
-      <div class="thumb">
-        <img src="${v.img}" alt="${v.title}" loading="lazy">
-        ${badgeHTML}
-        <div class="duration">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${v.duration}
-        </div>
-        <div class="play-overlay">
-          <div class="play-icon">
-            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-title">${v.title}</div>
-        <div class="card-meta">
-          <span class="likes">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#4caf50" stroke="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg>
-            ${v.likes}
-          </span>
-          <span class="views">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            ${v.views}
-          </span>
-        </div>
-        <div class="card-tags-mini">${tagsHTML}</div>
-      </div>
-    </div>
-  `;
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc,collection,getDocs,query,where }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
+  authDomain: "mit-store-15e1d.firebaseapp.com",
+  projectId: "mit-store-15e1d",
+  storageBucket: "mit-store-15e1d.firebasestorage.app",
+  messagingSenderId: "168416523904",
+  appId: "1:168416523904:web:711219a46f1c87b82e9865",
+  measurementId: "G-KV92W14ENY"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const loginBtn=document.getElementById("loginBtn");
+
+const page = document.getElementById("page");
+const products = document.getElementById("products");
+const categoryTitle = document.getElementById("categoryTitle");
+const detail = document.getElementById("detail");
+const detailBox = document.getElementById("detailBox");
+const loginModal = document.getElementById("loginModal");
+
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const regEmailInput = document.getElementById("regEmailInput");
+const regPasswordInput = document.getElementById("regPasswordInput");
+const confirmInput = document.getElementById("confirmInput");
+const nameInput = document.getElementById("nameInput");
+// 🔥 جلب المنتجات من فايربيس
+window.openCategory = async function(cat){
+
+page.style.display="flex";
+products.innerHTML="";
+categoryTitle.innerText=cat;
+
+const q = query(collection(db,"products"), where("category","==",cat));
+const querySnapshot = await getDocs(q);
+
+if(querySnapshot.empty){
+products.innerHTML="<p>لا توجد منتجات حالياً</p>";
+return;
+}
+
+querySnapshot.forEach((doc)=>{
+const p = doc.data();
+
+products.innerHTML+=`
+<div class="product" onclick='showDetail("${p.name}","${p.image}","${p.price}")'>
+<img src="${p.image}">
+<div>${p.name}</div>
+<div style="color:#ffd700">${p.price}</div>
+</div>`;
 });
 
-document.querySelectorAll('.sort-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
+}
+
+
+// 🔐 تسجيل دخول / تسجيل جديد
+window.register=async function(){
+if(regPasswordInput.value!==confirmInput.value){
+alert("كلمة المرور غير متطابقة");return;}
+try{
+const user=await createUserWithEmailAndPassword(auth,regEmailInput.value,regPasswordInput.value);
+await setDoc(doc(db,"users",user.user.uid),{
+name:nameInput.value,
+email:regEmailInput.value
+});
+alert("تم إنشاء الحساب");
+closeLogin();
+}catch(e){alert(e.message);}
+}
+
+window.login = async function(){
+try{
+
+const userCredential = await signInWithEmailAndPassword(
+auth,
+emailInput.value,
+passwordInput.value
+);
+
+const user = userCredential.user;
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(snap.exists() && snap.data().role === "admin"){
+window.location.href = "admin.html";
+return;
+}
+
+alert("تم تسجيل الدخول");
+closeLogin();
+
+}catch(e){
+alert(e.message);
+}
+}
+
+window.openLogin=()=>loginModal.style.display="flex";
+window.closeLogin=()=>loginModal.style.display="none";
+window.goHome=()=>{page.style.display="none";}
+
+window.showDetail=function(n,i,p){
+detail.style.display="flex";
+detailBox.innerHTML=`
+<div class="closeX" onclick="detail.style.display='none'">✖</div>
+<h3>${n}</h3>
+<img src="${i}" style="width:100%;border-radius:10px;margin-top:15px">
+<div style="margin-top:10px;color:#ffd700">${p}</div>
+`;
+}
+window.showRegister = function(){
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="block";
+}
+
+window.showLogin = function(){
+document.getElementById("loginForm").style.display="block";
+document.getElementById("registerForm").style.display="none";
+  }
+  // ⭐⭐ STAR BACKGROUND
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+
+for(let i=0;i<300;i++){
+stars.push({
+x: Math.random()*canvas.width,
+y: Math.random()*canvas.height,
+r: Math.random()*2,
+d: Math.random()*1
+});
+}
+
+function drawStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="white";
+ctx.beginPath();
+for(let i=0;i<stars.length;i++){
+let s=stars[i];
+ctx.moveTo(s.x,s.y);
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2,true);
+}
+ctx.fill();
+updateStars();
+}
+
+function updateStars(){
+for(let i=0;i<stars.length;i++){
+stars[i].y+=stars[i].d;
+if(stars[i].y>canvas.height){
+stars[i].y=0;
+stars[i].x=Math.random()*canvas.width;
+}
+}
+}
+
+setInterval(drawStars,33);
+  // 💨 SMOKE EFFECT
+const smokeCanvas = document.getElementById("smoke");
+const smokeCtx = smokeCanvas.getContext("2d");
+
+smokeCanvas.width = window.innerWidth;
+smokeCanvas.height = window.innerHeight;
+
+let particles = [];
+
+for(let i=0;i<50;i++){
+particles.push({
+x: Math.random()*smokeCanvas.width,
+y: Math.random()*smokeCanvas.height,
+r: Math.random()*20+10,
+a: Math.random()*0.3
+});
+}
+
+function drawSmoke(){
+smokeCtx.clearRect(0,0,smokeCanvas.width,smokeCanvas.height);
+
+particles.forEach(p=>{
+smokeCtx.beginPath();
+smokeCtx.fillStyle="rgba(255,255,255,"+p.a+")";
+smokeCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+smokeCtx.fill();
+
+p.y-=0.5;
+if(p.y<0){
+p.y=smokeCanvas.height;
+p.x=Math.random()*smokeCanvas.width;
+}
 });
 
-document.querySelectorAll('.tag').forEach(tag => {
-  tag.addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-    tag.classList.add('active');
-  });
-});
+requestAnimationFrame(drawSmoke);
+}
+
+drawSmoke();
 </script>
+
 </body>
 </html>
