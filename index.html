@@ -7,175 +7,110 @@
 
 <style>
 * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
 :root {
-    --beige:#e6d5b8;
-    --beige2:#cbb897;
-    --dark:#292a2c;
-    --gray:#3a3b3d;
-    --white:#f5f1e9;
+    --beige: #e6d5b8;
+    --beige2: #cbb897;
+    --dark: #292a2c;
+    --gray: #3a3b3d;
+    --white: #f5f1e9;
 }
 
 body {
-    background:#030406;
-    color:var(--white);
-    overflow-x:hidden;
+    background: #030406;
+    color: var(--white);
+    overflow-x: hidden;
 }
 
 /* SPACE BACKGROUND */
 
 #universe {
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:-5;
-    background:#030406;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .space {
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    z-index:-4;
-    pointer-events:none;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
 }
 
 /* GALAXY */
 
 .galaxy {
-    position:absolute;
-    width:850px;
-    height:500px;
-    top:15%;
-    left:10%;
-    border-radius:50%;
-
+    position: absolute;
+    width: 850px;
+    height: 500px;
+    top: 15%;
+    left: 10%;
+    border-radius: 50%;
     background:
-    radial-gradient(ellipse,
-    rgba(205,190,220,.15) 0%,
-    rgba(120,100,160,.12) 25%,
-    rgba(70,65,100,.10) 45%,
-    transparent 70%);
-
-    filter:blur(25px);
-
-    transform:rotate(-25deg);
-
-    animation:galaxyMove 25s ease-in-out infinite alternate;
+        radial-gradient(ellipse,
+        rgba(205,190,220,.15) 0%,
+        rgba(120,100,160,.12) 25%,
+        rgba(70,65,100,.10) 45%,
+        transparent 70%);
+    filter: blur(25px);
+    transform: rotate(-25deg);
+    animation: galaxyMove 25s ease-in-out infinite alternate;
 }
 
 @keyframes galaxyMove {
-    from {
-        transform:rotate(-25deg) scale(1);
-    }
-    to {
-        transform:rotate(-15deg) scale(1.2);
-    }
+    from { transform: rotate(-25deg) scale(1); }
+    to { transform: rotate(-15deg) scale(1.2); }
 }
 
 /* NEBULA CLOUDS */
 
 .nebula {
-    position:absolute;
-    width:400px;
-    height:300px;
-    border-radius:50%;
-    filter:blur(65px);
-    opacity:.35;
-    animation:nebulaMove 20s infinite alternate ease-in-out;
+    position: absolute;
+    width: 400px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(65px);
+    opacity: .35;
+    animation: nebulaMove 20s infinite alternate ease-in-out;
 }
 
 .nebula.one {
-    background:#51426c;
-    top:10%;
-    right:-150px;
+    background: #51426c;
+    top: 10%;
+    right: -150px;
 }
 
 .nebula.two {
-    background:#8b7560;
-    bottom:5%;
-    left:-150px;
-    animation-delay:-7s;
+    background: #8b7560;
+    bottom: 5%;
+    left: -150px;
+    animation-delay: -7s;
 }
 
 .nebula.three {
-    background:#343b62;
-    top:50%;
-    left:40%;
-    animation-delay:-12s;
+    background: #343b62;
+    top: 50%;
+    left: 40%;
+    animation-delay: -12s;
 }
 
 @keyframes nebulaMove {
-    from {
-        transform:translate(0,0);
-    }
-    to {
-        transform:translate(120px,70px) scale(1.3);
-    }
+    from { transform: translate(0,0); }
+    to { transform: translate(120px,70px) scale(1.3); }
 }
 
 /* PLANETS */
 
 .planet {
-    position:absolute;
-    border-radius:50%;
-    animation:planetFloat 12s ease-in-out infinite alternate;
-}
-
-.planet.one {
-    width:90px;
-    height:90px;
-    top:18%;
-    right:12%;
-
-    background:
-    radial-gradient(circle at 30% 30%,
-    #d7c9b4,#8e8170 50%,#302b2b 85%);
-
-    box-shadow:
-    0 0 30px rgba(205,190,170,.15),
-    inset -12px -10px 20px #161616;
-}
-
-.planet.two {
-    width:48px;
-    height:48px;
-    bottom:25%;
-    left:12%;
-
-    background:
-    radial-gradient(circle at 30% 30%,
-    #c4b8a4,#746e69 70%,#252525);
-
-    box-shadow:0 0 25px rgba(230,213,184,.2);
-
-    animation-delay:-5s;
-}
-
-.planet.three {
-    width:30px;
-    height:30px;
-    top:65%;
-    right:25%;
-
-    background:
-    radial-gradient(circle at 30% 30%,
-    #d9c6a4,#746553);
-    animation-delay:-8s;
-}
-
-/* PLANET RING */
-
-```css
-/* REALISTIC PLANETS */
-
-.planet {
     position: absolute;
     border-radius: 50%;
     overflow: visible;
@@ -190,27 +125,19 @@ body {
     height: 115px;
     top: 15%;
     right: 12%;
-
     background:
-    radial-gradient(ellipse at 28% 25%,
-        rgba(255,255,255,.9),
-        transparent 12%),
-    radial-gradient(ellipse at 65% 35%,
-        #a8a18d 0 8%,
-        transparent 9%),
-    radial-gradient(ellipse at 30% 65%,
-        #777e75 0 12%,
-        transparent 13%),
-    radial-gradient(circle at 35% 30%,
-        #d6d0bc,
-        #8d938e 35%,
-        #424b53 75%,
-        #111820 100%);
-
+        radial-gradient(ellipse at 28% 25%,
+            rgba(255,255,255,.9), transparent 12%),
+        radial-gradient(ellipse at 65% 35%,
+            #a8a18d 0 8%, transparent 9%),
+        radial-gradient(ellipse at 30% 65%,
+            #777e75 0 12%, transparent 13%),
+        radial-gradient(circle at 35% 30%,
+            #d6d0bc, #8d938e 35%, #424b53 75%, #111820 100%);
     box-shadow:
-    inset -22px -12px 30px #080b11,
-    inset 7px 5px 15px rgba(255,255,255,.4),
-    0 0 35px rgba(190,190,190,.15);
+        inset -22px -12px 30px #080b11,
+        inset 7px 5px 15px rgba(255,255,255,.4),
+        0 0 35px rgba(190,190,190,.15);
 }
 
 /* SATURN */
@@ -220,66 +147,46 @@ body {
     height: 105px;
     top: 43%;
     left: 8%;
-
     background:
-    radial-gradient(ellipse at 35% 25%,
-        #e7d5ad 0%,
-        #b49a73 25%,
-        #806c52 55%,
-        #29231e 100%);
-
+        radial-gradient(ellipse at 35% 25%,
+            #e7d5ad 0%, #b49a73 25%, #806c52 55%, #29231e 100%);
     box-shadow:
-    inset -20px -12px 25px #100e0d,
-    inset 8px 5px 15px rgba(255,255,255,.3),
-    0 0 30px rgba(210,190,160,.18);
+        inset -20px -12px 25px #100e0d,
+        inset 8px 5px 15px rgba(255,255,255,.3),
+        0 0 30px rgba(210,190,160,.18);
 }
-
-/* SATURN RINGS */
 
 .planet.ring::before {
     content: "";
     position: absolute;
-
     width: 185px;
     height: 53px;
-
     left: -40px;
     top: 25px;
-
     border-radius: 50%;
-
     background:
-    repeating-linear-gradient(
-        180deg,
-        #b7a78d 0px,
-        #d7c5a5 3px,
-        #746754 6px,
-        #e1d1b4 9px,
-        #8e806c 12px
-    );
-
+        repeating-linear-gradient(
+            180deg,
+            #b7a78d 0px,
+            #d7c5a5 3px,
+            #746754 6px,
+            #e1d1b4 9px,
+            #8e806c 12px
+        );
     transform: rotate(-20deg);
-
     box-shadow: 0 0 12px rgba(230,213,184,.15);
-
     z-index: -1;
 }
-
-/* SATURN SHADOW */
 
 .planet.ring::after {
     content: "";
     position: absolute;
-
     width: 185px;
     height: 53px;
-
     left: -40px;
     top: 25px;
-
     border-radius: 50%;
     border: 5px solid rgba(45,35,25,.5);
-
     transform: rotate(-20deg);
 }
 
@@ -290,163 +197,17 @@ body {
     height: 58px;
     bottom: 23%;
     left: 15%;
-
     background:
-    radial-gradient(circle at 30% 25%,
-        #e0d0ba 0 4%,
-        transparent 5%),
-    radial-gradient(circle at 65% 55%,
-        #6d6259 0 10%,
-        transparent 11%),
-    radial-gradient(circle at 35% 40%,
-        #b9a58c,
-        #786d61 55%,
-        #262321 100%);
-
+        radial-gradient(circle at 30% 25%,
+            #e0d0ba 0 4%, transparent 5%),
+        radial-gradient(circle at 65% 55%,
+            #6d6259 0 10%, transparent 11%),
+        radial-gradient(circle at 35% 40%,
+            #b9a58c, #786d61 55%, #262321 100%);
     box-shadow:
-    inset -12px -8px 18px #090909,
-    inset 4px 3px 8px rgba(255,255,255,.35),
-    0 0 25px rgba(230,213,184,.13);
-
-    animation-delay: -5s;
-}
-
-```css
-/* REALISTIC PLANETS */
-
-.planet {
-    position: absolute;
-    border-radius: 50%;
-    overflow: visible;
-    animation: planetFloat 18s ease-in-out infinite alternate;
-    isolation: isolate;
-}
-
-/* EARTH-LIKE PLANET */
-
-.planet.one {
-    width: 115px;
-    height: 115px;
-    top: 15%;
-    right: 12%;
-
-    background:
-    radial-gradient(ellipse at 28% 25%,
-        rgba(255,255,255,.9),
-        transparent 12%),
-    radial-gradient(ellipse at 65% 35%,
-        #a8a18d 0 8%,
-        transparent 9%),
-    radial-gradient(ellipse at 30% 65%,
-        #777e75 0 12%,
-        transparent 13%),
-    radial-gradient(circle at 35% 30%,
-        #d6d0bc,
-        #8d938e 35%,
-        #424b53 75%,
-        #111820 100%);
-
-    box-shadow:
-    inset -22px -12px 30px #080b11,
-    inset 7px 5px 15px rgba(255,255,255,.4),
-    0 0 35px rgba(190,190,190,.15);
-}
-
-/* SATURN */
-
-.planet.ring {
-    width: 105px;
-    height: 105px;
-    top: 43%;
-    left: 8%;
-
-    background:
-    radial-gradient(ellipse at 35% 25%,
-        #e7d5ad 0%,
-        #b49a73 25%,
-        #806c52 55%,
-        #29231e 100%);
-
-    box-shadow:
-    inset -20px -12px 25px #100e0d,
-    inset 8px 5px 15px rgba(255,255,255,.3),
-    0 0 30px rgba(210,190,160,.18);
-}
-
-/* SATURN RINGS */
-
-.planet.ring::before {
-    content: "";
-    position: absolute;
-
-    width: 185px;
-    height: 53px;
-
-    left: -40px;
-    top: 25px;
-
-    border-radius: 50%;
-
-    background:
-    repeating-linear-gradient(
-        180deg,
-        #b7a78d 0px,
-        #d7c5a5 3px,
-        #746754 6px,
-        #e1d1b4 9px,
-        #8e806c 12px
-    );
-
-    transform: rotate(-20deg);
-
-    box-shadow: 0 0 12px rgba(230,213,184,.15);
-
-    z-index: -1;
-}
-
-/* SATURN SHADOW */
-
-.planet.ring::after {
-    content: "";
-    position: absolute;
-
-    width: 185px;
-    height: 53px;
-
-    left: -40px;
-    top: 25px;
-
-    border-radius: 50%;
-    border: 5px solid rgba(45,35,25,.5);
-
-    transform: rotate(-20deg);
-}
-
-/* SMALL ROCKY PLANET */
-
-.planet.two {
-    width: 58px;
-    height: 58px;
-    bottom: 23%;
-    left: 15%;
-
-    background:
-    radial-gradient(circle at 30% 25%,
-        #e0d0ba 0 4%,
-        transparent 5%),
-    radial-gradient(circle at 65% 55%,
-        #6d6259 0 10%,
-        transparent 11%),
-    radial-gradient(circle at 35% 40%,
-        #b9a58c,
-        #786d61 55%,
-        #262321 100%);
-
-    box-shadow:
-    inset -12px -8px 18px #090909,
-    inset 4px 3px 8px rgba(255,255,255,.35),
-    0 0 25px rgba(230,213,184,.13);
-
+        inset -12px -8px 18px #090909,
+        inset 4px 3px 8px rgba(255,255,255,.35),
+        0 0 25px rgba(230,213,184,.13);
     animation-delay: -5s;
 }
 
@@ -457,588 +218,473 @@ body {
     height: 38px;
     top: 68%;
     right: 27%;
-
     background:
-    radial-gradient(circle at 30% 25%,
-        #e5d7c6,
-        #8c7c73 45%,
-        #302c31 100%);
-
+        radial-gradient(circle at 30% 25%,
+            #e5d7c6, #8c7c73 45%, #302c31 100%);
     box-shadow:
-    inset -9px -7px 12px #111,
-    0 0 20px rgba(220,200,180,.2);
-
+        inset -9px -7px 12px #111,
+        0 0 20px rgba(220,200,180,.2);
     animation-delay: -9s;
 }
 
 @keyframes planetFloat {
-    from {
-        transform: translateY(0) rotate(-5deg);
-    }
-
-    to {
-        transform: translateY(-30px) rotate(8deg);
-    }
-}
-
-/* TRANSPARENT PRODUCT CARDS */
-
-.product {
-    background: rgba(35,36,38,.35) !important;
-
-    border: 1px solid rgba(230,213,184,.22);
-
-    backdrop-filter: blur(8px);
-
-    -webkit-backdrop-filter: blur(8px);
-
-    box-shadow: 0 8px 30px rgba(0,0,0,.12);
-
-    transition: .4s;
-}
-
-.product:hover {
-    background: rgba(70,65,57,.35) !important;
-
-    border-color: rgba(230,213,184,.65);
-
-    box-shadow:
-    0 0 20px rgba(230,213,184,.12),
-    0 10px 35px rgba(0,0,0,.2);
-
-    transform: translateY(-8px);
-}
-
-/* TRANSPARENT PRODUCT IMAGE */
-
-.product-image {
-    background: rgba(255,255,255,.025) !important;
-
-    backdrop-filter: blur(3px);
-
-    -webkit-backdrop-filter: blur(3px);
-}
-
-.product-image span {
-    background: rgba(230,213,184,.07);
-
-    border: 1px solid rgba(230,213,184,.15);
-
-    box-shadow: 0 0 25px rgba(230,213,184,.08);
-}
-
-.product-info {
-    background: rgba(20,20,20,.12);
-}
-
-
-/* TRANSPARENT PRODUCT CARDS */
-
-.product {
-    background: rgba(35,36,38,.35) !important;
-
-    border: 1px solid rgba(230,213,184,.22);
-
-    backdrop-filter: blur(8px);
-
-    -webkit-backdrop-filter: blur(8px);
-
-    box-shadow: 0 8px 30px rgba(0,0,0,.12);
-
-    transition: .4s;
-}
-
-.product:hover {
-    background: rgba(70,65,57,.35) !important;
-
-    border-color: rgba(230,213,184,.65);
-
-    box-shadow:
-    0 0 20px rgba(230,213,184,.12),
-    0 10px 35px rgba(0,0,0,.2);
-
-    transform: translateY(-8px);
-}
-
-/* TRANSPARENT PRODUCT IMAGE */
-
-.product-image {
-    background: rgba(255,255,255,.025) !important;
-
-    backdrop-filter: blur(3px);
-
-    -webkit-backdrop-filter: blur(3px);
-}
-
-.product-image span {
-    background: rgba(230,213,184,.07);
-
-    border: 1px solid rgba(230,213,184,.15);
-
-    box-shadow: 0 0 25px rgba(230,213,184,.08);
-}
-
-.product-info {
-    background: rgba(20,20,20,.12);
+    from { transform: translateY(0) rotate(-5deg); }
+    to { transform: translateY(-30px) rotate(8deg); }
 }
 
 /* SHOOTING STARS */
 
 .shooting-star {
-    position:absolute;
-    width:120px;
-    height:2px;
-    background:linear-gradient(90deg,transparent,#fff,#e6d5b8,transparent);
-    opacity:0;
-    transform:rotate(-35deg);
-    animation:shoot 7s linear infinite;
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,#fff,#e6d5b8,transparent);
+    opacity: 0;
+    transform: rotate(-35deg);
+    animation: shoot 7s linear infinite;
 }
 
 .shooting-star.one {
-    top:15%;
-    left:70%;
+    top: 15%;
+    left: 70%;
 }
 
 .shooting-star.two {
-    top:55%;
-    left:30%;
-    animation-delay:3s;
+    top: 55%;
+    left: 30%;
+    animation-delay: 3s;
 }
 
 @keyframes shoot {
     0% {
-        opacity:0;
-        transform:translate(0,0) rotate(-35deg);
+        opacity: 0;
+        transform: translate(0,0) rotate(-35deg);
     }
-    5% {opacity:1;}
-    15% {opacity:0;}
+    5% { opacity: 1; }
+    15% { opacity: 0; }
     100% {
-        transform:translate(-400px,300px) rotate(-35deg);
-        opacity:0;
+        transform: translate(-400px,300px) rotate(-35deg);
+        opacity: 0;
     }
 }
-#universe {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -5;
-    pointer-events: none;
-}
+
 /* HEADER */
 
 header {
-    height:78px;
-    padding:0 7%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    background:rgba(25,25,25,.85);
-    backdrop-filter:blur(18px);
-
-    border-bottom:1px solid rgba(230,213,184,.15);
-
-    position:sticky;
-    top:0;
-    z-index:20;
+    height: 78px;
+    padding: 0 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(25,25,25,.85);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(230,213,184,.15);
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
 
 .logo {
-    font-size:30px;
-    font-weight:900;
-    letter-spacing:3px;
-    color:var(--beige);
-
-    text-shadow:0 0 18px rgba(230,213,184,.3);
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--beige);
+    text-shadow: 0 0 18px rgba(230,213,184,.3);
 }
 
 nav {
-    display:flex;
-    gap:30px;
+    display: flex;
+    gap: 30px;
 }
 
 nav a {
-    color:#ddd5c8;
-    text-decoration:none;
-    font-size:14px;
-    transition:.3s;
+    color: #ddd5c8;
+    text-decoration: none;
+    font-size: 14px;
+    transition: .3s;
 }
 
 nav a:hover {
-    color:var(--beige);
-    text-shadow:0 0 12px var(--beige);
+    color: var(--beige);
+    text-shadow: 0 0 12px var(--beige);
 }
 
 .cart {
-    background:var(--beige);
-    color:#252525;
-    border:0;
-    padding:13px 20px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:.3s;
+    background: var(--beige);
+    color: #252525;
+    border: 0;
+    padding: 13px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: .3s;
 }
 
 .cart:hover {
-    box-shadow:0 0 20px rgba(230,213,184,.3);
-    transform:translateY(-3px);
+    box-shadow: 0 0 20px rgba(230,213,184,.3);
+    transform: translateY(-3px);
 }
 
 /* HERO */
 
 .hero {
-    min-height:440px;
-    display:flex;
-    align-items:center;
-    padding:70px 9%;
-    position:relative;
+    min-height: 440px;
+    display: flex;
+    align-items: center;
+    padding: 70px 9%;
+    position: relative;
+    z-index: 1;
 }
 
 .hero-content {
-    max-width:570px;
-    z-index:2;
+    max-width: 570px;
+    z-index: 2;
 }
 
 .hero h1 {
-    font-size:58px;
-    color:#f4eee3;
-    margin-bottom:20px;
+    font-size: 58px;
+    color: #f4eee3;
+    margin-bottom: 20px;
 }
 
 .hero h1 span {
-    color:var(--beige);
-    text-shadow:0 0 25px rgba(230,213,184,.4);
+    color: var(--beige);
+    text-shadow: 0 0 25px rgba(230,213,184,.4);
 }
 
 .hero p {
-    line-height:2;
-    color:#bcb8b1;
-    margin-bottom:28px;
-    font-size:16px;
+    line-height: 2;
+    color: #bcb8b1;
+    margin-bottom: 28px;
+    font-size: 16px;
 }
 
 .main-btn {
-    padding:15px 35px;
-    background:var(--beige);
-    color:#292929;
-    border:0;
-    border-radius:10px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:.3s;
+    padding: 15px 35px;
+    background: var(--beige);
+    color: #292929;
+    border: 0;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
 }
 
 .main-btn:hover {
-    box-shadow:0 0 25px rgba(230,213,184,.4);
-    transform:scale(1.05);
+    box-shadow: 0 0 25px rgba(230,213,184,.4);
+    transform: scale(1.05);
 }
 
 /* SECTIONS */
 
 .section {
-    padding:60px 7%;
+    padding: 60px 7%;
+    position: relative;
+    z-index: 1;
 }
 
 .section-title {
-    font-size:30px;
-    margin-bottom:30px;
-    color:#f1e9db;
+    font-size: 30px;
+    margin-bottom: 30px;
+    color: #f1e9db;
 }
 
 .section-title span {
-    color:var(--beige);
+    color: var(--beige);
 }
 
 /* SEARCH */
 
 .search-box {
-    width:100%;
-    padding:16px 20px;
-    background:rgba(40,40,40,.85);
-    border:1px solid #55514a;
-    border-radius:12px;
-    color:white;
-    outline:none;
-    margin-bottom:25px;
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(40,40,40,.85);
+    border: 1px solid #55514a;
+    border-radius: 12px;
+    color: white;
+    outline: none;
+    margin-bottom: 25px;
 }
 
 .search-box:focus {
-    border-color:var(--beige);
-    box-shadow:0 0 15px rgba(230,213,184,.15);
+    border-color: var(--beige);
+    box-shadow: 0 0 15px rgba(230,213,184,.15);
 }
 
 /* CATEGORIES */
 
 .categories {
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    margin-bottom:35px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 35px;
 }
 
 .categories button {
-    background:#292a2c;
-    color:#ddd2bd;
-    border:1px solid #55514a;
-    padding:11px 23px;
-    border-radius:30px;
-    cursor:pointer;
-    transition:.3s;
+    background: #292a2c;
+    color: #ddd2bd;
+    border: 1px solid #55514a;
+    padding: 11px 23px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s;
 }
 
 .categories button.active,
 .categories button:hover {
-    background:var(--beige);
-    color:#292929;
-    border-color:var(--beige);
-    box-shadow:0 0 20px rgba(230,213,184,.25);
+    background: var(--beige);
+    color: #292929;
+    border-color: var(--beige);
+    box-shadow: 0 0 20px rgba(230,213,184,.25);
 }
 
 /* PRODUCTS */
 
 .products {
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:22px;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 22px;
 }
 
 .product {
-    background:rgba(42,43,44,.88);
-    border:1px solid rgba(230,213,184,.17);
-    border-radius:17px;
-    overflow:hidden;
-    transition:.35s;
-    backdrop-filter:blur(12px);
+    background: rgba(35,36,38,.35);
+    border: 1px solid rgba(230,213,184,.22);
+    border-radius: 17px;
+    overflow: hidden;
+    transition: .4s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 30px rgba(0,0,0,.12);
 }
 
 .product:hover {
-    transform:translateY(-7px);
-    border-color:var(--beige);
-    box-shadow:0 0 25px rgba(230,213,184,.13);
+    background: rgba(70,65,57,.35);
+    border-color: rgba(230,213,184,.65);
+    box-shadow:
+        0 0 20px rgba(230,213,184,.12),
+        0 10px 35px rgba(0,0,0,.2);
+    transform: translateY(-8px);
 }
 
-/* PRODUCT ICON */
+/* PRODUCT IMAGE */
 
 .product-image {
-    height:190px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:
-    radial-gradient(circle,
-    rgba(230,213,184,.12),
-    rgba(35,35,35,.3) 70%);
+    height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.025);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .product-image span {
-    display:flex;
-    width:105px;
-    height:105px;
-    align-items:center;
-    justify-content:center;
-    border-radius:50%;
-    background:rgba(230,213,184,.08);
-    font-size:60px;
-
-    box-shadow:0 0 20px rgba(230,213,184,.08);
-    transition:.4s;
+    display: flex;
+    width: 105px;
+    height: 105px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(230,213,184,.07);
+    border: 1px solid rgba(230,213,184,.15);
+    font-size: 60px;
+    box-shadow: 0 0 25px rgba(230,213,184,.08);
+    transition: .4s;
 }
 
 .product:hover .product-image span {
     box-shadow:
-    0 0 20px rgba(230,213,184,.25),
-    0 0 40px rgba(230,213,184,.12);
-
-    transform:scale(1.08);
+        0 0 20px rgba(230,213,184,.25),
+        0 0 40px rgba(230,213,184,.12);
+    transform: scale(1.08);
 }
 
 .product-info {
-    padding:20px;
+    padding: 20px;
+    background: rgba(20,20,20,.12);
 }
 
 .product-info h3 {
-    color:#f0e8dc;
-    font-size:17px;
-    margin-bottom:12px;
+    color: #f0e8dc;
+    font-size: 17px;
+    margin-bottom: 12px;
 }
 
 .price {
-    color:var(--beige);
-    font-size:20px;
-    font-weight:bold;
-    margin-bottom:17px;
+    color: var(--beige);
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 17px;
 }
 
 .add-btn {
-    width:100%;
-    padding:13px;
-    border:1px solid rgba(230,213,184,.3);
-    border-radius:9px;
-    background:rgba(230,213,184,.1);
-    color:var(--beige);
-    cursor:pointer;
-    font-weight:bold;
-    transition:.3s;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid rgba(230,213,184,.3);
+    border-radius: 9px;
+    background: rgba(230,213,184,.1);
+    color: var(--beige);
+    cursor: pointer;
+    font-weight: bold;
+    transition: .3s;
 }
 
 .add-btn:hover {
-    background:var(--beige);
-    color:#242424;
-    box-shadow:0 0 20px rgba(230,213,184,.3);
+    background: var(--beige);
+    color: #242424;
+    box-shadow: 0 0 20px rgba(230,213,184,.3);
 }
 
 /* CART */
 
 .cart-panel {
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.8);
-    backdrop-filter:blur(8px);
-    z-index:50;
-    justify-content:center;
-    align-items:center;
-    padding:15px;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.8);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
 }
 
 .cart-content {
-    background:#292a2c;
-    border:1px solid rgba(230,213,184,.25);
-    width:100%;
-    max-width:450px;
-    padding:25px;
-    border-radius:17px;
-    max-height:80vh;
-    overflow-y:auto;
+    background: #292a2c;
+    border: 1px solid rgba(230,213,184,.25);
+    width: 100%;
+    max-width: 450px;
+    padding: 25px;
+    border-radius: 17px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .cart-content h2 {
-    color:var(--beige);
-    margin-bottom:20px;
+    color: var(--beige);
+    margin-bottom: 20px;
 }
 
 .cart-item {
-    display:flex;
-    justify-content:space-between;
-    padding:15px 0;
-    border-bottom:1px solid #4a4945;
-    gap:10px;
-    color:white;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #4a4945;
+    gap: 10px;
+    color: white;
 }
 
 .remove-btn {
-    color:#e7a5a5;
-    background:none;
-    border:none;
-    cursor:pointer;
+    color: #e7a5a5;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 .close-btn {
-    background:var(--beige);
-    color:#292929;
-    border:0;
-    padding:13px;
-    border-radius:9px;
-    cursor:pointer;
-    margin-top:20px;
-    width:100%;
+    background: var(--beige);
+    color: #292929;
+    border: 0;
+    padding: 13px;
+    border-radius: 9px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
 }
 
 .total {
-    margin-top:20px;
-    color:var(--beige);
-    font-size:20px;
-    font-weight:bold;
+    margin-top: 20px;
+    color: var(--beige);
+    font-size: 20px;
+    font-weight: bold;
 }
 
 /* ABOUT */
 
 .about-box {
-    background:rgba(40,40,40,.8);
-    border:1px solid rgba(230,213,184,.15);
-    border-radius:15px;
-    padding:30px;
-    line-height:2;
-    color:#c5beb2;
+    background: rgba(40,40,40,.8);
+    border: 1px solid rgba(230,213,184,.15);
+    border-radius: 15px;
+    padding: 30px;
+    line-height: 2;
+    color: #c5beb2;
 }
 
 /* FOOTER */
 
 footer {
-    background:rgba(25,25,25,.9);
-    border-top:1px solid rgba(230,213,184,.15);
-    text-align:center;
-    padding:35px;
-    color:#bcb3a4;
-    margin-top:50px;
+    background: rgba(25,25,25,.9);
+    border-top: 1px solid rgba(230,213,184,.15);
+    text-align: center;
+    padding: 35px;
+    color: #bcb3a4;
+    margin-top: 50px;
+    position: relative;
+    z-index: 1;
 }
 
 /* MOBILE */
 
-@media(max-width:900px) {
+@media(max-width: 900px) {
     .products {
-        grid-template-columns:repeat(2,1fr);
+        grid-template-columns: repeat(2,1fr);
     }
 
     nav {
-        display:none;
+        display: none;
     }
 
     .hero h1 {
-        font-size:42px;
+        font-size: 42px;
     }
 
     .galaxy {
-        width:600px;
+        width: 600px;
     }
 }
 
-@media(max-width:450px) {
+@media(max-width: 450px) {
     header {
-        padding:0 5%;
+        padding: 0 5%;
     }
 
     .logo {
-        font-size:23px;
+        font-size: 23px;
     }
 
     .products {
-        gap:12px;
+        gap: 12px;
     }
 
     .product-image {
-        height:140px;
+        height: 140px;
     }
 
     .product-info {
-        padding:12px;
+        padding: 12px;
     }
 
     .product-info h3 {
-        font-size:14px;
+        font-size: 14px;
     }
 
     .price {
-        font-size:16px;
+        font-size: 16px;
     }
 
     .hero {
-        padding:60px 6%;
+        padding: 60px 6%;
     }
 
     .hero h1 {
-        font-size:36px;
+        font-size: 36px;
     }
 
     .planet.one {
-        width:55px;
-        height:55px;
+        width: 55px;
+        height: 55px;
     }
 }
-
 </style>
 </head>
 
@@ -1049,7 +695,6 @@ footer {
 <canvas id="universe"></canvas>
 
 <div class="space">
-
     <div class="galaxy"></div>
 
     <div class="nebula one"></div>
@@ -1063,13 +708,11 @@ footer {
 
     <div class="shooting-star one"></div>
     <div class="shooting-star two"></div>
-
 </div>
 
 <!-- HEADER -->
 
 <header>
-
     <div class="logo">VOLT.</div>
 
     <nav>
@@ -1081,15 +724,12 @@ footer {
     <button class="cart" onclick="openCart()">
         🛒 السلة (<span id="cartCount">0</span>)
     </button>
-
 </header>
 
 <!-- HERO -->
 
 <section class="hero">
-
     <div class="hero-content">
-
         <h1>
             WELCOME TO
             <span>VOLT</span>
@@ -1102,18 +742,15 @@ footer {
         </p>
 
         <button class="main-btn"
-        onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+            onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
             اكتشف المنتجات
         </button>
-
     </div>
-
 </section>
 
 <!-- PRODUCTS -->
 
 <section class="section" id="products">
-
     <h2 class="section-title">
         اكتشف <span>منتجاتنا</span>
     </h2>
@@ -1123,13 +760,10 @@ footer {
         class="search-box"
         id="search"
         placeholder="ابحث عن منتج..."
-        oninput="renderProducts()"
     >
 
     <div class="categories">
-
-        <button class="active"
-        onclick="filterCategory('الكل',this)">
+        <button class="active" onclick="filterCategory('الكل',this)">
             الكل
         </button>
 
@@ -1144,17 +778,14 @@ footer {
         <button onclick="filterCategory('موبايل',this)">
             موبايل
         </button>
-
     </div>
 
     <div class="products" id="productsContainer"></div>
-
 </section>
 
 <!-- ABOUT -->
 
 <section class="section" id="about">
-
     <h2 class="section-title">
         ABOUT <span>VOLT</span>
     </h2>
@@ -1164,15 +795,12 @@ footer {
         والإكسسوارات المميزة، بتجربة تسوق تجمع بين
         البساطة والأناقة.
     </div>
-
 </section>
 
 <!-- CART -->
 
 <div class="cart-panel" id="cartPanel">
-
     <div class="cart-content">
-
         <h2>سلة المشتريات 🛒</h2>
 
         <div id="cartItems"></div>
@@ -1186,172 +814,191 @@ footer {
         <button class="close-btn" onclick="closeCart()">
             إغلاق
         </button>
-
     </div>
-
 </div>
 
 <footer>
-    © 2026 VOLT STORE - جميع الحقوق محفوظة
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    ©️ 2026 VOLT STORE - جميع الحقوق محفوظة
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
-/* SUPABASE CONNECTION */
+/* =========================
+   SUPABASE CONNECTION
+========================= */
 
 const SUPABASE_URL = "https://qzmbylngwrhccjwlxpgl.supabase.co";
-
 const SUPABASE_KEY = "sb_publishable_DoCrCtcU_VFMsfxRw3Kqgg_1IFc6CoD";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+let supabaseClient = null;
 
-console.log("VOLT STORE: Supabase connected");
+if (window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+    console.log("VOLT: Supabase initialized successfully");
+} else {
+    console.error("VOLT: Supabase library did not load");
+}
 
-
-
-/* STAR ANIMATION */
+/* =========================
+   STAR ANIMATION
+========================= */
 
 const canvas = document.getElementById("universe");
-const ctx = canvas.getContext("2d");
+const ctx = canvas ? canvas.getContext("2d") : null;
 
 let stars = [];
 
 function resizeCanvas() {
+    if (!canvas || !ctx) return;
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     stars = [];
 
-    for(let i=0; i<180; i++) {
+    for (let i = 0; i < 180; i++) {
         stars.push({
-            x:Math.random()*canvas.width,
-            y:Math.random()*canvas.height,
-            size:Math.random()*1.8+.3,
-            speed:Math.random()*.35+.08,
-            opacity:Math.random()
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 1.8 + 0.3,
+            speed: Math.random() * 0.35 + 0.08,
+            opacity: Math.random()
         });
     }
 }
 
-window.addEventListener("resize",resizeCanvas);
-resizeCanvas();
-
 function animateStars() {
+    if (!canvas || !ctx) return;
 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     stars.forEach(star => {
-
         star.y += star.speed;
 
-        if(star.y > canvas.height) {
+        if (star.y > canvas.height) {
             star.y = 0;
-            star.x = Math.random()*canvas.width;
+            star.x = Math.random() * canvas.width;
         }
 
-        star.opacity += (Math.random()-.5)*.04;
-        star.opacity = Math.max(.2,Math.min(1,star.opacity));
+        star.opacity += (Math.random() - 0.5) * 0.04;
+        star.opacity = Math.max(0.2, Math.min(1, star.opacity));
 
         ctx.beginPath();
-
         ctx.arc(
             star.x,
             star.y,
             star.size,
             0,
-            Math.PI*2
+            Math.PI * 2
         );
 
         ctx.fillStyle = `rgba(245,231,208,${star.opacity})`;
-
         ctx.shadowBlur = 8;
         ctx.shadowColor = "#e6d5b8";
-
         ctx.fill();
-
     });
 
     ctx.shadowBlur = 0;
-
     requestAnimationFrame(animateStars);
 }
 
+window.addEventListener("resize", resizeCanvas);
+
+resizeCanvas();
 animateStars();
 
-/* PRODUCTS */
-
-/* PRODUCTS - SUPABASE */
+/* =========================
+   PRODUCTS
+========================= */
 
 let products = [];
 let cart = [];
 let currentCategory = "الكل";
 
-/* LOAD PRODUCTS */
+/* LOAD PRODUCTS FROM DATABASE */
 
 async function loadProducts() {
-
     const container = document.getElementById("productsContainer");
 
     container.innerHTML = "<p>جاري تحميل المنتجات...</p>";
 
-    const { data, error } = await supabaseClient
-        .from("products")
-        .select("id,name,description,price,category,image_url,active")
-        .eq("active", true);
-
-    if (error) {
-        console.error("Supabase error:", error.message);
-        container.innerHTML = "<p>تعذر تحميل المنتجات. حاول تحديث الصفحة.</p>";
+    if (!supabaseClient) {
+        container.innerHTML =
+            "<p>تعذر الاتصال بقاعدة البيانات. حاول تحديث الصفحة.</p>";
         return;
     }
 
-    products = (data || []).map(p => ({
-        ...p,
-        icon:
-            p.category === "ساعات" ? "⌚" :
-            p.category === "إكسسوارات" ? "📿" :
-            p.category === "موبايل" ? "📱" : "🛍️"
-    }));
+    try {
+        const { data, error } = await supabaseClient
+            .from("products")
+            .select("*");
 
-    renderProducts();
+        if (error) {
+            console.error("VOLT DATABASE ERROR:", error);
+            container.innerHTML =
+                "<p>حدث خطأ أثناء تحميل المنتجات.</p>";
+            return;
+        }
+
+        products = (data || [])
+            .filter(product => product.active !== false)
+            .map(product => ({
+                ...product,
+                icon:
+                    product.category === "ساعات" ? "⌚" :
+                    product.category === "إكسسوارات" ? "📿" :
+                    product.category === "موبايل" ? "📱" : "🛍️"
+            }));
+
+        console.log("VOLT PRODUCTS:", products);
+
+        renderProducts();
+
+    } catch (error) {
+        console.error("VOLT UNEXPECTED ERROR:", error);
+
+        container.innerHTML =
+            "<p>تعذر تحميل المنتجات. حاول مرة أخرى.</p>";
+    }
 }
 
-/* RENDER PRODUCTS */
+/* DISPLAY PRODUCTS */
 
 function renderProducts() {
-
     const container = document.getElementById("productsContainer");
-    const search = document.getElementById("search").value.toLowerCase();
+    const search = document.getElementById("search").value
+        .trim()
+        .toLowerCase();
 
     container.innerHTML = "";
 
-    const filtered = products.filter(p => {
+    const filteredProducts = products.filter(product => {
+        const productName = String(product.name || "").toLowerCase();
 
         return (
-            (currentCategory === "الكل" || p.category === currentCategory) &&
-            p.name.toLowerCase().includes(search)
+            (currentCategory === "الكل" ||
+             product.category === currentCategory) &&
+            productName.includes(search)
         );
-
     });
 
-    if (filtered.length === 0) {
-        container.innerHTML = "<p>لا توجد منتجات مطابقة للبحث.</p>";
+    if (filteredProducts.length === 0) {
+        container.innerHTML =
+            "<p>لا توجد منتجات مطابقة للبحث.</p>";
         return;
     }
 
-    filtered.forEach(p => {
-
-        const imageContent = p.image_url
-            ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;">`
-            : `<span>${p.icon}</span>`;
+    filteredProducts.forEach(product => {
+        const imageContent = product.image_url
+            ? `<img src="${product.image_url}"
+                    alt="صورة المنتج"
+                    style="width:100%;height:100%;object-fit:contain;">`
+            : `<span>${product.icon}</span>`;
 
         container.innerHTML += `
-
             <div class="product">
 
                 <div class="product-image">
@@ -1360,72 +1007,87 @@ function renderProducts() {
 
                 <div class="product-info">
 
-                    <h3>${p.name}</h3>
+                    <h3>${product.name}</h3>
 
                     <div class="price">
-                        ${p.price} جنيه
+                        ${product.price} جنيه
                     </div>
 
                     <button class="add-btn"
-                    onclick="addToCart('${p.id}')">
+                        onclick="addToCart('${product.id}')">
                         أضف إلى السلة +
                     </button>
 
                 </div>
-
             </div>
-
         `;
-
     });
-
 }
 
-/* CATEGORY FILTER */
+/* =========================
+   SEARCH
+========================= */
+
+document.getElementById("search").addEventListener(
+    "input",
+    renderProducts
+);
+
+/* =========================
+   CATEGORY FILTER
+========================= */
 
 function filterCategory(category, button) {
-
     currentCategory = category;
 
     document.querySelectorAll(".categories button")
-        .forEach(b => b.classList.remove("active"));
+        .forEach(item => {
+            item.classList.remove("active");
+        });
 
     button.classList.add("active");
 
     renderProducts();
-
 }
 
-/* ADD TO CART */
+/* =========================
+   ADD TO CART
+========================= */
 
 function addToCart(id) {
-
-    const product = products.find(p => String(p.id) === String(id));
+    const product = products.find(
+        item => String(item.id) === String(id)
+    );
 
     if (!product) return;
 
-    const existing = cart.find(p => String(p.id) === String(id));
+    const existingProduct = cart.find(
+        item => String(item.id) === String(id)
+    );
 
-    if (existing) {
-        existing.quantity++;
+    if (existingProduct) {
+        existingProduct.quantity++;
     } else {
-        cart.push({...product, quantity: 1});
+        cart.push({
+            ...product,
+            quantity: 1
+        });
     }
 
     updateCart();
-
 }
 
-/* UPDATE CART */
+/* =========================
+   UPDATE CART
+========================= */
 
 function updateCart() {
-
     let count = 0;
     let total = 0;
 
-    cart.forEach(p => {
-        count += p.quantity;
-        total += Number(p.price) * p.quantity;
+    cart.forEach(product => {
+        count += product.quantity;
+        total += Number(product.price) * product.quantity;
     });
 
     document.getElementById("cartCount").innerText = count;
@@ -1434,119 +1096,47 @@ function updateCart() {
     const items = document.getElementById("cartItems");
 
     items.innerHTML = "";
-
-    cart.forEach(p => {
-
-        items.innerHTML += `
-
-            <div class="cart-item">
-
-                <div>
-                    ${p.name}
-                    <br>
-                    ${p.price} × ${p.quantity}
-                </div>
-
-                <button class="remove-btn"
-                onclick="removeFromCart('${p.id}')">
-                    حذف
-                </button>
-
-            </div>
-
-        `;
-
-    });
 
     if (cart.length === 0) {
         items.innerHTML = "<p>السلة فارغة حالياً</p>";
+        return;
     }
 
-}
-
-/* REMOVE FROM CART */
-
-function removeFromCart(id) {
-
-    cart = cart.filter(p => String(p.id) !== String(id));
-
-    updateCart();
-
-}
-
-/* OPEN AND CLOSE CART */
-
-function openCart() {
-
-    document.getElementById("cartPanel").style.display = "flex";
-
-}
-
-function closeCart() {
-
-    document.getElementById("cartPanel").style.display = "none";
-
-}
-
-/* START */
-
-loadProducts();
-updateCart();
-
-}
-
-function updateCart() {
-
-    let count = 0;
-    let total = 0;
-
-    cart.forEach(p => {
-        count += p.quantity;
-        total += p.price*p.quantity;
-    });
-
-    document.getElementById("cartCount").innerText = count;
-    document.getElementById("total").innerText = total;
-
-    const items = document.getElementById("cartItems");
-
-    items.innerHTML = "";
-
-    cart.forEach(p => {
-
+    cart.forEach(product => {
         items.innerHTML += `
-
             <div class="cart-item">
 
                 <div>
-                    ${p.name}
+                    ${product.name}
                     <br>
-                    ${p.price} × ${p.quantity}
+                    ${product.price} × ${product.quantity}
                 </div>
 
                 <button class="remove-btn"
-                onclick="removeFromCart(${p.id})">
+                    onclick="removeFromCart('${product.id}')">
                     حذف
                 </button>
 
             </div>
-
         `;
-
     });
-
-    if(cart.length === 0) {
-        items.innerHTML = "<p>السلة فارغة حالياً</p>";
-    }
-
 }
+
+/* =========================
+   REMOVE FROM CART
+========================= */
 
 function removeFromCart(id) {
+    cart = cart.filter(
+        product => String(product.id) !== String(id)
+    );
 
-    cart = cart.filter(p => p.id !== id);
     updateCart();
-
 }
+
+/* =========================
+   OPEN AND CLOSE CART
+========================= */
 
 function openCart() {
     document.getElementById("cartPanel").style.display = "flex";
@@ -1556,8 +1146,12 @@ function closeCart() {
     document.getElementById("cartPanel").style.display = "none";
 }
 
-renderProducts();
+/* =========================
+   START WEBSITE
+========================= */
+
 updateCart();
+loadProducts();
 
 </script>
 
