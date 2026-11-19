@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>VOLT STORE</title>
 
 <style>
+
+/* =========================
+   GENERAL
+========================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -13,436 +20,1171 @@
     font-family: Arial, sans-serif;
 }
 
-body {
-    background: #101010;
-    color: white;
+:root {
+    --main: #a78bfa;
+    --light: #d8c9ff;
+    --dark: #f7f5ff;
+    --white: #ffffff;
+    --text: #29213c;
+    --muted: #77718a;
 }
 
+body {
+    background: #f7f5ff;
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+/* =========================
+   SPACE BACKGROUND
+========================= */
+
+.space-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 15% 20%,
+        rgba(191, 165, 255, .40), transparent 40%),
+
+        radial-gradient(ellipse at 85% 65%,
+        rgba(220, 205, 255, .55), transparent 45%),
+
+        linear-gradient(135deg,
+        #ffffff, #f0eaff, #faf8ff);
+}
+
+/* Stars */
+
+.stars {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(2px 2px at 20px 30px,
+        #a78bfa 100%, transparent),
+
+        radial-gradient(2px 2px at 150px 80px,
+        #ffffff 100%, transparent),
+
+        radial-gradient(1px 1px at 250px 150px,
+        #9873e8 100%, transparent),
+
+        radial-gradient(2px 2px at 350px 40px,
+        #ffffff 100%, transparent),
+
+        radial-gradient(1px 1px at 450px 190px,
+        #a78bfa 100%, transparent);
+
+    background-size: 500px 250px;
+
+    animation: starsMove 35s linear infinite;
+
+    opacity: .65;
+}
+
+@keyframes starsMove {
+
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(250px);
+    }
+
+}
+
+/* Clouds */
+
+.cloud {
+    position: absolute;
+
+    width: 350px;
+    height: 200px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(ellipse,
+        rgba(167,139,250,.28),
+        rgba(255,255,255,.15),
+        transparent 70%);
+
+    filter: blur(35px);
+
+    animation: cloudMove 18s ease-in-out infinite alternate;
+}
+
+.cloud.one {
+    top: 10%;
+    right: -100px;
+}
+
+.cloud.two {
+    top: 45%;
+    left: -100px;
+
+    animation-delay: -5s;
+}
+
+.cloud.three {
+    bottom: 5%;
+    right: 30%;
+
+    animation-delay: -9s;
+}
+
+@keyframes cloudMove {
+
+    from {
+        transform: translate(0,0) scale(1);
+    }
+
+    to {
+        transform: translate(100px,40px) scale(1.3);
+    }
+
+}
+
+/* =========================
+   HEADER
+========================= */
+
 header {
-    height: 75px;
+
+    height: 80px;
+
     padding: 0 7%;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
-    background: #181818;
-    border-bottom: 1px solid #292929;
+
+    background: rgba(255,255,255,.75);
+
+    backdrop-filter: blur(15px);
+
+    border-bottom: 1px solid rgba(167,139,250,.2);
+
     position: sticky;
+
     top: 0;
-    z-index: 10;
+
+    z-index: 20;
 }
 
 .logo {
-    font-size: 27px;
-    font-weight: bold;
-    color: #ff7b00;
-    letter-spacing: 2px;
+
+    font-size: 30px;
+
+    font-weight: 900;
+
+    letter-spacing: 3px;
+
+    color: #8b5cf6;
+
+    text-shadow: 0 0 15px rgba(167,139,250,.35);
+
 }
 
 nav {
+
     display: flex;
-    gap: 25px;
+
+    gap: 30px;
+
 }
 
 nav a {
-    color: white;
+
     text-decoration: none;
+
+    color: #51466d;
+
     font-size: 14px;
+
+    transition: .3s;
+
 }
 
 nav a:hover {
-    color: #ff7b00;
+
+    color: #9b70f5;
+
+    text-shadow: 0 0 10px #c4b5fd;
+
 }
 
 .cart {
-    background: #ff7b00;
-    color: black;
+
+    background: linear-gradient(135deg,
+    #a78bfa,#c4b5fd);
+
+    color: white;
+
     border: none;
-    padding: 11px 18px;
-    border-radius: 8px;
+
+    padding: 13px 20px;
+
+    border-radius: 12px;
+
     cursor: pointer;
-    font-weight: bold;
+
+    box-shadow: 0 5px 20px rgba(167,139,250,.25);
+
+    transition: .3s;
+
 }
 
+.cart:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 25px rgba(167,139,250,.45);
+
+}
+
+/* =========================
+   HERO
+========================= */
+
 .hero {
-    min-height: 390px;
-    padding: 70px 8%;
+
+    min-height: 430px;
+
     display: flex;
+
     align-items: center;
-    background: linear-gradient(110deg, #171717, #292018);
+
+    padding: 70px 9%;
+
+    position: relative;
+
+    overflow: hidden;
+
 }
 
 .hero-content {
+
     max-width: 550px;
+
+    z-index: 2;
+
 }
 
 .hero h1 {
-    font-size: 48px;
+
+    font-size: 58px;
+
+    color: #554477;
+
     margin-bottom: 20px;
+
 }
 
 .hero h1 span {
-    color: #ff7b00;
+
+    color: #9b72f4;
+
+    text-shadow: 0 0 25px rgba(167,139,250,.35);
+
 }
 
 .hero p {
-    color: #aaa;
-    line-height: 1.9;
+
+    line-height: 2;
+
+    color: #77718a;
+
     margin-bottom: 25px;
+
+    font-size: 16px;
+
 }
 
 .main-btn {
-    background: #ff7b00;
-    color: black;
+
+    padding: 15px 35px;
+
+    background: linear-gradient(135deg,
+    #a78bfa,#c4b5fd);
+
     border: none;
-    padding: 14px 28px;
-    border-radius: 7px;
-    font-weight: bold;
+
+    color: white;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
     cursor: pointer;
+
+    box-shadow: 0 5px 25px rgba(167,139,250,.35);
+
+    transition: .3s;
+
 }
 
+.main-btn:hover {
+
+    transform: scale(1.06);
+
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
 .section {
-    padding: 55px 7%;
+
+    padding: 60px 7%;
+
 }
 
 .section-title {
-    font-size: 27px;
-    margin-bottom: 25px;
+
+    font-size: 30px;
+
+    margin-bottom: 30px;
+
+    color: #554477;
+
 }
 
 .section-title span {
-    color: #ff7b00;
+
+    color: #a78bfa;
+
 }
+
+/* =========================
+   SEARCH
+========================= */
 
 .search-box {
+
     width: 100%;
-    padding: 15px;
-    background: #202020;
-    border: 1px solid #333;
-    color: white;
-    border-radius: 8px;
-    margin-bottom: 25px;
+
+    padding: 16px 20px;
+
+    background: rgba(255,255,255,.8);
+
+    border: 1px solid #e3d8ff;
+
+    border-radius: 15px;
+
     outline: none;
+
+    color: #554477;
+
+    margin-bottom: 25px;
+
+    box-shadow: 0 5px 20px rgba(167,139,250,.07);
+
 }
 
+.search-box:focus {
+
+    border-color: #a78bfa;
+
+    box-shadow: 0 0 20px rgba(167,139,250,.2);
+
+}
+
+/* =========================
+   CATEGORIES
+========================= */
+
 .categories {
+
     display: flex;
-    gap: 12px;
+
     flex-wrap: wrap;
-    margin-bottom: 30px;
+
+    gap: 12px;
+
+    margin-bottom: 35px;
+
 }
 
 .categories button {
-    padding: 10px 20px;
-    background: #222;
-    color: white;
-    border: 1px solid #333;
-    border-radius: 20px;
+
+    background: rgba(255,255,255,.8);
+
+    border: 1px solid #e5dcff;
+
+    color: #786995;
+
+    padding: 11px 23px;
+
+    border-radius: 30px;
+
     cursor: pointer;
+
+    transition: .3s;
+
 }
 
-.categories button.active,
-.categories button:hover {
-    background: #ff7b00;
-    color: black;
+.categories button:hover,
+.categories button.active {
+
+    background: #a78bfa;
+
+    color: white;
+
+    box-shadow: 0 0 18px rgba(167,139,250,.45);
+
+    border-color: transparent;
+
 }
+
+/* =========================
+   PRODUCTS
+========================= */
 
 .products {
+
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+
+    grid-template-columns: repeat(4,1fr);
+
+    gap: 22px;
+
 }
 
 .product {
-    background: #1c1c1c;
-    border-radius: 12px;
+
+    background: rgba(255,255,255,.78);
+
+    border: 1px solid rgba(196,181,253,.4);
+
+    border-radius: 20px;
+
     overflow: hidden;
-    border: 1px solid #292929;
-    transition: .3s;
+
+    transition: .35s;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 8px 25px rgba(103,80,150,.06);
+
 }
 
 .product:hover {
-    transform: translateY(-5px);
-    border-color: #ff7b00;
+
+    transform: translateY(-8px);
+
+    border-color: #bda8ff;
+
+    box-shadow:
+    0 10px 30px rgba(167,139,250,.17),
+    0 0 20px rgba(196,181,253,.2);
+
 }
+
+/* PRODUCT ICON */
 
 .product-image {
+
     height: 190px;
-    background: #292929;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
+    background:
+    radial-gradient(circle,
+    rgba(196,181,253,.35),
+    rgba(255,255,255,.4) 65%);
+
     font-size: 65px;
+
+    position: relative;
+
+    transition: .3s;
+
 }
 
+.product:hover .product-image {
+
+    background:
+    radial-gradient(circle,
+    rgba(167,139,250,.3),
+    rgba(255,255,255,.5) 70%);
+
+}
+
+.product-image span {
+
+    display: flex;
+
+    width: 105px;
+
+    height: 105px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.7);
+
+    box-shadow: 0 0 20px rgba(167,139,250,.15);
+
+    transition: .4s;
+
+}
+
+.product:hover .product-image span {
+
+    box-shadow:
+    0 0 20px rgba(167,139,250,.35),
+    0 0 45px rgba(196,181,253,.3);
+
+    transform: scale(1.08);
+
+}
+
+/* PRODUCT INFO */
+
 .product-info {
-    padding: 18px;
+
+    padding: 20px;
+
 }
 
 .product-info h3 {
+
+    color: #554477;
+
+    font-size: 17px;
+
     margin-bottom: 12px;
+
 }
 
 .price {
-    color: #ff7b00;
-    font-size: 19px;
+
+    color: #9670ed;
+
+    font-size: 20px;
+
     font-weight: bold;
-    margin-bottom: 15px;
+
+    margin-bottom: 17px;
+
 }
 
 .add-btn {
+
     width: 100%;
-    background: #ff7b00;
+
+    padding: 13px;
+
     border: none;
-    padding: 12px;
-    border-radius: 6px;
+
+    border-radius: 10px;
+
+    background: #eee8ff;
+
+    color: #8663d6;
+
     cursor: pointer;
+
     font-weight: bold;
+
+    transition: .3s;
+
 }
 
 .add-btn:hover {
-    background: #ff9633;
+
+    background: #a78bfa;
+
+    color: white;
+
+    box-shadow: 0 0 20px rgba(167,139,250,.4);
+
 }
 
+/* =========================
+   CART
+========================= */
+
 .cart-panel {
+
     display: none;
+
     position: fixed;
+
     inset: 0;
-    background: #000b;
-    z-index: 20;
+
+    background: rgba(50,35,75,.3);
+
+    backdrop-filter: blur(7px);
+
+    z-index: 50;
+
     justify-content: center;
+
     align-items: center;
+
     padding: 15px;
+
 }
 
 .cart-content {
-    background: #202020;
+
+    background: white;
+
     width: 100%;
+
     max-width: 450px;
+
     padding: 25px;
-    border-radius: 12px;
+
+    border-radius: 20px;
+
     max-height: 80vh;
+
     overflow-y: auto;
+
+    box-shadow: 0 10px 50px rgba(100,70,150,.2);
+
 }
 
 .cart-content h2 {
+
+    color: #9874e9;
+
     margin-bottom: 20px;
-    color: #ff7b00;
+
 }
 
 .cart-item {
+
     display: flex;
+
     justify-content: space-between;
-    padding: 13px 0;
-    border-bottom: 1px solid #333;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eee8ff;
+
     gap: 10px;
+
+    color: #554477;
+
 }
 
 .remove-btn {
-    color: #ff5555;
+
+    color: #e879a9;
+
     background: none;
+
     border: none;
+
     cursor: pointer;
+
 }
 
 .close-btn {
-    background: #333;
+
+    background: #a78bfa;
+
     color: white;
+
     border: none;
-    padding: 12px;
-    border-radius: 6px;
+
+    padding: 13px;
+
+    border-radius: 10px;
+
     cursor: pointer;
-    margin-top: 15px;
+
+    margin-top: 20px;
+
     width: 100%;
+
 }
 
 .total {
+
     margin-top: 20px;
+
+    color: #8b5cf6;
+
     font-size: 20px;
+
+    font-weight: bold;
+
 }
+
+/* =========================
+   FOOTER
+========================= */
 
 footer {
-    background: #181818;
+
+    background: rgba(255,255,255,.75);
+
+    border-top: 1px solid #e8e0ff;
+
     text-align: center;
-    padding: 30px;
-    color: #888;
+
+    padding: 35px;
+
+    color: #8b7ba5;
+
     margin-top: 50px;
+
 }
 
-@media(max-width: 900px) {
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px) {
+
     .products {
-        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-columns: repeat(2,1fr);
+
     }
 
     nav {
+
         display: none;
+
     }
 
     .hero h1 {
-        font-size: 36px;
+
+        font-size: 42px;
+
     }
+
 }
 
-@media(max-width: 450px) {
+@media(max-width:450px) {
+
+    header {
+
+        padding: 0 5%;
+
+    }
+
+    .logo {
+
+        font-size: 23px;
+
+    }
+
     .products {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+
+        gap: 12px;
+
     }
 
     .product-image {
-        height: 130px;
-        font-size: 45px;
+
+        height: 140px;
+
     }
 
     .product-info {
+
         padding: 12px;
+
+    }
+
+    .product-info h3 {
+
+        font-size: 14px;
+
+    }
+
+    .price {
+
+        font-size: 16px;
+
     }
 
     .hero {
-        padding: 55px 6%;
+
+        padding: 60px 6%;
+
     }
+
+    .hero h1 {
+
+        font-size: 36px;
+
+    }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
+<!-- SPACE BACKGROUND -->
+
+<div class="space-background">
+
+    <div class="stars"></div>
+
+    <div class="cloud one"></div>
+
+    <div class="cloud two"></div>
+
+    <div class="cloud three"></div>
+
+</div>
+
+<!-- HEADER -->
+
 <header>
+
     <div class="logo">VOLT.</div>
 
     <nav>
+
         <a href="#">الرئيسية</a>
+
         <a href="#products">المنتجات</a>
+
         <a href="#about">من نحن</a>
+
     </nav>
 
     <button class="cart" onclick="openCart()">
-        🛒 السلة (<span id="cartCount">0</span>)
+
+        🛒 السلة
+
+        (<span id="cartCount">0</span>)
+
     </button>
+
 </header>
 
+<!-- HERO -->
+
 <section class="hero">
+
     <div class="hero-content">
-        <h1>WELCOME TO <span>VOLT</span></h1>
+
+        <h1>
+
+            WELCOME TO
+
+            <span>VOLT</span>
+
+        </h1>
+
         <p>
-            اكتشف مجموعتنا المميزة من المنتجات والإكسسوارات
-            بتصميم عصري وتجربة تسوق مختلفة.
+
+            اكتشف مجموعتنا المميزة من المنتجات
+
+            والإكسسوارات العصرية.
+
+            تجربة تسوق مختلفة بتصميم مستوحى من الفضاء.
+
         </p>
+
         <button class="main-btn"
-        onclick="document.getElementById('products').scrollIntoView()">
-            تسوق الآن
+
+        onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+
+            اكتشف المنتجات
+
         </button>
+
     </div>
+
 </section>
+
+<!-- PRODUCTS -->
 
 <section class="section" id="products">
 
-    <h2 class="section-title">اكتشف <span>منتجاتنا</span></h2>
+    <h2 class="section-title">
+
+        اكتشف <span>منتجاتنا</span>
+
+    </h2>
 
     <input
+
         type="text"
+
         class="search-box"
+
         id="search"
+
         placeholder="ابحث عن منتج..."
+
         oninput="renderProducts()"
+
     >
 
     <div class="categories">
-        <button class="active" onclick="filterCategory('الكل',this)">الكل</button>
-        <button onclick="filterCategory('ساعات',this)">ساعات</button>
-        <button onclick="filterCategory('إكسسوارات',this)">إكسسوارات</button>
-        <button onclick="filterCategory('موبايل',this)">موبايل</button>
+
+        <button class="active"
+
+        onclick="filterCategory('الكل',this)">
+
+            الكل
+
+        </button>
+
+        <button onclick="filterCategory('ساعات',this)">
+
+            ساعات
+
+        </button>
+
+        <button onclick="filterCategory('إكسسوارات',this)">
+
+            إكسسوارات
+
+        </button>
+
+        <button onclick="filterCategory('موبايل',this)">
+
+            موبايل
+
+        </button>
+
     </div>
 
     <div class="products" id="productsContainer"></div>
 
 </section>
 
+<!-- ABOUT -->
+
 <section class="section" id="about">
-    <h2 class="section-title">ABOUT <span>VOLT</span></h2>
-    <p style="color:#aaa;line-height:2">
-        VOLT STORE وجهتك لاكتشاف المنتجات العصرية
+
+    <h2 class="section-title">
+
+        ABOUT <span>VOLT</span>
+
+    </h2>
+
+    <p style="color:#77718a;line-height:2">
+
+        VOLT STORE
+
+        وجهتك لاكتشاف المنتجات العصرية
+
         والإكسسوارات المميزة.
+
     </p>
+
 </section>
 
+<!-- CART -->
+
 <div class="cart-panel" id="cartPanel">
+
     <div class="cart-content">
+
         <h2>سلة المشتريات 🛒</h2>
 
         <div id="cartItems"></div>
 
         <div class="total">
-            الإجمالي: <span id="total">0</span> جنيه
+
+            الإجمالي:
+
+            <span id="total">0</span>
+
+            جنيه
+
         </div>
 
         <button class="close-btn" onclick="closeCart()">
+
             إغلاق
+
         </button>
+
     </div>
+
 </div>
 
+<!-- FOOTER -->
+
 <footer>
-    © 2026 VOLT STORE - جميع الحقوق محفوظة
+
+    © 2026 VOLT STORE
+
+    جميع الحقوق محفوظة
+
 </footer>
 
 <script>
 
+/* PRODUCTS */
+
 const products = [
-    {id:1,name:"ساعة كلاسيك",price:850,category:"ساعات",icon:"⌚"},
-    {id:2,name:"ساعة رياضية",price:1200,category:"ساعات",icon:"⌚"},
-    {id:3,name:"سلسلة ستانلس",price:250,category:"إكسسوارات",icon:"📿"},
-    {id:4,name:"محفظة جلد",price:400,category:"إكسسوارات",icon:"👝"},
-    {id:5,name:"سماعة لاسلكية",price:650,category:"موبايل",icon:"🎧"},
-    {id:6,name:"جراب موبايل",price:180,category:"موبايل",icon:"📱"},
-    {id:7,name:"نظارة شمسية",price:350,category:"إكسسوارات",icon:"🕶️"},
-    {id:8,name:"سوار أنيق",price:220,category:"إكسسوارات",icon:"💍"}
+
+    {
+        id:1,
+        name:"ساعة كلاسيك",
+        price:850,
+        category:"ساعات",
+        icon:"⌚"
+    },
+
+    {
+        id:2,
+        name:"ساعة رياضية",
+        price:1200,
+        category:"ساعات",
+        icon:"⌚"
+    },
+
+    {
+        id:3,
+        name:"سلسلة ستانلس",
+        price:250,
+        category:"إكسسوارات",
+        icon:"📿"
+    },
+
+    {
+        id:4,
+        name:"محفظة جلد",
+        price:400,
+        category:"إكسسوارات",
+        icon:"👝"
+    },
+
+    {
+        id:5,
+        name:"سماعة لاسلكية",
+        price:650,
+        category:"موبايل",
+        icon:"🎧"
+    },
+
+    {
+        id:6,
+        name:"جراب موبايل",
+        price:180,
+        category:"موبايل",
+        icon:"📱"
+    },
+
+    {
+        id:7,
+        name:"نظارة شمسية",
+        price:350,
+        category:"إكسسوارات",
+        icon:"🕶️"
+    },
+
+    {
+        id:8,
+        name:"سوار أنيق",
+        price:220,
+        category:"إكسسوارات",
+        icon:"💍"
+    }
+
 ];
 
 let cart = [];
+
 let currentCategory = "الكل";
+
+/* DISPLAY PRODUCTS */
 
 function renderProducts() {
 
-    const container = document.getElementById("productsContainer");
-    const search = document.getElementById("search").value.toLowerCase();
+    const container =
+    document.getElementById("productsContainer");
+
+    const search =
+    document.getElementById("search").value.toLowerCase();
 
     container.innerHTML = "";
 
     const filtered = products.filter(p => {
+
         return (
-            (currentCategory === "الكل" || p.category === currentCategory)
-            && p.name.toLowerCase().includes(search)
+
+            (currentCategory === "الكل" ||
+            p.category === currentCategory)
+
+            &&
+
+            p.name.toLowerCase().includes(search)
+
         );
+
     });
 
     filtered.forEach(p => {
 
         container.innerHTML += `
+
             <div class="product">
-                <div class="product-image">${p.icon}</div>
+
+                <div class="product-image">
+
+                    <span>${p.icon}</span>
+
+                </div>
 
                 <div class="product-info">
+
                     <h3>${p.name}</h3>
 
-                    <div class="price">${p.price} جنيه</div>
+                    <div class="price">
+
+                        ${p.price} جنيه
+
+                    </div>
 
                     <button class="add-btn"
+
                     onclick="addToCart(${p.id})">
+
                         أضف إلى السلة +
+
                     </button>
+
                 </div>
+
             </div>
+
         `;
 
     });
 
 }
 
+/* FILTER */
+
 function filterCategory(category,button) {
 
     currentCategory = category;
 
     document.querySelectorAll(".categories button")
+
     .forEach(b => b.classList.remove("active"));
 
     button.classList.add("active");
@@ -451,6 +1193,8 @@ function filterCategory(category,button) {
 
 }
 
+/* ADD TO CART */
+
 function addToCart(id) {
 
     const product = products.find(p => p.id === id);
@@ -458,26 +1202,43 @@ function addToCart(id) {
     const existing = cart.find(p => p.id === id);
 
     if(existing) {
+
         existing.quantity++;
+
     } else {
-        cart.push({...product,quantity:1});
+
+        cart.push({
+
+            ...product,
+
+            quantity:1
+
+        });
+
     }
 
     updateCart();
 
 }
 
+/* UPDATE CART */
+
 function updateCart() {
 
     let count = 0;
+
     let total = 0;
 
     cart.forEach(p => {
+
         count += p.quantity;
+
         total += p.price * p.quantity;
+
     });
 
     document.getElementById("cartCount").innerText = count;
+
     document.getElementById("total").innerText = total;
 
     const items = document.getElementById("cartItems");
@@ -487,27 +1248,44 @@ function updateCart() {
     cart.forEach(p => {
 
         items.innerHTML += `
+
             <div class="cart-item">
+
                 <div>
+
                     ${p.name}
+
                     <br>
+
                     ${p.price} × ${p.quantity}
+
                 </div>
 
                 <button class="remove-btn"
+
                 onclick="removeFromCart(${p.id})">
+
                     حذف
+
                 </button>
+
             </div>
+
         `;
 
     });
 
     if(cart.length === 0) {
-        items.innerHTML = "<p>السلة فارغة حالياً</p>";
+
+        items.innerHTML =
+
+        "<p>السلة فارغة حالياً</p>";
+
     }
 
 }
+
+/* REMOVE */
 
 function removeFromCart(id) {
 
@@ -517,18 +1295,30 @@ function removeFromCart(id) {
 
 }
 
+/* OPEN CART */
+
 function openCart() {
+
     document.getElementById("cartPanel").style.display = "flex";
+
 }
+
+/* CLOSE CART */
 
 function closeCart() {
+
     document.getElementById("cartPanel").style.display = "none";
+
 }
 
+/* START */
+
 renderProducts();
+
 updateCart();
 
 </script>
 
 </body>
-</html>
+
+        </html>
