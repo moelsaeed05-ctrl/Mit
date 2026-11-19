@@ -939,7 +939,7 @@ async function loadProducts() {
         if (error) {
             console.error("VOLT DATABASE ERROR:", error);
             container.innerHTML =
-                "<p>حدث خطأ أثناء تحميل المنتجات.</p>";
+                "<p> خطأ قاعدة البيانات:"+ error.message + "</p>"
             return;
         }
 
