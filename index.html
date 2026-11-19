@@ -1,854 +1,871 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>VOLT STORE</title>
 
 <style>
-
-/* =========================
-   GENERAL
-========================= */
-
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
 :root {
-    --main: #a78bfa;
-    --light: #d8c9ff;
-    --dark: #f7f5ff;
-    --white: #ffffff;
-    --text: #29213c;
-    --muted: #77718a;
+    --beige:#e6d5b8;
+    --beige2:#cbb897;
+    --dark:#292a2c;
+    --gray:#3a3b3d;
+    --white:#f5f1e9;
 }
 
 body {
-    background: #f7f5ff;
-    color: var(--text);
-    overflow-x: hidden;
+    background:#030406;
+    color:var(--white);
+    overflow-x:hidden;
 }
 
-/* =========================
-   SPACE BACKGROUND
-========================= */
+/* SPACE BACKGROUND */
 
-.space-background {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
+#universe {
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:-5;
+    background:#030406;
+}
+
+.space {
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-4;
+    pointer-events:none;
+}
+
+/* GALAXY */
+
+.galaxy {
+    position:absolute;
+    width:850px;
+    height:500px;
+    top:15%;
+    left:10%;
+    border-radius:50%;
+
     background:
-        radial-gradient(ellipse at 15% 20%,
-        rgba(191, 165, 255, .40), transparent 40%),
+    radial-gradient(ellipse,
+    rgba(205,190,220,.15) 0%,
+    rgba(120,100,160,.12) 25%,
+    rgba(70,65,100,.10) 45%,
+    transparent 70%);
 
-        radial-gradient(ellipse at 85% 65%,
-        rgba(220, 205, 255, .55), transparent 45%),
+    filter:blur(25px);
 
-        linear-gradient(135deg,
-        #ffffff, #f0eaff, #faf8ff);
+    transform:rotate(-25deg);
+
+    animation:galaxyMove 25s ease-in-out infinite alternate;
 }
 
-/* Stars */
-
-.stars {
-    position: absolute;
-    inset: 0;
-
-    background-image:
-        radial-gradient(2px 2px at 20px 30px,
-        #a78bfa 100%, transparent),
-
-        radial-gradient(2px 2px at 150px 80px,
-        #ffffff 100%, transparent),
-
-        radial-gradient(1px 1px at 250px 150px,
-        #9873e8 100%, transparent),
-
-        radial-gradient(2px 2px at 350px 40px,
-        #ffffff 100%, transparent),
-
-        radial-gradient(1px 1px at 450px 190px,
-        #a78bfa 100%, transparent);
-
-    background-size: 500px 250px;
-
-    animation: starsMove 35s linear infinite;
-
-    opacity: .65;
-}
-
-@keyframes starsMove {
-
+@keyframes galaxyMove {
     from {
-        transform: translateY(0);
+        transform:rotate(-25deg) scale(1);
     }
-
     to {
-        transform: translateY(250px);
+        transform:rotate(-15deg) scale(1.2);
     }
-
 }
 
-/* Clouds */
+/* NEBULA CLOUDS */
 
-.cloud {
+.nebula {
+    position:absolute;
+    width:400px;
+    height:300px;
+    border-radius:50%;
+    filter:blur(65px);
+    opacity:.35;
+    animation:nebulaMove 20s infinite alternate ease-in-out;
+}
+
+.nebula.one {
+    background:#51426c;
+    top:10%;
+    right:-150px;
+}
+
+.nebula.two {
+    background:#8b7560;
+    bottom:5%;
+    left:-150px;
+    animation-delay:-7s;
+}
+
+.nebula.three {
+    background:#343b62;
+    top:50%;
+    left:40%;
+    animation-delay:-12s;
+}
+
+@keyframes nebulaMove {
+    from {
+        transform:translate(0,0);
+    }
+    to {
+        transform:translate(120px,70px) scale(1.3);
+    }
+}
+
+/* PLANETS */
+
+.planet {
+    position:absolute;
+    border-radius:50%;
+    animation:planetFloat 12s ease-in-out infinite alternate;
+}
+
+.planet.one {
+    width:90px;
+    height:90px;
+    top:18%;
+    right:12%;
+
+    background:
+    radial-gradient(circle at 30% 30%,
+    #d7c9b4,#8e8170 50%,#302b2b 85%);
+
+    box-shadow:
+    0 0 30px rgba(205,190,170,.15),
+    inset -12px -10px 20px #161616;
+}
+
+.planet.two {
+    width:48px;
+    height:48px;
+    bottom:25%;
+    left:12%;
+
+    background:
+    radial-gradient(circle at 30% 30%,
+    #c4b8a4,#746e69 70%,#252525);
+
+    box-shadow:0 0 25px rgba(230,213,184,.2);
+
+    animation-delay:-5s;
+}
+
+.planet.three {
+    width:30px;
+    height:30px;
+    top:65%;
+    right:25%;
+
+    background:
+    radial-gradient(circle at 30% 30%,
+    #d9c6a4,#746553);
+    animation-delay:-8s;
+}
+
+/* PLANET RING */
+
+```css
+/* REALISTIC PLANETS */
+
+.planet {
+    position: absolute;
+    border-radius: 50%;
+    overflow: visible;
+    animation: planetFloat 18s ease-in-out infinite alternate;
+    isolation: isolate;
+}
+
+/* EARTH-LIKE PLANET */
+
+.planet.one {
+    width: 115px;
+    height: 115px;
+    top: 15%;
+    right: 12%;
+
+    background:
+    radial-gradient(ellipse at 28% 25%,
+        rgba(255,255,255,.9),
+        transparent 12%),
+    radial-gradient(ellipse at 65% 35%,
+        #a8a18d 0 8%,
+        transparent 9%),
+    radial-gradient(ellipse at 30% 65%,
+        #777e75 0 12%,
+        transparent 13%),
+    radial-gradient(circle at 35% 30%,
+        #d6d0bc,
+        #8d938e 35%,
+        #424b53 75%,
+        #111820 100%);
+
+    box-shadow:
+    inset -22px -12px 30px #080b11,
+    inset 7px 5px 15px rgba(255,255,255,.4),
+    0 0 35px rgba(190,190,190,.15);
+}
+
+/* SATURN */
+
+.planet.ring {
+    width: 105px;
+    height: 105px;
+    top: 43%;
+    left: 8%;
+
+    background:
+    radial-gradient(ellipse at 35% 25%,
+        #e7d5ad 0%,
+        #b49a73 25%,
+        #806c52 55%,
+        #29231e 100%);
+
+    box-shadow:
+    inset -20px -12px 25px #100e0d,
+    inset 8px 5px 15px rgba(255,255,255,.3),
+    0 0 30px rgba(210,190,160,.18);
+}
+
+/* SATURN RINGS */
+
+.planet.ring::before {
+    content: "";
     position: absolute;
 
-    width: 350px;
-    height: 200px;
+    width: 185px;
+    height: 53px;
+
+    left: -40px;
+    top: 25px;
 
     border-radius: 50%;
 
     background:
-        radial-gradient(ellipse,
-        rgba(167,139,250,.28),
-        rgba(255,255,255,.15),
-        transparent 70%);
+    repeating-linear-gradient(
+        180deg,
+        #b7a78d 0px,
+        #d7c5a5 3px,
+        #746754 6px,
+        #e1d1b4 9px,
+        #8e806c 12px
+    );
 
-    filter: blur(35px);
+    transform: rotate(-20deg);
 
-    animation: cloudMove 18s ease-in-out infinite alternate;
+    box-shadow: 0 0 12px rgba(230,213,184,.15);
+
+    z-index: -1;
 }
 
-.cloud.one {
-    top: 10%;
-    right: -100px;
+/* SATURN SHADOW */
+
+.planet.ring::after {
+    content: "";
+    position: absolute;
+
+    width: 185px;
+    height: 53px;
+
+    left: -40px;
+    top: 25px;
+
+    border-radius: 50%;
+    border: 5px solid rgba(45,35,25,.5);
+
+    transform: rotate(-20deg);
 }
 
-.cloud.two {
-    top: 45%;
-    left: -100px;
+/* SMALL ROCKY PLANET */
+
+.planet.two {
+    width: 58px;
+    height: 58px;
+    bottom: 23%;
+    left: 15%;
+
+    background:
+    radial-gradient(circle at 30% 25%,
+        #e0d0ba 0 4%,
+        transparent 5%),
+    radial-gradient(circle at 65% 55%,
+        #6d6259 0 10%,
+        transparent 11%),
+    radial-gradient(circle at 35% 40%,
+        #b9a58c,
+        #786d61 55%,
+        #262321 100%);
+
+    box-shadow:
+    inset -12px -8px 18px #090909,
+    inset 4px 3px 8px rgba(255,255,255,.35),
+    0 0 25px rgba(230,213,184,.13);
 
     animation-delay: -5s;
 }
 
-.cloud.three {
-    bottom: 5%;
-    right: 30%;
+/* DISTANT PLANET */
+
+.planet.three {
+    width: 38px;
+    height: 38px;
+    top: 68%;
+    right: 27%;
+
+    background:
+    radial-gradient(circle at 30% 25%,
+        #e5d7c6,
+        #8c7c73 45%,
+        #302c31 100%);
+
+    box-shadow:
+    inset -9px -7px 12px #111,
+    0 0 20px rgba(220,200,180,.2);
 
     animation-delay: -9s;
 }
 
-@keyframes cloudMove {
-
+@keyframes planetFloat {
     from {
-        transform: translate(0,0) scale(1);
+        transform: translateY(0) rotate(-5deg);
     }
 
     to {
-        transform: translate(100px,40px) scale(1.3);
+        transform: translateY(-30px) rotate(8deg);
     }
-
 }
 
-/* =========================
-   HEADER
-========================= */
-
-header {
-
-    height: 80px;
-
-    padding: 0 7%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    background: rgba(255,255,255,.75);
-
-    backdrop-filter: blur(15px);
-
-    border-bottom: 1px solid rgba(167,139,250,.2);
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 20;
-}
-
-.logo {
-
-    font-size: 30px;
-
-    font-weight: 900;
-
-    letter-spacing: 3px;
-
-    color: #8b5cf6;
-
-    text-shadow: 0 0 15px rgba(167,139,250,.35);
-
-}
-
-nav {
-
-    display: flex;
-
-    gap: 30px;
-
-}
-
-nav a {
-
-    text-decoration: none;
-
-    color: #51466d;
-
-    font-size: 14px;
-
-    transition: .3s;
-
-}
-
-nav a:hover {
-
-    color: #9b70f5;
-
-    text-shadow: 0 0 10px #c4b5fd;
-
-}
-
-.cart {
-
-    background: linear-gradient(135deg,
-    #a78bfa,#c4b5fd);
-
-    color: white;
-
-    border: none;
-
-    padding: 13px 20px;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-
-    box-shadow: 0 5px 20px rgba(167,139,250,.25);
-
-    transition: .3s;
-
-}
-
-.cart:hover {
-
-    transform: translateY(-3px);
-
-    box-shadow: 0 8px 25px rgba(167,139,250,.45);
-
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero {
-
-    min-height: 430px;
-
-    display: flex;
-
-    align-items: center;
-
-    padding: 70px 9%;
-
-    position: relative;
-
-    overflow: hidden;
-
-}
-
-.hero-content {
-
-    max-width: 550px;
-
-    z-index: 2;
-
-}
-
-.hero h1 {
-
-    font-size: 58px;
-
-    color: #554477;
-
-    margin-bottom: 20px;
-
-}
-
-.hero h1 span {
-
-    color: #9b72f4;
-
-    text-shadow: 0 0 25px rgba(167,139,250,.35);
-
-}
-
-.hero p {
-
-    line-height: 2;
-
-    color: #77718a;
-
-    margin-bottom: 25px;
-
-    font-size: 16px;
-
-}
-
-.main-btn {
-
-    padding: 15px 35px;
-
-    background: linear-gradient(135deg,
-    #a78bfa,#c4b5fd);
-
-    border: none;
-
-    color: white;
-
-    border-radius: 12px;
-
-    font-size: 15px;
-
-    cursor: pointer;
-
-    box-shadow: 0 5px 25px rgba(167,139,250,.35);
-
-    transition: .3s;
-
-}
-
-.main-btn:hover {
-
-    transform: scale(1.06);
-
-}
-
-/* =========================
-   SECTIONS
-========================= */
-
-.section {
-
-    padding: 60px 7%;
-
-}
-
-.section-title {
-
-    font-size: 30px;
-
-    margin-bottom: 30px;
-
-    color: #554477;
-
-}
-
-.section-title span {
-
-    color: #a78bfa;
-
-}
-
-/* =========================
-   SEARCH
-========================= */
-
-.search-box {
-
-    width: 100%;
-
-    padding: 16px 20px;
-
-    background: rgba(255,255,255,.8);
-
-    border: 1px solid #e3d8ff;
-
-    border-radius: 15px;
-
-    outline: none;
-
-    color: #554477;
-
-    margin-bottom: 25px;
-
-    box-shadow: 0 5px 20px rgba(167,139,250,.07);
-
-}
-
-.search-box:focus {
-
-    border-color: #a78bfa;
-
-    box-shadow: 0 0 20px rgba(167,139,250,.2);
-
-}
-
-/* =========================
-   CATEGORIES
-========================= */
-
-.categories {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 12px;
-
-    margin-bottom: 35px;
-
-}
-
-.categories button {
-
-    background: rgba(255,255,255,.8);
-
-    border: 1px solid #e5dcff;
-
-    color: #786995;
-
-    padding: 11px 23px;
-
-    border-radius: 30px;
-
-    cursor: pointer;
-
-    transition: .3s;
-
-}
-
-.categories button:hover,
-.categories button.active {
-
-    background: #a78bfa;
-
-    color: white;
-
-    box-shadow: 0 0 18px rgba(167,139,250,.45);
-
-    border-color: transparent;
-
-}
-
-/* =========================
-   PRODUCTS
-========================= */
-
-.products {
-
-    display: grid;
-
-    grid-template-columns: repeat(4,1fr);
-
-    gap: 22px;
-
-}
+/* TRANSPARENT PRODUCT CARDS */
 
 .product {
+    background: rgba(35,36,38,.35) !important;
 
-    background: rgba(255,255,255,.78);
+    border: 1px solid rgba(230,213,184,.22);
 
-    border: 1px solid rgba(196,181,253,.4);
+    backdrop-filter: blur(8px);
 
-    border-radius: 20px;
+    -webkit-backdrop-filter: blur(8px);
 
-    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,.12);
 
-    transition: .35s;
-
-    backdrop-filter: blur(10px);
-
-    box-shadow: 0 8px 25px rgba(103,80,150,.06);
-
+    transition: .4s;
 }
 
 .product:hover {
+    background: rgba(70,65,57,.35) !important;
 
-    transform: translateY(-8px);
-
-    border-color: #bda8ff;
+    border-color: rgba(230,213,184,.65);
 
     box-shadow:
-    0 10px 30px rgba(167,139,250,.17),
-    0 0 20px rgba(196,181,253,.2);
+    0 0 20px rgba(230,213,184,.12),
+    0 10px 35px rgba(0,0,0,.2);
 
+    transform: translateY(-8px);
+}
+
+/* TRANSPARENT PRODUCT IMAGE */
+
+.product-image {
+    background: rgba(255,255,255,.025) !important;
+
+    backdrop-filter: blur(3px);
+
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.product-image span {
+    background: rgba(230,213,184,.07);
+
+    border: 1px solid rgba(230,213,184,.15);
+
+    box-shadow: 0 0 25px rgba(230,213,184,.08);
+}
+
+.product-info {
+    background: rgba(20,20,20,.12);
+}
+
+/* SHOOTING STARS */
+
+.shooting-star {
+    position:absolute;
+    width:120px;
+    height:2px;
+    background:linear-gradient(90deg,transparent,#fff,#e6d5b8,transparent);
+    opacity:0;
+    transform:rotate(-35deg);
+    animation:shoot 7s linear infinite;
+}
+
+.shooting-star.one {
+    top:15%;
+    left:70%;
+}
+
+.shooting-star.two {
+    top:55%;
+    left:30%;
+    animation-delay:3s;
+}
+
+@keyframes shoot {
+    0% {
+        opacity:0;
+        transform:translate(0,0) rotate(-35deg);
+    }
+    5% {opacity:1;}
+    15% {opacity:0;}
+    100% {
+        transform:translate(-400px,300px) rotate(-35deg);
+        opacity:0;
+    }
+}
+
+/* HEADER */
+
+header {
+    height:78px;
+    padding:0 7%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    background:rgba(25,25,25,.85);
+    backdrop-filter:blur(18px);
+
+    border-bottom:1px solid rgba(230,213,184,.15);
+
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo {
+    font-size:30px;
+    font-weight:900;
+    letter-spacing:3px;
+    color:var(--beige);
+
+    text-shadow:0 0 18px rgba(230,213,184,.3);
+}
+
+nav {
+    display:flex;
+    gap:30px;
+}
+
+nav a {
+    color:#ddd5c8;
+    text-decoration:none;
+    font-size:14px;
+    transition:.3s;
+}
+
+nav a:hover {
+    color:var(--beige);
+    text-shadow:0 0 12px var(--beige);
+}
+
+.cart {
+    background:var(--beige);
+    color:#252525;
+    border:0;
+    padding:13px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.cart:hover {
+    box-shadow:0 0 20px rgba(230,213,184,.3);
+    transform:translateY(-3px);
+}
+
+/* HERO */
+
+.hero {
+    min-height:440px;
+    display:flex;
+    align-items:center;
+    padding:70px 9%;
+    position:relative;
+}
+
+.hero-content {
+    max-width:570px;
+    z-index:2;
+}
+
+.hero h1 {
+    font-size:58px;
+    color:#f4eee3;
+    margin-bottom:20px;
+}
+
+.hero h1 span {
+    color:var(--beige);
+    text-shadow:0 0 25px rgba(230,213,184,.4);
+}
+
+.hero p {
+    line-height:2;
+    color:#bcb8b1;
+    margin-bottom:28px;
+    font-size:16px;
+}
+
+.main-btn {
+    padding:15px 35px;
+    background:var(--beige);
+    color:#292929;
+    border:0;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.main-btn:hover {
+    box-shadow:0 0 25px rgba(230,213,184,.4);
+    transform:scale(1.05);
+}
+
+/* SECTIONS */
+
+.section {
+    padding:60px 7%;
+}
+
+.section-title {
+    font-size:30px;
+    margin-bottom:30px;
+    color:#f1e9db;
+}
+
+.section-title span {
+    color:var(--beige);
+}
+
+/* SEARCH */
+
+.search-box {
+    width:100%;
+    padding:16px 20px;
+    background:rgba(40,40,40,.85);
+    border:1px solid #55514a;
+    border-radius:12px;
+    color:white;
+    outline:none;
+    margin-bottom:25px;
+}
+
+.search-box:focus {
+    border-color:var(--beige);
+    box-shadow:0 0 15px rgba(230,213,184,.15);
+}
+
+/* CATEGORIES */
+
+.categories {
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:35px;
+}
+
+.categories button {
+    background:#292a2c;
+    color:#ddd2bd;
+    border:1px solid #55514a;
+    padding:11px 23px;
+    border-radius:30px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.categories button.active,
+.categories button:hover {
+    background:var(--beige);
+    color:#292929;
+    border-color:var(--beige);
+    box-shadow:0 0 20px rgba(230,213,184,.25);
+}
+
+/* PRODUCTS */
+
+.products {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:22px;
+}
+
+.product {
+    background:rgba(42,43,44,.88);
+    border:1px solid rgba(230,213,184,.17);
+    border-radius:17px;
+    overflow:hidden;
+    transition:.35s;
+    backdrop-filter:blur(12px);
+}
+
+.product:hover {
+    transform:translateY(-7px);
+    border-color:var(--beige);
+    box-shadow:0 0 25px rgba(230,213,184,.13);
 }
 
 /* PRODUCT ICON */
 
 .product-image {
-
-    height: 190px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
+    height:190px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
     background:
     radial-gradient(circle,
-    rgba(196,181,253,.35),
-    rgba(255,255,255,.4) 65%);
-
-    font-size: 65px;
-
-    position: relative;
-
-    transition: .3s;
-
-}
-
-.product:hover .product-image {
-
-    background:
-    radial-gradient(circle,
-    rgba(167,139,250,.3),
-    rgba(255,255,255,.5) 70%);
-
+    rgba(230,213,184,.12),
+    rgba(35,35,35,.3) 70%);
 }
 
 .product-image span {
+    display:flex;
+    width:105px;
+    height:105px;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:rgba(230,213,184,.08);
+    font-size:60px;
 
-    display: flex;
-
-    width: 105px;
-
-    height: 105px;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,.7);
-
-    box-shadow: 0 0 20px rgba(167,139,250,.15);
-
-    transition: .4s;
-
+    box-shadow:0 0 20px rgba(230,213,184,.08);
+    transition:.4s;
 }
 
 .product:hover .product-image span {
-
     box-shadow:
-    0 0 20px rgba(167,139,250,.35),
-    0 0 45px rgba(196,181,253,.3);
+    0 0 20px rgba(230,213,184,.25),
+    0 0 40px rgba(230,213,184,.12);
 
-    transform: scale(1.08);
-
+    transform:scale(1.08);
 }
 
-/* PRODUCT INFO */
-
 .product-info {
-
-    padding: 20px;
-
+    padding:20px;
 }
 
 .product-info h3 {
-
-    color: #554477;
-
-    font-size: 17px;
-
-    margin-bottom: 12px;
-
+    color:#f0e8dc;
+    font-size:17px;
+    margin-bottom:12px;
 }
 
 .price {
-
-    color: #9670ed;
-
-    font-size: 20px;
-
-    font-weight: bold;
-
-    margin-bottom: 17px;
-
+    color:var(--beige);
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:17px;
 }
 
 .add-btn {
-
-    width: 100%;
-
-    padding: 13px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background: #eee8ff;
-
-    color: #8663d6;
-
-    cursor: pointer;
-
-    font-weight: bold;
-
-    transition: .3s;
-
+    width:100%;
+    padding:13px;
+    border:1px solid rgba(230,213,184,.3);
+    border-radius:9px;
+    background:rgba(230,213,184,.1);
+    color:var(--beige);
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
 }
 
 .add-btn:hover {
-
-    background: #a78bfa;
-
-    color: white;
-
-    box-shadow: 0 0 20px rgba(167,139,250,.4);
-
+    background:var(--beige);
+    color:#242424;
+    box-shadow:0 0 20px rgba(230,213,184,.3);
 }
 
-/* =========================
-   CART
-========================= */
+/* CART */
 
 .cart-panel {
-
-    display: none;
-
-    position: fixed;
-
-    inset: 0;
-
-    background: rgba(50,35,75,.3);
-
-    backdrop-filter: blur(7px);
-
-    z-index: 50;
-
-    justify-content: center;
-
-    align-items: center;
-
-    padding: 15px;
-
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    backdrop-filter:blur(8px);
+    z-index:50;
+    justify-content:center;
+    align-items:center;
+    padding:15px;
 }
 
 .cart-content {
-
-    background: white;
-
-    width: 100%;
-
-    max-width: 450px;
-
-    padding: 25px;
-
-    border-radius: 20px;
-
-    max-height: 80vh;
-
-    overflow-y: auto;
-
-    box-shadow: 0 10px 50px rgba(100,70,150,.2);
-
+    background:#292a2c;
+    border:1px solid rgba(230,213,184,.25);
+    width:100%;
+    max-width:450px;
+    padding:25px;
+    border-radius:17px;
+    max-height:80vh;
+    overflow-y:auto;
 }
 
 .cart-content h2 {
-
-    color: #9874e9;
-
-    margin-bottom: 20px;
-
+    color:var(--beige);
+    margin-bottom:20px;
 }
 
 .cart-item {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    padding: 15px 0;
-
-    border-bottom: 1px solid #eee8ff;
-
-    gap: 10px;
-
-    color: #554477;
-
+    display:flex;
+    justify-content:space-between;
+    padding:15px 0;
+    border-bottom:1px solid #4a4945;
+    gap:10px;
+    color:white;
 }
 
 .remove-btn {
-
-    color: #e879a9;
-
-    background: none;
-
-    border: none;
-
-    cursor: pointer;
-
+    color:#e7a5a5;
+    background:none;
+    border:none;
+    cursor:pointer;
 }
 
 .close-btn {
-
-    background: #a78bfa;
-
-    color: white;
-
-    border: none;
-
-    padding: 13px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    margin-top: 20px;
-
-    width: 100%;
-
+    background:var(--beige);
+    color:#292929;
+    border:0;
+    padding:13px;
+    border-radius:9px;
+    cursor:pointer;
+    margin-top:20px;
+    width:100%;
 }
 
 .total {
-
-    margin-top: 20px;
-
-    color: #8b5cf6;
-
-    font-size: 20px;
-
-    font-weight: bold;
-
+    margin-top:20px;
+    color:var(--beige);
+    font-size:20px;
+    font-weight:bold;
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* ABOUT */
+
+.about-box {
+    background:rgba(40,40,40,.8);
+    border:1px solid rgba(230,213,184,.15);
+    border-radius:15px;
+    padding:30px;
+    line-height:2;
+    color:#c5beb2;
+}
+
+/* FOOTER */
 
 footer {
-
-    background: rgba(255,255,255,.75);
-
-    border-top: 1px solid #e8e0ff;
-
-    text-align: center;
-
-    padding: 35px;
-
-    color: #8b7ba5;
-
-    margin-top: 50px;
-
+    background:rgba(25,25,25,.9);
+    border-top:1px solid rgba(230,213,184,.15);
+    text-align:center;
+    padding:35px;
+    color:#bcb3a4;
+    margin-top:50px;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* MOBILE */
 
 @media(max-width:900px) {
-
     .products {
-
-        grid-template-columns: repeat(2,1fr);
-
+        grid-template-columns:repeat(2,1fr);
     }
 
     nav {
-
-        display: none;
-
+        display:none;
     }
 
     .hero h1 {
-
-        font-size: 42px;
-
+        font-size:42px;
     }
 
+    .galaxy {
+        width:600px;
+    }
 }
 
 @media(max-width:450px) {
-
     header {
-
-        padding: 0 5%;
-
+        padding:0 5%;
     }
 
     .logo {
-
-        font-size: 23px;
-
+        font-size:23px;
     }
 
     .products {
-
-        gap: 12px;
-
+        gap:12px;
     }
 
     .product-image {
-
-        height: 140px;
-
+        height:140px;
     }
 
     .product-info {
-
-        padding: 12px;
-
+        padding:12px;
     }
 
     .product-info h3 {
-
-        font-size: 14px;
-
+        font-size:14px;
     }
 
     .price {
-
-        font-size: 16px;
-
+        font-size:16px;
     }
 
     .hero {
-
-        padding: 60px 6%;
-
+        padding:60px 6%;
     }
 
     .hero h1 {
-
-        font-size: 36px;
-
+        font-size:36px;
     }
 
+    .planet.one {
+        width:55px;
+        height:55px;
+    }
 }
 
 </style>
-
 </head>
 
 <body>
 
-<!-- SPACE BACKGROUND -->
+<!-- UNIVERSE -->
 
-<div class="space-background">
+<canvas id="universe"></canvas>
 
-    <div class="stars"></div>
+<div class="space">
 
-    <div class="cloud one"></div>
+    <div class="galaxy"></div>
 
-    <div class="cloud two"></div>
+    <div class="nebula one"></div>
+    <div class="nebula two"></div>
+    <div class="nebula three"></div>
 
-    <div class="cloud three"></div>
+    <div class="planet one"></div>
+    <div class="planet two"></div>
+    <div class="planet three"></div>
+    <div class="planet ring"></div>
+
+    <div class="shooting-star one"></div>
+    <div class="shooting-star two"></div>
 
 </div>
 
@@ -859,21 +876,13 @@ footer {
     <div class="logo">VOLT.</div>
 
     <nav>
-
         <a href="#">الرئيسية</a>
-
         <a href="#products">المنتجات</a>
-
         <a href="#about">من نحن</a>
-
     </nav>
 
     <button class="cart" onclick="openCart()">
-
-        🛒 السلة
-
-        (<span id="cartCount">0</span>)
-
+        🛒 السلة (<span id="cartCount">0</span>)
     </button>
 
 </header>
@@ -885,29 +894,19 @@ footer {
     <div class="hero-content">
 
         <h1>
-
             WELCOME TO
-
             <span>VOLT</span>
-
         </h1>
 
         <p>
-
             اكتشف مجموعتنا المميزة من المنتجات
-
             والإكسسوارات العصرية.
-
-            تجربة تسوق مختلفة بتصميم مستوحى من الفضاء.
-
+            تجربة تسوق مختلفة وسط عالم من الأناقة.
         </p>
 
         <button class="main-btn"
-
         onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
-
             اكتشف المنتجات
-
         </button>
 
     </div>
@@ -919,51 +918,34 @@ footer {
 <section class="section" id="products">
 
     <h2 class="section-title">
-
         اكتشف <span>منتجاتنا</span>
-
     </h2>
 
     <input
-
         type="text"
-
         class="search-box"
-
         id="search"
-
         placeholder="ابحث عن منتج..."
-
         oninput="renderProducts()"
-
     >
 
     <div class="categories">
 
         <button class="active"
-
         onclick="filterCategory('الكل',this)">
-
             الكل
-
         </button>
 
         <button onclick="filterCategory('ساعات',this)">
-
             ساعات
-
         </button>
 
         <button onclick="filterCategory('إكسسوارات',this)">
-
             إكسسوارات
-
         </button>
 
         <button onclick="filterCategory('موبايل',this)">
-
             موبايل
-
         </button>
 
     </div>
@@ -977,20 +959,14 @@ footer {
 <section class="section" id="about">
 
     <h2 class="section-title">
-
         ABOUT <span>VOLT</span>
-
     </h2>
 
-    <p style="color:#77718a;line-height:2">
-
-        VOLT STORE
-
-        وجهتك لاكتشاف المنتجات العصرية
-
-        والإكسسوارات المميزة.
-
-    </p>
+    <div class="about-box">
+        VOLT STORE وجهتك لاكتشاف المنتجات العصرية
+        والإكسسوارات المميزة، بتجربة تسوق تجمع بين
+        البساطة والأناقة.
+    </div>
 
 </section>
 
@@ -1005,134 +981,122 @@ footer {
         <div id="cartItems"></div>
 
         <div class="total">
-
             الإجمالي:
-
             <span id="total">0</span>
-
             جنيه
-
         </div>
 
         <button class="close-btn" onclick="closeCart()">
-
             إغلاق
-
         </button>
 
     </div>
 
 </div>
 
-<!-- FOOTER -->
-
 <footer>
-
-    © 2026 VOLT STORE
-
-    جميع الحقوق محفوظة
-
+    © 2026 VOLT STORE - جميع الحقوق محفوظة
 </footer>
 
 <script>
 
+/* STAR ANIMATION */
+
+const canvas = document.getElementById("universe");
+const ctx = canvas.getContext("2d");
+
+let stars = [];
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    stars = [];
+
+    for(let i=0; i<180; i++) {
+        stars.push({
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            size:Math.random()*1.8+.3,
+            speed:Math.random()*.35+.08,
+            opacity:Math.random()
+        });
+    }
+}
+
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+function animateStars() {
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    stars.forEach(star => {
+
+        star.y += star.speed;
+
+        if(star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random()*canvas.width;
+        }
+
+        star.opacity += (Math.random()-.5)*.04;
+        star.opacity = Math.max(.2,Math.min(1,star.opacity));
+
+        ctx.beginPath();
+
+        ctx.arc(
+            star.x,
+            star.y,
+            star.size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle = `rgba(245,231,208,${star.opacity})`;
+
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#e6d5b8";
+
+        ctx.fill();
+
+    });
+
+    ctx.shadowBlur = 0;
+
+    requestAnimationFrame(animateStars);
+}
+
+animateStars();
+
 /* PRODUCTS */
 
 const products = [
-
-    {
-        id:1,
-        name:"ساعة كلاسيك",
-        price:850,
-        category:"ساعات",
-        icon:"⌚"
-    },
-
-    {
-        id:2,
-        name:"ساعة رياضية",
-        price:1200,
-        category:"ساعات",
-        icon:"⌚"
-    },
-
-    {
-        id:3,
-        name:"سلسلة ستانلس",
-        price:250,
-        category:"إكسسوارات",
-        icon:"📿"
-    },
-
-    {
-        id:4,
-        name:"محفظة جلد",
-        price:400,
-        category:"إكسسوارات",
-        icon:"👝"
-    },
-
-    {
-        id:5,
-        name:"سماعة لاسلكية",
-        price:650,
-        category:"موبايل",
-        icon:"🎧"
-    },
-
-    {
-        id:6,
-        name:"جراب موبايل",
-        price:180,
-        category:"موبايل",
-        icon:"📱"
-    },
-
-    {
-        id:7,
-        name:"نظارة شمسية",
-        price:350,
-        category:"إكسسوارات",
-        icon:"🕶️"
-    },
-
-    {
-        id:8,
-        name:"سوار أنيق",
-        price:220,
-        category:"إكسسوارات",
-        icon:"💍"
-    }
-
+    {id:1,name:"ساعة كلاسيك",price:850,category:"ساعات",icon:"⌚"},
+    {id:2,name:"ساعة رياضية",price:1200,category:"ساعات",icon:"⌚"},
+    {id:3,name:"سلسلة ستانلس",price:250,category:"إكسسوارات",icon:"📿"},
+    {id:4,name:"محفظة جلد",price:400,category:"إكسسوارات",icon:"👝"},
+    {id:5,name:"سماعة لاسلكية",price:650,category:"موبايل",icon:"🎧"},
+    {id:6,name:"جراب موبايل",price:180,category:"موبايل",icon:"📱"},
+    {id:7,name:"نظارة شمسية",price:350,category:"إكسسوارات",icon:"🕶️"},
+    {id:8,name:"سوار أنيق",price:220,category:"إكسسوارات",icon:"💍"}
 ];
 
 let cart = [];
-
 let currentCategory = "الكل";
-
-/* DISPLAY PRODUCTS */
 
 function renderProducts() {
 
-    const container =
-    document.getElementById("productsContainer");
-
-    const search =
-    document.getElementById("search").value.toLowerCase();
+    const container = document.getElementById("productsContainer");
+    const search = document.getElementById("search").value.toLowerCase();
 
     container.innerHTML = "";
 
     const filtered = products.filter(p => {
 
         return (
-
-            (currentCategory === "الكل" ||
-            p.category === currentCategory)
-
-            &&
-
-            p.name.toLowerCase().includes(search)
-
+            (currentCategory === "الكل" || p.category === currentCategory)
+            && p.name.toLowerCase().includes(search)
         );
 
     });
@@ -1144,9 +1108,7 @@ function renderProducts() {
             <div class="product">
 
                 <div class="product-image">
-
                     <span>${p.icon}</span>
-
                 </div>
 
                 <div class="product-info">
@@ -1154,17 +1116,12 @@ function renderProducts() {
                     <h3>${p.name}</h3>
 
                     <div class="price">
-
                         ${p.price} جنيه
-
                     </div>
 
                     <button class="add-btn"
-
                     onclick="addToCart(${p.id})">
-
                         أضف إلى السلة +
-
                     </button>
 
                 </div>
@@ -1177,14 +1134,11 @@ function renderProducts() {
 
 }
 
-/* FILTER */
-
 function filterCategory(category,button) {
 
     currentCategory = category;
 
     document.querySelectorAll(".categories button")
-
     .forEach(b => b.classList.remove("active"));
 
     button.classList.add("active");
@@ -1193,52 +1147,32 @@ function filterCategory(category,button) {
 
 }
 
-/* ADD TO CART */
-
 function addToCart(id) {
 
     const product = products.find(p => p.id === id);
-
     const existing = cart.find(p => p.id === id);
 
     if(existing) {
-
         existing.quantity++;
-
     } else {
-
-        cart.push({
-
-            ...product,
-
-            quantity:1
-
-        });
-
+        cart.push({...product,quantity:1});
     }
 
     updateCart();
 
 }
 
-/* UPDATE CART */
-
 function updateCart() {
 
     let count = 0;
-
     let total = 0;
 
     cart.forEach(p => {
-
         count += p.quantity;
-
-        total += p.price * p.quantity;
-
+        total += p.price*p.quantity;
     });
 
     document.getElementById("cartCount").innerText = count;
-
     document.getElementById("total").innerText = total;
 
     const items = document.getElementById("cartItems");
@@ -1252,21 +1186,14 @@ function updateCart() {
             <div class="cart-item">
 
                 <div>
-
                     ${p.name}
-
                     <br>
-
                     ${p.price} × ${p.quantity}
-
                 </div>
 
                 <button class="remove-btn"
-
                 onclick="removeFromCart(${p.id})">
-
                     حذف
-
                 </button>
 
             </div>
@@ -1276,49 +1203,30 @@ function updateCart() {
     });
 
     if(cart.length === 0) {
-
-        items.innerHTML =
-
-        "<p>السلة فارغة حالياً</p>";
-
+        items.innerHTML = "<p>السلة فارغة حالياً</p>";
     }
 
 }
 
-/* REMOVE */
-
 function removeFromCart(id) {
 
     cart = cart.filter(p => p.id !== id);
-
     updateCart();
 
 }
 
-/* OPEN CART */
-
 function openCart() {
-
     document.getElementById("cartPanel").style.display = "flex";
-
 }
-
-/* CLOSE CART */
 
 function closeCart() {
-
     document.getElementById("cartPanel").style.display = "none";
-
 }
 
-/* START */
-
 renderProducts();
-
 updateCart();
 
 </script>
 
 </body>
-
-        </html>
+</html>
