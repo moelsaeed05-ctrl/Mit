@@ -311,6 +311,145 @@ body {
     animation-delay: -5s;
 }
 
+```css
+/* REALISTIC PLANETS */
+
+.planet {
+    position: absolute;
+    border-radius: 50%;
+    overflow: visible;
+    animation: planetFloat 18s ease-in-out infinite alternate;
+    isolation: isolate;
+}
+
+/* EARTH-LIKE PLANET */
+
+.planet.one {
+    width: 115px;
+    height: 115px;
+    top: 15%;
+    right: 12%;
+
+    background:
+    radial-gradient(ellipse at 28% 25%,
+        rgba(255,255,255,.9),
+        transparent 12%),
+    radial-gradient(ellipse at 65% 35%,
+        #a8a18d 0 8%,
+        transparent 9%),
+    radial-gradient(ellipse at 30% 65%,
+        #777e75 0 12%,
+        transparent 13%),
+    radial-gradient(circle at 35% 30%,
+        #d6d0bc,
+        #8d938e 35%,
+        #424b53 75%,
+        #111820 100%);
+
+    box-shadow:
+    inset -22px -12px 30px #080b11,
+    inset 7px 5px 15px rgba(255,255,255,.4),
+    0 0 35px rgba(190,190,190,.15);
+}
+
+/* SATURN */
+
+.planet.ring {
+    width: 105px;
+    height: 105px;
+    top: 43%;
+    left: 8%;
+
+    background:
+    radial-gradient(ellipse at 35% 25%,
+        #e7d5ad 0%,
+        #b49a73 25%,
+        #806c52 55%,
+        #29231e 100%);
+
+    box-shadow:
+    inset -20px -12px 25px #100e0d,
+    inset 8px 5px 15px rgba(255,255,255,.3),
+    0 0 30px rgba(210,190,160,.18);
+}
+
+/* SATURN RINGS */
+
+.planet.ring::before {
+    content: "";
+    position: absolute;
+
+    width: 185px;
+    height: 53px;
+
+    left: -40px;
+    top: 25px;
+
+    border-radius: 50%;
+
+    background:
+    repeating-linear-gradient(
+        180deg,
+        #b7a78d 0px,
+        #d7c5a5 3px,
+        #746754 6px,
+        #e1d1b4 9px,
+        #8e806c 12px
+    );
+
+    transform: rotate(-20deg);
+
+    box-shadow: 0 0 12px rgba(230,213,184,.15);
+
+    z-index: -1;
+}
+
+/* SATURN SHADOW */
+
+.planet.ring::after {
+    content: "";
+    position: absolute;
+
+    width: 185px;
+    height: 53px;
+
+    left: -40px;
+    top: 25px;
+
+    border-radius: 50%;
+    border: 5px solid rgba(45,35,25,.5);
+
+    transform: rotate(-20deg);
+}
+
+/* SMALL ROCKY PLANET */
+
+.planet.two {
+    width: 58px;
+    height: 58px;
+    bottom: 23%;
+    left: 15%;
+
+    background:
+    radial-gradient(circle at 30% 25%,
+        #e0d0ba 0 4%,
+        transparent 5%),
+    radial-gradient(circle at 65% 55%,
+        #6d6259 0 10%,
+        transparent 11%),
+    radial-gradient(circle at 35% 40%,
+        #b9a58c,
+        #786d61 55%,
+        #262321 100%);
+
+    box-shadow:
+    inset -12px -8px 18px #090909,
+    inset 4px 3px 8px rgba(255,255,255,.35),
+    0 0 25px rgba(230,213,184,.13);
+
+    animation-delay: -5s;
+}
+
 /* DISTANT PLANET */
 
 .planet.three {
@@ -341,6 +480,57 @@ body {
         transform: translateY(-30px) rotate(8deg);
     }
 }
+
+/* TRANSPARENT PRODUCT CARDS */
+
+.product {
+    background: rgba(35,36,38,.35) !important;
+
+    border: 1px solid rgba(230,213,184,.22);
+
+    backdrop-filter: blur(8px);
+
+    -webkit-backdrop-filter: blur(8px);
+
+    box-shadow: 0 8px 30px rgba(0,0,0,.12);
+
+    transition: .4s;
+}
+
+.product:hover {
+    background: rgba(70,65,57,.35) !important;
+
+    border-color: rgba(230,213,184,.65);
+
+    box-shadow:
+    0 0 20px rgba(230,213,184,.12),
+    0 10px 35px rgba(0,0,0,.2);
+
+    transform: translateY(-8px);
+}
+
+/* TRANSPARENT PRODUCT IMAGE */
+
+.product-image {
+    background: rgba(255,255,255,.025) !important;
+
+    backdrop-filter: blur(3px);
+
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.product-image span {
+    background: rgba(230,213,184,.07);
+
+    border: 1px solid rgba(230,213,184,.15);
+
+    box-shadow: 0 0 25px rgba(230,213,184,.08);
+}
+
+.product-info {
+    background: rgba(20,20,20,.12);
+}
+
 
 /* TRANSPARENT PRODUCT CARDS */
 
