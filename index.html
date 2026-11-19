@@ -1195,7 +1195,24 @@ footer {
     © 2026 VOLT STORE - جميع الحقوق محفوظة
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+
+/* SUPABASE CONNECTION */
+
+const SUPABASE_URL = "https://qzmbylngwrhccjwlxpgl.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_DoCrCtcU_VFMsfxRw3Kqgg_1IFc6CoD";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+console.log("VOLT STORE: Supabase connected");
+
+
 
 /* STAR ANIMATION */
 
