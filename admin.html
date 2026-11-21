@@ -1,288 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>MIT Admin Pro</title>
-
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VOLT STORE | Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Tahoma;
-  background:#0b1120;
-  color:#fff;
-}
-
-/* Sidebar */
-.sidebar{
-  width:250px;
-  height:100vh;
-  background:linear-gradient(180deg,#111827,#1f2937);
-  position:fixed;
-  padding:25px;
-}
-.sidebar h2{
-  color:#22d3ee;
-}
-.sidebar a{
-  display:block;
-  margin:15px 0;
-  text-decoration:none;
-  color:#ccc;
-  transition:.3s;
-}
-.sidebar a:hover{
-  color:#fff;
-}
-
-/* Content */
-.content{
-  margin-right:260px;
-  padding:30px;
-}
-
-/* Cards */
-.cards{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-.card{
-  flex:1;
-  min-width:200px;
-  background:#1e293b;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 0 20px rgba(0,0,0,.3);
-  transition:.3s;
-}
-.card:hover{
-  transform:translateY(-5px);
-}
-
-/* Tables */
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
-  background:#1e293b;
-  border-radius:15px;
-  overflow:hidden;
-}
-th,td{
-  padding:12px;
-  text-align:center;
-}
-th{
-  background:#111827;
-}
-tr:nth-child(even){
-  background:#0f172a;
-}
-
-button{
-  padding:6px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  background:#22d3ee;
-  color:#000;
-}
-
-.add-btn{
-  background:#10b981;
-  margin:15px 0;
-}
-
-/* Modal */
-.modal{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-.modal-content{
-  background:#1e293b;
-  padding:30px;
-  border-radius:15px;
-  width:300px;
-}
-.modal input, .modal select{
-  width:100%;
-  padding:8px;
-  margin:8px 0;
-  border-radius:8px;
-  border:none;
-}
-</style>
-</head>
-<body>
-
-<div class="sidebar">
-  <h2>MIT ADMIN</h2>
-  <a href="#">الرئيسية</a>
-  <a href="#">المنتجات</a>
-  <a href="#">الطلبات</a>
-</div>
-
-<div class="content">
-
-<h1>لوحة التحكم</h1>
-
-<div class="cards">
-  <div class="card" id="productsCount">0<br>منتج</div>
-  <div class="card" id="ordersCount">0<br>طلب</div>
-  <div class="card" id="newOrdersCount">0<br>طلب جديد</div>
-</div>
-
-<button class="add-btn" onclick="openModal()">+ إضافة منتج</button>
-
-<h2>المنتجات</h2>
-<table>
-<thead>
-<tr>
-<th>الصورة</th>
-<th>الاسم</th>
-<th>السعر</th>
-<th>القسم</th>
-<th>حذف</th>
-</tr>
-</thead>
-<tbody id="productsTable"></tbody>
-</table>
-
-<h2>الطلبات</h2>
-<table>
-<thead>
-<tr>
-<th>العميل</th>
-<th>المنتج</th>
-<th>المقاس</th>
-<th>اللون</th>
-<th>الحالة</th>
-<th>تغيير</th>
-</tr>
-</thead>
-<tbody id="ordersTable"></tbody>
-</table>
-
-</div>
-
-<!-- Modal -->
-<div class="modal" id="modal">
-<div class="modal-content">
-<h3>إضافة منتج</h3>
-<input id="name" placeholder="اسم المنتج">
-<input id="price" type="number" placeholder="السعر">
-<select id="category">
-<option>تيشيرتات</option>
-<option>هودي</option>
-<option>بنطلون</option>
-</select>
-<input id="image" placeholder="رابط الصورة">
-<button onclick="addProduct()">حفظ</button>
-</div>
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC6606N-AgsVjpUfubQa9ZRb7VjYtOZvCU",
-  authDomain: "mit-store-15e1d.firebaseapp.com",
-  projectId: "mit-store-15e1d",
-  storageBucket: "mit-store-15e1d.appspot.com",
-  messagingSenderId: "168416523904",
-  appId: "1:168416523904:web:711219a46f1c87b82e9865"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-window.openModal = ()=> modal.style.display="flex";
-
-window.addProduct = async ()=>{
-  await addDoc(collection(db,"products"),{
-    name:name.value,
-    price:Number(price.value),
-    category:category.value,
-    image:image.value,
-    createdAt:new Date()
-  });
-  modal.style.display="none";
-  loadProducts();
-  loadStats();
-};
-
-window.deleteProduct = async (id)=>{
-  await deleteDoc(doc(db,"products",id));
-  loadProducts();
-  loadStats();
-};
-
-window.changeStatus = async (id)=>{
-  await updateDoc(doc(db,"orders",id),{status:"تم التنفيذ"});
-  loadOrders();
-  loadStats();
-};
-
-async function loadStats(){
-  const p = await getDocs(collection(db,"products"));
-  const o = await getDocs(collection(db,"orders"));
-  const n = await getDocs(query(collection(db,"orders"), where("status","==","جديد")));
-  productsCount.innerHTML = p.size+"<br>منتج";
-  ordersCount.innerHTML = o.size+"<br>طلب";
-  newOrdersCount.innerHTML = n.size+"<br>طلب جديد";
-}
-
-async function loadProducts(){
-  const snap = await getDocs(collection(db,"products"));
-  productsTable.innerHTML="";
-  snap.forEach(d=>{
-    const data=d.data();
-    productsTable.innerHTML+=`
-      <tr>
-        <td><img src="${data.image}" width="50"></td>
-        <td>${data.name}</td>
-        <td>${data.price}</td>
-        <td>${data.category}</td>
-        <td><button onclick="deleteProduct('${d.id}')">X</button></td>
-      </tr>
-    `;
-  });
-}
-
-async function loadOrders(){
-  const snap = await getDocs(collection(db,"orders"));
-  ordersTable.innerHTML="";
-  snap.forEach(d=>{
-    const data=d.data();
-    ordersTable.innerHTML+=`
-      <tr>
-        <td>${data.customerName}</td>
-        <td>${data.productName}</td>
-        <td>${data.size}</td>
-        <td>${data.color}</td>
-        <td>${data.status}</td>
-        <td><button onclick="changeStatus('${d.id}')">تم</button></td>
-      </tr>
-    `;
-  });
-}
-
-loadStats();
-loadProducts();
-loadOrders();
-
-</script>
-
-</body>
-</html>
+:root{--bg:#101010;--panel:#1b1b1b;--line:#37332e;--cream:#e8dcc4;--muted:#aaa398;--danger:#d87878;--ok:#8bc59a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#393127 0,transparent 45%),var(--bg);color:#f5f0e8;font-family:Arial,sans-serif;min-height:100vh}
+.wrap{width:min(1100px,94%);margin:30px auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.brand{font-size:24px;font-weight:800;letter-spacing:2px;color:var(--cream)}.sub{color:var(--muted);font-size:13px;margin-top:6px}
+.panel{background:rgba(27,27,27,.96);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 15px 45px #0005}.login{max-width:430px;margin:9vh auto}.hidden{display:none!important}h1,h2{margin:0 0 18px}h1{font-size:22px}h2{font-size:18px}
+label{display:block;font-size:13px;color:var(--cream);margin:13px 0 7px}input,select,textarea{width:100%;padding:13px;border:1px solid #48433c;border-radius:11px;background:#111;color:#fff;font:inherit;outline:none}textarea{min-height:90px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--cream)}
+button{border:0;border-radius:11px;padding:12px 16px;background:var(--cream);color:#211d18;font-weight:700;font-size:14px;cursor:pointer}button.secondary{background:#34302b;color:#eee;border:1px solid #514a40}button.danger{background:#4a2626;color:#ffdada}button:disabled{opacity:.5;cursor:not-allowed}.full{width:100%;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0}.msg{font-size:13px;margin-top:12px;line-height:1.7}.error{color:#ffaaaa}.success{color:var(--ok)}.muted{color:var(--muted)}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.item{border:1px solid var(--line);border-radius:14px;padding:13px;background:#171717}.item img{width:100%;height:155px;object-fit:contain;background:#111;border-radius:10px}.item h3{font-size:15px;margin:10px 0 6px}.item p{font-size:13px;color:var(--muted);margin:5px 0}.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1;padding:10px}.preview{width:100%;max-height:190px;object-fit:contain;background:#111;border-radius:12px;margin-top:10px}.bar{display:flex;gap:10px;align-items:center}.bar input{max-width:320px}.pill{font-size:11px;color:var(--cream);border:1px solid var(--line);border-radius:30px;padding:5px 9px}
+@media(max-width:600px){.wrap{margin:18px auto}.panel{padding:16px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.toolbar{align-items:stretch;flex-direction:column}.bar{width:100%}.bar input{max-width:none;flex:1}}
+</style></head>
+<body><main class="wrap">
+<header class="top"><div><div class="brand">VOLT STORE</div><div class="sub">لوحة إدارة المنتجات</div></div><span class="pill">ADMIN ONLY</span></header>
+<section id="loginBox" class="panel login"><h1>تسجيل دخول الإدارة</h1><p class="muted">استخدم حساب الإدارة الذي أنشأته في Supabase Auth.</p><form id="loginForm"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" required><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required><button class="full" type="submit">تسجيل الدخول</button></form><div id="loginMsg" class="msg" role="status"></div></section>
+<section id="adminApp" class="hidden">
+<div class="toolbar"><div><h1>إدارة المنتجات</h1><div class="sub" id="adminEmail"></div></div><button class="secondary" id="logoutBtn">تسجيل الخروج</button></div>
+<section class="panel" style="margin-bottom:18px"><h2 id="formTitle">إضافة منتج جديد</h2><form id="productForm">
+<div class="grid"><div><label>اسم المنتج</label><input id="pName" required maxlength="150" placeholder="اسم المنتج"></div><div><label>السعر بالجنيه</label><input id="pPrice" type="number" min="0" step="0.01" required placeholder="0.00"></div><div><label>التصنيف</label><input id="pCategory" required maxlength="80" placeholder="مثال: ساعات"></div><div><label>الكمية المتاحة</label><input id="pStock" type="number" min="0" step="1" value="0"></div></div>
+<label>وصف المنتج</label><textarea id="pDescription" placeholder="تفاصيل المنتج"></textarea><label>صورة المنتج</label><input id="pImage" type="file" accept="image/png,image/jpeg,image/webp"><img id="imagePreview" class="preview hidden" alt="معاينة صورة المنتج"><label style="display:flex;align-items:center;gap:9px"><input id="pActive" type="checkbox" checked style="width:auto"> إظهار المنتج في المتجر</label>
+<div class="actions"><button id="saveBtn" type="submit">حفظ المنتج</button><button id="cancelEdit" class="secondary hidden" type="button">إلغاء التعديل</button></div><div id="formMsg" class="msg" role="status"></div></form></section>
+<div class="toolbar"><div><h2 style="margin:0">المنتجات الحالية</h2><div class="sub" id="countLabel"></div></div><div class="bar"><input id="search" placeholder="ابحث عن منتج..."></div></div><div id="productsList" class="products"></div>
+</section></main>
+<script>
+const SUPABASE_URL='https://qzmbylngwrhccjwlxpgl.supabase.co';
+// Use the same publishable/anon key as the public storefront. Never use service_role here.
+const SUPABASE_KEY='sb_publishable_DoCrcU_VFMsfxRw3Kqgg_1IFc6CoD';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);let editingId=null,allProducts=[],currentImageUrl='';
+const msg=(id,text,kind='')=>{$(id).textContent=text;$(id).className='msg '+kind};
+function resetForm(){editingId=null;currentImageUrl='';$('productForm').reset();$('pActive').checked=true;$('pStock').value=0;$('imagePreview').classList.add('hidden');$('imagePreview').src='';$('formTitle').textContent='إضافة منتج جديد';$('saveBtn').textContent='حفظ المنتج';$('cancelEdit').classList.add('hidden');msg('formMsg','');}
+async function checkAdmin(){const {data:{user}}=await db.auth.getUser();if(!user){$('loginBox').classList.remove('hidden');$('adminApp').classList.add('hidden');return false}const {data,error}=await db.from('volt_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(error||!data){await db.auth.signOut();$('loginBox').classList.remove('hidden');$('adminApp').classList.add('hidden');msg('loginMsg','هذا الحساب غير مصرح له بدخول لوحة الإدارة.','error');return false}$('loginBox').classList.add('hidden');$('adminApp').classList.remove('hidden');$('adminEmail').textContent=user.email||'';await loadProducts();return true}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();msg('loginMsg','جارٍ التحقق...');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg('loginMsg','تعذر تسجيل الدخول: '+error.message,'error');return}await checkAdmin()});
+$('logoutBtn').onclick=async()=>{await db.auth.signOut();resetForm();$('adminApp').classList.add('hidden');$('loginBox').classList.remove('hidden');msg('loginMsg','تم تسجيل الخروج.','success')};
+$('pImage').addEventListener('change',()=>{const f=$('pImage').files[0];if(!f){$('imagePreview').classList.add('hidden');return}if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>5*1024*1024){msg('formMsg','اختر صورة JPG أو PNG أو WEBP بحجم لا يتجاوز 5MB.','error');$('pImage').value='';return} $('imagePreview').src=URL.createObjectURL(f);$('imagePreview').classList.remove('hidden');msg('formMsg','')});
+async function uploadImage(file){const ext=file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('volt-products').upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from('volt-products').getPublicUrl(path);return data.publicUrl}
+$('productForm').addEventListener('submit',async e=>{e.preventDefault();$('saveBtn').disabled=true;msg('formMsg','جارٍ حفظ المنتج...');try{let imageUrl=currentImageUrl;const file=$('pImage').files[0];if(file)imageUrl=await uploadImage(file);const product={name:$('pName').value.trim(),price:Number($('pPrice').value),category:$('pCategory').value.trim(),stock:Number($('pStock').value||0),description:$('pDescription').value.trim(),image_url:imageUrl||null,active:$('pActive').checked};if(!product.name||!product.category||!Number.isFinite(product.price)||product.price<0||!Number.isInteger(product.stock)||product.stock<0)throw new Error('راجع الاسم والتصنيف والسعر والكمية.');let result;if(editingId)result=await db.from('products').update(product).eq('id',editingId);else result=await db.from('products').insert(product);if(result.error)throw result.error;msg('formMsg','تم حفظ المنتج بنجاح.','success');resetForm();await loadProducts()}catch(err){msg('formMsg','لم يتم الحفظ: '+(err.message||'حدث خطأ غير معروف'),'error')}finally{$('saveBtn').disabled=false}});
+async function loadProducts(){ $('productsList').innerHTML='<p class="muted">جارٍ تحميل المنتجات...</p>';const {data,error}=await db.from('products').select('*').order('name');if(error){$('productsList').textContent='تعذر تحميل المنتجات: '+error.message;return}allProducts=data||[];renderProducts()}
+function renderProducts(){const q=$('search').value.trim().toLowerCase();const list=allProducts.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));$('countLabel').textContent='عدد المنتجات: '+allProducts.length;if(!list.length){$('productsList').innerHTML='<p class="muted">لا توجد منتجات مطابقة.</p>';return}$('productsList').innerHTML=list.map(p=>`<article class="item"><img src="${escapeAttr(p.image_url||'')}" alt="صورة المنتج" onerror="this.style.opacity='.15'"><h3>${escapeHtml(p.name||'بدون اسم')}</h3><p>${escapeHtml(p.category||'')} · ${Number(p.price||0).toLocaleString('ar-EG')} ج.م</p><p>المخزون: ${Number(p.stock||0)} · ${p.active?'ظاهر':'مخفي'}</p><div class="actions"><button class="secondary" data-edit="${escapeAttr(p.id)}">تعديل</button><button class="danger" data-delete="${escapeAttr(p.id)}">حذف</button></div></article>`).join('')}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escapeAttr(s){return escapeHtml(s)}
+$('productsList').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const p=allProducts.find(x=>String(x.id)===edit.dataset.edit);if(!p)return;editingId=p.id;currentImageUrl=p.image_url||'';$('pName').value=p.name||'';$('pPrice').value=p.price??'';$('pCategory').value=p.category||'';$('pStock').value=p.stock??0;$('pDescription').value=p.description||'';$('pActive').checked=p.active!==false;$('pImage').value='';$('imagePreview').classList.toggle('hidden',!currentImageUrl);if(currentImageUrl)$('imagePreview').src=currentImageUrl;$('formTitle').textContent='تعديل المنتج';$('saveBtn').textContent='حفظ التعديلات';$('cancelEdit').classList.remove('hidden');msg('formMsg','أنت تعدّل: '+(p.name||''));window.scrollTo({top:0,behavior:'smooth'});return}if(del){const p=allProducts.find(x=>String(x.id)===del.dataset.delete);if(!p||!confirm('تأكيد حذف المنتج: '+p.name+'؟'))return;del.disabled=true;const {error}=await db.from('products').delete().eq('id',p.id);if(error){alert('تعذر الحذف: '+error.message);del.disabled=false;return}await loadProducts();resetForm()}});
+$('cancelEdit').onclick=resetForm;$('search').addEventListener('input',renderProducts);db.auth.onAuthStateChange((_event,session)=>{if(!session){$('adminApp').classList.add('hidden');$('loginBox').classList.remove('hidden')}});checkAdmin();
+</script></body></html>
