@@ -1,46 +1,1283 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VOLT STORE | Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#101010;--panel:#1b1b1b;--line:#37332e;--cream:#e8dcc4;--muted:#aaa398;--danger:#d87878;--ok:#8bc59a}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#393127 0,transparent 45%),var(--bg);color:#f5f0e8;font-family:Arial,sans-serif;min-height:100vh}
-.wrap{width:min(1100px,94%);margin:30px auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.brand{font-size:24px;font-weight:800;letter-spacing:2px;color:var(--cream)}.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.panel{background:rgba(27,27,27,.96);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 15px 45px #0005}.login{max-width:430px;margin:9vh auto}.hidden{display:none!important}h1,h2{margin:0 0 18px}h1{font-size:22px}h2{font-size:18px}
-label{display:block;font-size:13px;color:var(--cream);margin:13px 0 7px}input,select,textarea{width:100%;padding:13px;border:1px solid #48433c;border-radius:11px;background:#111;color:#fff;font:inherit;outline:none}textarea{min-height:90px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--cream)}
-button{border:0;border-radius:11px;padding:12px 16px;background:var(--cream);color:#211d18;font-weight:700;font-size:14px;cursor:pointer}button.secondary{background:#34302b;color:#eee;border:1px solid #514a40}button.danger{background:#4a2626;color:#ffdada}button:disabled{opacity:.5;cursor:not-allowed}.full{width:100%;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0}.msg{font-size:13px;margin-top:12px;line-height:1.7}.error{color:#ffaaaa}.success{color:var(--ok)}.muted{color:var(--muted)}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.item{border:1px solid var(--line);border-radius:14px;padding:13px;background:#171717}.item img{width:100%;height:155px;object-fit:contain;background:#111;border-radius:10px}.item h3{font-size:15px;margin:10px 0 6px}.item p{font-size:13px;color:var(--muted);margin:5px 0}.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1;padding:10px}.preview{width:100%;max-height:190px;object-fit:contain;background:#111;border-radius:12px;margin-top:10px}.bar{display:flex;gap:10px;align-items:center}.bar input{max-width:320px}.pill{font-size:11px;color:var(--cream);border:1px solid var(--line);border-radius:30px;padding:5px 9px}
-@media(max-width:600px){.wrap{margin:18px auto}.panel{padding:16px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.toolbar{align-items:stretch;flex-direction:column}.bar{width:100%}.bar input{max-width:none;flex:1}}
-</style></head>
-<body><main class="wrap">
-<header class="top"><div><div class="brand">VOLT STORE</div><div class="sub">لوحة إدارة المنتجات</div></div><span class="pill">ADMIN ONLY</span></header>
-<section id="loginBox" class="panel login"><h1>تسجيل دخول الإدارة</h1><p class="muted">استخدم حساب الإدارة الذي أنشأته في Supabase Auth.</p><form id="loginForm"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" required><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required><button class="full" type="submit">تسجيل الدخول</button></form><div id="loginMsg" class="msg" role="status"></div></section>
+:root{
+  --bg:#101010;
+  --panel:#1b1b1b;
+  --line:#37332e;
+  --cream:#e8dcc4;
+  --muted:#aaa398;
+  --danger:#d87878;
+  --ok:#8bc59a;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:radial-gradient(ellipse at 50% -20%,#393127 0,transparent 45%),var(--bg);
+  color:#f5f0e8;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+}
+
+.wrap{width:min(1150px,94%);margin:30px auto}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.brand{
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:var(--cream);
+}
+
+.sub{color:var(--muted);font-size:13px;margin-top:6px}
+
+.panel{
+  background:rgba(27,27,27,.96);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 15px 45px #0005;
+  margin-bottom:18px;
+}
+
+.login{max-width:430px;margin:9vh auto}
+.hidden{display:none!important}
+
+h1,h2,h3{margin-top:0}
+h1{font-size:22px}
+h2{font-size:18px;margin-bottom:17px}
+
+label{
+  display:block;
+  font-size:13px;
+  color:var(--cream);
+  margin:13px 0 7px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #48433c;
+  border-radius:11px;
+  background:#111;
+  color:#fff;
+  font:inherit;
+  outline:none;
+}
+
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--cream)}
+input[type="checkbox"]{width:auto;accent-color:var(--cream)}
+
+button{
+  border:0;
+  border-radius:11px;
+  padding:12px 16px;
+  background:var(--cream);
+  color:#211d18;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#34302b;
+  color:#eee;
+  border:1px solid #514a40;
+}
+
+button.danger{background:#4a2626;color:#ffdada}
+button:disabled{opacity:.5;cursor:not-allowed}
+.full{width:100%;margin-top:18px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:22px 0;
+}
+
+.msg{font-size:13px;margin-top:12px;line-height:1.7}
+.error{color:#ffaaaa}
+.success{color:var(--ok)}
+.muted{color:var(--muted)}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+}
+
+.item{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:13px;
+  background:#171717;
+}
+
+.item img{
+  width:100%;
+  height:155px;
+  object-fit:contain;
+  background:#111;
+  border-radius:10px;
+}
+
+.item h3{font-size:15px;margin:10px 0 6px}
+.item p{font-size:13px;color:var(--muted);margin:5px 0}
+
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions button{flex:1;padding:10px}
+
+.preview{
+  width:100%;
+  max-height:190px;
+  object-fit:contain;
+  background:#111;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+.bar{display:flex;gap:10px;align-items:center}
+.bar input{max-width:320px}
+
+.pill{
+  font-size:11px;
+  color:var(--cream);
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:6px 11px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.section-title h2{margin:0}
+
+@media(max-width:600px){
+  .wrap{margin:18px auto}
+  .panel{padding:16px}
+  .grid{grid-template-columns:1fr}
+  .top{align-items:flex-start}
+  .toolbar{align-items:stretch;flex-direction:column}
+  .bar{width:100%}
+  .bar input{max-width:none;flex:1}
+  .actions{flex-wrap:wrap}
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+
+<header class="top">
+  <div>
+    <div class="brand">VOLT STORE</div>
+    <div class="sub">لوحة التحكم والإدارة</div>
+  </div>
+  <span class="pill">ADMIN ONLY</span>
+</header>
+
+<section id="loginBox" class="panel login">
+  <h1>تسجيل دخول الإدارة</h1>
+  <p class="muted">استخدم حساب الإدارة المسجل في Supabase Auth.</p>
+
+  <form id="loginForm">
+    <label>البريد الإلكتروني</label>
+    <input id="email" type="email" autocomplete="username" required>
+
+    <label>كلمة المرور</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+
+    <button class="full" type="submit">تسجيل الدخول</button>
+  </form>
+
+  <div id="loginMsg" class="msg" role="status"></div>
+</section>
+
 <section id="adminApp" class="hidden">
-<div class="toolbar"><div><h1>إدارة المنتجات</h1><div class="sub" id="adminEmail"></div></div><button class="secondary" id="logoutBtn">تسجيل الخروج</button></div>
-<section class="panel" style="margin-bottom:18px"><h2 id="formTitle">إضافة منتج جديد</h2><form id="productForm">
-<div class="grid"><div><label>اسم المنتج</label><input id="pName" required maxlength="150" placeholder="اسم المنتج"></div><div><label>السعر بالجنيه</label><input id="pPrice" type="number" min="0" step="0.01" required placeholder="0.00"></div><div><label>التصنيف</label><input id="pCategory" required maxlength="80" placeholder="مثال: ساعات"></div><div><label>الكمية المتاحة</label><input id="pStock" type="number" min="0" step="1" value="0"></div></div>
-<label>وصف المنتج</label><textarea id="pDescription" placeholder="تفاصيل المنتج"></textarea><label>صورة المنتج</label><input id="pImage" type="file" accept="image/png,image/jpeg,image/webp"><img id="imagePreview" class="preview hidden" alt="معاينة صورة المنتج"><label style="display:flex;align-items:center;gap:9px"><input id="pActive" type="checkbox" checked style="width:auto"> إظهار المنتج في المتجر</label>
-<div class="actions"><button id="saveBtn" type="submit">حفظ المنتج</button><button id="cancelEdit" class="secondary hidden" type="button">إلغاء التعديل</button></div><div id="formMsg" class="msg" role="status"></div></form></section>
-<div class="toolbar"><div><h2 style="margin:0">المنتجات الحالية</h2><div class="sub" id="countLabel"></div></div><div class="bar"><input id="search" placeholder="ابحث عن منتج..."></div></div><div id="productsList" class="products"></div>
-</section></main>
-<script>
-const SUPABASE_URL='https://qzmbylngwrhccjwlxpgl.supabase.co';
-// Use the same publishable/anon key as the public storefront. Never use service_role here.
-const SUPABASE_KEY='sb_publishable_DoCrCtcU_VFMsfxRw3Kqgg_1IFc6CoD';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);let editingId=null,allProducts=[],currentImageUrl='';
-const msg=(id,text,kind='')=>{$(id).textContent=text;$(id).className='msg '+kind};
-function resetForm(){editingId=null;currentImageUrl='';$('productForm').reset();$('pActive').checked=true;$('pStock').value=0;$('imagePreview').classList.add('hidden');$('imagePreview').src='';$('formTitle').textContent='إضافة منتج جديد';$('saveBtn').textContent='حفظ المنتج';$('cancelEdit').classList.add('hidden');msg('formMsg','');}
-async function checkAdmin(){const {data:{user}}=await db.auth.getUser();if(!user){$('loginBox').classList.remove('hidden');$('adminApp').classList.add('hidden');return false}const {data,error}=await db.from('volt_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(error||!data){await db.auth.signOut();$('loginBox').classList.remove('hidden');$('adminApp').classList.add('hidden');msg('loginMsg','هذا الحساب غير مصرح له بدخول لوحة الإدارة.','error');return false}$('loginBox').classList.add('hidden');$('adminApp').classList.remove('hidden');$('adminEmail').textContent=user.email||'';await loadProducts();return true}
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();msg('loginMsg','جارٍ التحقق...');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg('loginMsg','تعذر تسجيل الدخول: '+error.message,'error');return}await checkAdmin()});
-$('logoutBtn').onclick=async()=>{await db.auth.signOut();resetForm();$('adminApp').classList.add('hidden');$('loginBox').classList.remove('hidden');msg('loginMsg','تم تسجيل الخروج.','success')};
-$('pImage').addEventListener('change',()=>{const f=$('pImage').files[0];if(!f){$('imagePreview').classList.add('hidden');return}if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>5*1024*1024){msg('formMsg','اختر صورة JPG أو PNG أو WEBP بحجم لا يتجاوز 5MB.','error');$('pImage').value='';return} $('imagePreview').src=URL.createObjectURL(f);$('imagePreview').classList.remove('hidden');msg('formMsg','')});
-async function uploadImage(file){const ext=file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('volt-products').upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from('volt-products').getPublicUrl(path);return data.publicUrl}
-$('productForm').addEventListener('submit',async e=>{e.preventDefault();$('saveBtn').disabled=true;msg('formMsg','جارٍ حفظ المنتج...');try{let imageUrl=currentImageUrl;const file=$('pImage').files[0];if(file)imageUrl=await uploadImage(file);const product={name:$('pName').value.trim(),price:Number($('pPrice').value),category:$('pCategory').value.trim(),stock:Number($('pStock').value||0),description:$('pDescription').value.trim(),image_url:imageUrl||null,active:$('pActive').checked};if(!product.name||!product.category||!Number.isFinite(product.price)||product.price<0||!Number.isInteger(product.stock)||product.stock<0)throw new Error('راجع الاسم والتصنيف والسعر والكمية.');let result;if(editingId)result=await db.from('products').update(product).eq('id',editingId);else result=await db.from('products').insert(product);if(result.error)throw result.error;msg('formMsg','تم حفظ المنتج بنجاح.','success');resetForm();await loadProducts()}catch(err){msg('formMsg','لم يتم الحفظ: '+(err.message||'حدث خطأ غير معروف'),'error')}finally{$('saveBtn').disabled=false}});
-async function loadProducts(){ $('productsList').innerHTML='<p class="muted">جارٍ تحميل المنتجات...</p>';const {data,error}=await db.from('products').select('*').order('name');if(error){$('productsList').textContent='تعذر تحميل المنتجات: '+error.message;return}allProducts=data||[];renderProducts()}
-function renderProducts(){const q=$('search').value.trim().toLowerCase();const list=allProducts.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));$('countLabel').textContent='عدد المنتجات: '+allProducts.length;if(!list.length){$('productsList').innerHTML='<p class="muted">لا توجد منتجات مطابقة.</p>';return}$('productsList').innerHTML=list.map(p=>`<article class="item"><img src="${escapeAttr(p.image_url||'')}" alt="صورة المنتج" onerror="this.style.opacity='.15'"><h3>${escapeHtml(p.name||'بدون اسم')}</h3><p>${escapeHtml(p.category||'')} · ${Number(p.price||0).toLocaleString('ar-EG')} ج.م</p><p>المخزون: ${Number(p.stock||0)} · ${p.active?'ظاهر':'مخفي'}</p><div class="actions"><button class="secondary" data-edit="${escapeAttr(p.id)}">تعديل</button><button class="danger" data-delete="${escapeAttr(p.id)}">حذف</button></div></article>`).join('')}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escapeAttr(s){return escapeHtml(s)}
-$('productsList').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const p=allProducts.find(x=>String(x.id)===edit.dataset.edit);if(!p)return;editingId=p.id;currentImageUrl=p.image_url||'';$('pName').value=p.name||'';$('pPrice').value=p.price??'';$('pCategory').value=p.category||'';$('pStock').value=p.stock??0;$('pDescription').value=p.description||'';$('pActive').checked=p.active!==false;$('pImage').value='';$('imagePreview').classList.toggle('hidden',!currentImageUrl);if(currentImageUrl)$('imagePreview').src=currentImageUrl;$('formTitle').textContent='تعديل المنتج';$('saveBtn').textContent='حفظ التعديلات';$('cancelEdit').classList.remove('hidden');msg('formMsg','أنت تعدّل: '+(p.name||''));window.scrollTo({top:0,behavior:'smooth'});return}if(del){const p=allProducts.find(x=>String(x.id)===del.dataset.delete);if(!p||!confirm('تأكيد حذف المنتج: '+p.name+'؟'))return;del.disabled=true;const {error}=await db.from('products').delete().eq('id',p.id);if(error){alert('تعذر الحذف: '+error.message);del.disabled=false;return}await loadProducts();resetForm()}});
-$('cancelEdit').onclick=resetForm;$('search').addEventListener('input',renderProducts);db.auth.onAuthStateChange((_event,session)=>{if(!session){$('adminApp').classList.add('hidden');$('loginBox').classList.remove('hidden')}});checkAdmin();
-</script></body></html>
+
+  <div class="toolbar">
+    <div>
+      <h1>لوحة الإدارة</h1>
+      <div class="sub" id="adminEmail"></div>
+    </div>
+    <button class="secondary" id="logoutBtn">تسجيل الخروج</button>
+  </div>
+
+  <!-- CATEGORIES -->
+
+  <section class="panel">
+
+    <div class="section-title">
+      <h2>إدارة الأقسام</h2>
+      <span class="pill">CATEGORIES</span>
+    </div>
+
+    <form id="categoryForm">
+
+      <div class="grid">
+        <div>
+          <label>اسم القسم</label>
+          <input id="categoryName" maxlength="80" required placeholder="مثال: ساعات">
+        </div>
+
+        <div>
+          <label>ترتيب ظهور القسم</label>
+          <input id="categoryOrder" type="number" value="0" step="1">
+        </div>
+      </div>
+
+      <label style="display:flex;align-items:center;gap:9px">
+        <input id="categoryActive" type="checkbox" checked>
+        إظهار القسم في المتجر
+      </label>
+
+      <div class="actions">
+        <button id="categorySaveBtn" type="submit">إضافة القسم</button>
+        <button id="categoryCancelBtn" class="secondary hidden" type="button">إلغاء التعديل</button>
+      </div>
+
+      <div id="categoryMsg" class="msg" role="status"></div>
+    </form>
+
+    <div class="toolbar">
+      <h2 style="margin:0">الأقسام الحالية</h2>
+      <span class="sub" id="categoryCount"></span>
+    </div>
+
+    <div id="categoriesList" class="products">
+      <p class="muted">جارٍ تحميل الأقسام...</p>
+    </div>
+
+  </section>
+
+  <!-- PRODUCT FORM -->
+
+  <section class="panel">
+
+    <div class="section-title">
+      <h2 id="formTitle">إضافة منتج جديد</h2>
+      <span class="pill">PRODUCTS</span>
+    </div>
+
+    <form id="productForm">
+
+      <div class="grid">
+
+        <div>
+          <label>اسم المنتج</label>
+          <input id="pName" required maxlength="150" placeholder="اسم المنتج">
+        </div>
+
+        <div>
+          <label>السعر بالجنيه</label>
+          <input id="pPrice" type="number" min="0" step="0.01" required placeholder="0.00">
+        </div>
+
+        <div>
+          <label>القسم</label>
+          <select id="pCategory" required>
+            <option value="">اختر القسم</option>
+          </select>
+        </div>
+
+        <div>
+          <label>الكمية المتاحة</label>
+          <input id="pStock" type="number" min="0" step="1" value="0">
+        </div>
+
+      </div>
+
+      <label>وصف المنتج</label>
+      <textarea id="pDescription" placeholder="تفاصيل المنتج"></textarea>
+
+      <label>صورة المنتج</label>
+      <input id="pImage" type="file" accept="image/png,image/jpeg,image/webp">
+
+      <img id="imagePreview" class="preview hidden" alt="معاينة صورة المنتج">
+
+      <label style="display:flex;align-items:center;gap:9px">
+        <input id="pActive" type="checkbox" checked>
+        إظهار المنتج في المتجر
+      </label>
+
+      <div class="actions">
+        <button id="saveBtn" type="submit">حفظ المنتج</button>
+        <button id="cancelEdit" class="secondary hidden" type="button">إلغاء التعديل</button>
+      </div>
+
+      <div id="formMsg" class="msg" role="status"></div>
+
+    </form>
+
+  </section>
+
+  <!-- PRODUCTS LIST -->
+
+  <div class="toolbar">
+    <div>
+      <h2 style="margin:0">المنتجات الحالية</h2>
+      <div class="sub" id="countLabel"></div>
+    </div>
+
+    <div class="bar">
+      <input id="search" placeholder="ابحث عن منتج أو قسم...">
+    </div>
+  </div>
+
+  <div id="productsList" class="products"></div>
+
+</section>
+
+</main>
+
+<!-- الجزء الثاني يوضع هنا قبل body -->
+  <script>
+'use strict';
+
+/* ================================
+   SUPABASE CONFIGURATION
+================================ */
+
+const SUPABASE_URL =
+'https://qzmbylngwrhccjwlxpgl.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_DoCrCtcU_VFMsfxRw3Kqgg_1IFc6CoD';
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+let editingId = null;
+let editingCategoryId = null;
+
+let allProducts = [];
+let allCategories = [];
+
+let currentImageUrl = '';
+let previewObjectUrl = null;
+
+
+/* ================================
+   HELPERS
+================================ */
+
+function msg(id, text, kind = '') {
+  $(id).textContent = text;
+  $(id).className = 'msg ' + kind;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(
+    /[&<>"']/g,
+    char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]
+  );
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+function releasePreviewUrl() {
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
+  }
+}
+
+
+/* ================================
+   LOGIN AND ADMIN AUTHORIZATION
+================================ */
+
+async function checkAdmin() {
+  const {
+    data: { user },
+    error: userError
+  } = await db.auth.getUser();
+
+  if (userError || !user) {
+    $('loginBox').classList.remove('hidden');
+    $('adminApp').classList.add('hidden');
+    return false;
+  }
+
+  const { data, error } = await db
+    .from('volt_admins')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !data) {
+    await db.auth.signOut();
+
+    $('loginBox').classList.remove('hidden');
+    $('adminApp').classList.add('hidden');
+
+    msg(
+      'loginMsg',
+      'هذا الحساب غير مصرح له بدخول لوحة الإدارة.',
+      'error'
+    );
+
+    return false;
+  }
+
+  $('loginBox').classList.add('hidden');
+  $('adminApp').classList.remove('hidden');
+
+  $('adminEmail').textContent = user.email || '';
+
+  await loadCategories();
+  await loadProducts();
+
+  return true;
+}
+
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  msg('loginMsg', 'جارٍ التحقق من البيانات...');
+
+  const { error } = await db.auth.signInWithPassword({
+    email: $('email').value.trim(),
+    password: $('password').value
+  });
+
+  if (error) {
+    msg(
+      'loginMsg',
+      'تعذر تسجيل الدخول: ' + error.message,
+      'error'
+    );
+    return;
+  }
+
+  const authorized = await checkAdmin();
+
+  if (!authorized) return;
+
+  msg('loginMsg', '');
+});
+
+$('logoutBtn').addEventListener('click', async () => {
+  await db.auth.signOut();
+
+  resetForm();
+  resetCategoryForm();
+
+  $('adminApp').classList.add('hidden');
+  $('loginBox').classList.remove('hidden');
+
+  msg('loginMsg', 'تم تسجيل الخروج.', 'success');
+});
+
+db.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT' || !session) {
+    $('adminApp').classList.add('hidden');
+    $('loginBox').classList.remove('hidden');
+  }
+});
+
+
+/* ================================
+   CATEGORY MANAGEMENT
+================================ */
+
+async function loadCategories() {
+  $('categoriesList').innerHTML =
+    '<p class="muted">جارٍ تحميل الأقسام...</p>';
+
+  const { data, error } = await db
+    .from('categories')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) {
+    $('categoriesList').innerHTML =
+      '<p class="error">تعذر تحميل الأقسام: ' +
+      escapeHtml(error.message) +
+      '</p>';
+
+    return;
+  }
+
+  allCategories = data || [];
+
+  renderCategories();
+  fillCategorySelect();
+}
+
+function renderCategories() {
+  $('categoryCount').textContent =
+    'عدد الأقسام: ' + allCategories.length;
+
+  if (!allCategories.length) {
+    $('categoriesList').innerHTML =
+      '<p class="empty">لا توجد أقسام. أضف أول قسم الآن.</p>';
+
+    return;
+  }
+
+  $('categoriesList').innerHTML = allCategories.map(category => `
+    <article class="item">
+
+      <h3>${escapeHtml(category.name)}</h3>
+
+      <p>
+        الترتيب:
+        ${Number(category.sort_order || 0)}
+      </p>
+
+      <p class="category-status">
+        ${category.active ? 'ظاهر في المتجر' : 'مخفي'}
+      </p>
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          type="button"
+          data-category-edit="${escapeAttr(category.id)}"
+        >
+          تعديل
+        </button>
+
+        <button
+          class="secondary"
+          type="button"
+          data-category-toggle="${escapeAttr(category.id)}"
+        >
+          ${category.active ? 'إخفاء' : 'إظهار'}
+        </button>
+
+        <button
+          class="danger"
+          type="button"
+          data-category-delete="${escapeAttr(category.id)}"
+        >
+          حذف
+        </button>
+
+      </div>
+
+    </article>
+  `).join('');
+}
+
+function fillCategorySelect(selectedId = '') {
+  const select = $('pCategory');
+
+  select.innerHTML =
+    '<option value="">اختر القسم</option>';
+
+  allCategories
+    .filter(category =>
+      category.active || String(category.id) === String(selectedId)
+    )
+    .forEach(category => {
+      const option = document.createElement('option');
+
+      option.value = category.id;
+      option.textContent = category.name;
+
+      select.appendChild(option);
+    });
+
+  if (selectedId) {
+    select.value = selectedId;
+  }
+}
+
+function resetCategoryForm() {
+  editingCategoryId = null;
+
+  $('categoryForm').reset();
+
+  $('categoryOrder').value = 0;
+  $('categoryActive').checked = true;
+
+  $('categorySaveBtn').textContent = 'إضافة القسم';
+
+  $('categoryCancelBtn').classList.add('hidden');
+
+  msg('categoryMsg', '');
+}
+
+$('categoryForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const name = $('categoryName').value.trim();
+  const sort_order = Number($('categoryOrder').value || 0);
+  const active = $('categoryActive').checked;
+
+  if (!name) {
+    msg('categoryMsg', 'اكتب اسم القسم.', 'error');
+    return;
+  }
+
+  if (!Number.isInteger(sort_order)) {
+    msg('categoryMsg', 'ترتيب القسم يجب أن يكون رقمًا صحيحًا.', 'error');
+    return;
+  }
+
+  $('categorySaveBtn').disabled = true;
+
+  try {
+    let result;
+
+    if (editingCategoryId) {
+      const oldCategory = allCategories.find(
+        category => category.id === editingCategoryId
+      );
+
+      result = await db
+        .from('categories')
+        .update({
+          name,
+          sort_order,
+          active
+        })
+        .eq('id', editingCategoryId);
+
+      if (result.error) throw result.error;
+
+      /*
+       * Keep the old text category synchronized
+       * with the renamed category.
+       */
+
+      if (oldCategory && oldCategory.name !== name) {
+        const updateProducts = await db
+          .from('products')
+          .update({ category: name })
+          .eq('category_id', editingCategoryId);
+
+        if (updateProducts.error) {
+          throw updateProducts.error;
+        }
+      }
+
+    } else {
+      result = await db
+        .from('categories')
+        .insert({
+          name,
+          sort_order,
+          active
+        });
+
+      if (result.error) throw result.error;
+    }
+
+    resetCategoryForm();
+
+    await loadCategories();
+    await loadProducts();
+
+    msg(
+      'categoryMsg',
+      'تم حفظ القسم بنجاح.',
+      'success'
+    );
+
+  } catch (error) {
+    msg(
+      'categoryMsg',
+      'تعذر حفظ القسم: ' + error.message,
+      'error'
+    );
+  } finally {
+    $('categorySaveBtn').disabled = false;
+  }
+});
+
+$('categoryCancelBtn').addEventListener(
+  'click',
+  resetCategoryForm
+);
+
+$('categoriesList').addEventListener('click', async event => {
+
+  const editButton = event.target.closest('[data-category-edit]');
+  const toggleButton = event.target.closest('[data-category-toggle]');
+  const deleteButton = event.target.closest('[data-category-delete]');
+
+  if (editButton) {
+    const category = allCategories.find(
+      item => String(item.id) === editButton.dataset.categoryEdit
+    );
+
+    if (!category) return;
+
+    editingCategoryId = category.id;
+
+    $('categoryName').value = category.name;
+    $('categoryOrder').value = category.sort_order || 0;
+    $('categoryActive').checked = category.active;
+
+    $('categorySaveBtn').textContent = 'حفظ التعديلات';
+    $('categoryCancelBtn').classList.remove('hidden');
+
+    msg(
+      'categoryMsg',
+      'أنت تعدّل القسم: ' + category.name
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
+    return;
+  }
+
+  if (toggleButton) {
+    const category = allCategories.find(
+      item => String(item.id) === toggleButton.dataset.categoryToggle
+    );
+
+    if (!category) return;
+
+    toggleButton.disabled = true;
+
+    const { error } = await db
+      .from('categories')
+      .update({ active: !category.active })
+      .eq('id', category.id);
+
+    if (error) {
+      alert('تعذر تغيير حالة القسم: ' + error.message);
+      toggleButton.disabled = false;
+      return;
+    }
+
+    await loadCategories();
+
+    return;
+  }
+
+  if (deleteButton) {
+    const category = allCategories.find(
+      item => String(item.id) === deleteButton.dataset.categoryDelete
+    );
+
+    if (!category) return;
+
+    const { count, error: countError } = await db
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('category_id', category.id);
+
+    if (countError) {
+      alert('تعذر التحقق من المنتجات: ' + countError.message);
+      return;
+    }
+
+    if (count > 0) {
+      alert(
+        'لا يمكن حذف القسم لأنه يحتوي على منتجات. انقل المنتجات إلى قسم آخر أولاً.'
+      );
+      return;
+    }
+
+    if (!confirm('هل تريد حذف القسم ' + category.name + '؟')) {
+      return;
+    }
+
+    const { error } = await db
+      .from('categories')
+      .delete()
+      .eq('id', category.id);
+
+    if (error) {
+      alert('تعذر حذف القسم: ' + error.message);
+      return;
+    }
+
+    if (editingCategoryId === category.id) {
+      resetCategoryForm();
+    }
+
+    await loadCategories();
+  }
+});
+
+
+/* ================================
+   PRODUCT FORM
+================================ */
+
+function resetForm() {
+  editingId = null;
+  currentImageUrl = '';
+
+  releasePreviewUrl();
+
+  $('productForm').reset();
+
+  $('pActive').checked = true;
+  $('pStock').value = 0;
+
+  $('imagePreview').classList.add('hidden');
+  $('imagePreview').src = '';
+
+  $('pImage').value = '';
+
+  $('formTitle').textContent = 'إضافة منتج جديد';
+  $('saveBtn').textContent = 'حفظ المنتج';
+
+  $('cancelEdit').classList.add('hidden');
+
+  fillCategorySelect();
+
+  msg('formMsg', '');
+}
+
+$('cancelEdit').addEventListener('click', resetForm);
+
+
+/* ================================
+   IMAGE PREVIEW
+================================ */
+
+$('pImage').addEventListener('change', () => {
+
+  const file = $('pImage').files[0];
+
+  releasePreviewUrl();
+
+  if (!file) {
+    $('imagePreview').classList.add('hidden');
+    return;
+  }
+
+  if (
+    !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+    file.size > 5 * 1024 * 1024
+  ) {
+    msg(
+      'formMsg',
+      'اختر صورة JPG أو PNG أو WEBP بحجم لا يتجاوز 5MB.',
+      'error'
+    );
+
+    $('pImage').value = '';
+    $('imagePreview').classList.add('hidden');
+
+    return;
+  }
+
+  previewObjectUrl = URL.createObjectURL(file);
+
+  $('imagePreview').src = previewObjectUrl;
+  $('imagePreview').classList.remove('hidden');
+
+  msg('formMsg', '');
+});
+
+
+/* ================================
+   IMAGE UPLOAD
+================================ */
+
+async function uploadImage(file) {
+
+  const ext = file.name
+    .split('.')
+    .pop()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || 'jpg';
+
+  const path = crypto.randomUUID() + '.' + ext;
+
+  const { error } = await db
+    .storage
+    .from('volt-products')
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (error) throw error;
+
+  const { data } = db
+    .storage
+    .from('volt-products')
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+
+/* ================================
+   SAVE PRODUCT
+================================ */
+
+$('productForm').addEventListener('submit', async event => {
+
+  event.preventDefault();
+
+  $('saveBtn').disabled = true;
+
+  msg('formMsg', 'جارٍ حفظ المنتج...');
+
+  try {
+
+    const categoryId = $('pCategory').value;
+
+    const category = allCategories.find(
+      item => String(item.id) === String(categoryId)
+    );
+
+    if (!category) {
+      throw new Error('اختر قسمًا صحيحًا للمنتج.');
+    }
+
+    const price = Number($('pPrice').value);
+    const stock = Number($('pStock').value || 0);
+
+    if (
+      !Number.isFinite(price) ||
+      price < 0 ||
+      !Number.isInteger(stock) ||
+      stock < 0
+    ) {
+      throw new Error('راجع السعر والكمية.');
+    }
+
+    let imageUrl = currentImageUrl;
+
+    const file = $('pImage').files[0];
+
+    if (file) {
+      imageUrl = await uploadImage(file);
+    }
+
+    const product = {
+      name: $('pName').value.trim(),
+      price,
+      category: category.name,
+      category_id: category.id,
+      stock,
+      description: $('pDescription').value.trim(),
+      image_url: imageUrl || null,
+      active: $('pActive').checked
+    };
+
+    if (!product.name) {
+      throw new Error('اكتب اسم المنتج.');
+    }
+
+    let result;
+
+    if (editingId) {
+
+      result = await db
+        .from('products')
+        .update(product)
+        .eq('id', editingId);
+
+    } else {
+
+      result = await db
+        .from('products')
+        .insert(product);
+
+    }
+
+    if (result.error) throw result.error;
+
+    resetForm();
+
+    await loadProducts();
+
+    msg(
+      'formMsg',
+      'تم حفظ المنتج بنجاح.',
+      'success'
+    );
+
+  } catch (error) {
+
+    msg(
+      'formMsg',
+      'لم يتم الحفظ: ' + error.message,
+      'error'
+    );
+
+  } finally {
+
+    $('saveBtn').disabled = false;
+
+  }
+
+});
+
+
+/* ================================
+   LOAD PRODUCTS
+================================ */
+
+async function loadProducts() {
+
+  $('productsList').innerHTML =
+    '<p class="muted">جارٍ تحميل المنتجات...</p>';
+
+  const { data, error } = await db
+    .from('products')
+    .select('*')
+    .order('name', { ascending: true });
+
+  if (error) {
+    $('productsList').innerHTML =
+      '<p class="error">تعذر تحميل المنتجات: ' +
+      escapeHtml(error.message) +
+      '</p>';
+
+    return;
+  }
+
+  allProducts = data || [];
+
+  renderProducts();
+}
+
+
+/* ================================
+   DISPLAY PRODUCTS
+================================ */
+
+function renderProducts() {
+
+  const query = $('search').value.trim().toLowerCase();
+
+  const list = allProducts.filter(product => {
+
+    const name = (product.name || '').toLowerCase();
+    const category = (product.category || '').toLowerCase();
+
+    return name.includes(query) || category.includes(query);
+
+  });
+
+  $('countLabel').textContent =
+    'عدد المنتجات: ' + allProducts.length;
+
+  if (!list.length) {
+
+    $('productsList').innerHTML =
+      '<p class="empty">لا توجد منتجات مطابقة.</p>';
+
+    return;
+  }
+
+  $('productsList').innerHTML = list.map(product => `
+
+    <article class="item">
+
+      <img
+        src="${escapeAttr(product.image_url || '')}"
+        alt="صورة المنتج"
+        onerror="this.style.opacity='.15'"
+      >
+
+      <h3>${escapeHtml(product.name || 'بدون اسم')}</h3>
+
+      <p>
+        ${escapeHtml(product.category || '')}
+        ·
+        ${Number(product.price || 0).toLocaleString('ar-EG')}
+        ج.م
+      </p>
+
+      <p>
+        المخزون: ${Number(product.stock || 0)}
+        ·
+        ${product.active ? 'ظاهر' : 'مخفي'}
+      </p>
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          type="button"
+          data-edit="${escapeAttr(product.id)}"
+        >
+          تعديل
+        </button>
+
+        <button
+          class="danger"
+          type="button"
+          data-delete="${escapeAttr(product.id)}"
+        >
+          حذف
+        </button>
+
+      </div>
+
+    </article>
+
+  `).join('');
+
+}
+
+
+/* ================================
+   EDIT AND DELETE PRODUCTS
+================================ */
+
+$('productsList').addEventListener('click', async event => {
+
+  const editButton = event.target.closest('[data-edit]');
+  const deleteButton = event.target.closest('[data-delete]');
+
+  if (editButton) {
+
+    const product = allProducts.find(
+      item => String(item.id) === editButton.dataset.edit
+    );
+
+    if (!product) return;
+
+    editingId = product.id;
+
+    currentImageUrl = product.image_url || '';
+
+    $('pName').value = product.name || '';
+    $('pPrice').value = product.price ?? '';
+    $('pStock').value = product.stock ?? 0;
+
+    $('pDescription').value = product.description || '';
+
+    $('pActive').checked = product.active !== false;
+
+    $('pImage').value = '';
+
+    releasePreviewUrl();
+
+    fillCategorySelect(product.category_id || '');
+
+    $('imagePreview').classList.toggle(
+      'hidden',
+      !currentImageUrl
+    );
+
+    if (currentImageUrl) {
+      $('imagePreview').src = currentImageUrl;
+    }
+
+    $('formTitle').textContent = 'تعديل المنتج';
+
+    $('saveBtn').textContent = 'حفظ التعديلات';
+
+    $('cancelEdit').classList.remove('hidden');
+
+    msg(
+      'formMsg',
+      'أنت تعدّل: ' + (product.name || '')
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
+    return;
+  }
+
+  if (deleteButton) {
+
+    const product = allProducts.find(
+      item => String(item.id) === deleteButton.dataset.delete
+    );
+
+    if (!product) return;
+
+    if (!confirm('تأكيد حذف المنتج: ' + product.name + '؟')) {
+      return;
+    }
+
+    deleteButton.disabled = true;
+
+    const { error } = await db
+      .from('products')
+      .delete()
+      .eq('id', product.id);
+
+    if (error) {
+      alert('تعذر الحذف: ' + error.message);
+      deleteButton.disabled = false;
+      return;
+    }
+
+    if (editingId === product.id) {
+      resetForm();
+    }
+
+    await loadProducts();
+
+  }
+
+});
+
+
+/* ================================
+   SEARCH
+================================ */
+
+$('search').addEventListener('input', renderProducts);
+
+
+/* ================================
+   INITIALIZATION
+================================ */
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>
